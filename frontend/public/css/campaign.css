@@ -1,0 +1,280 @@
+/* Aeon Circuit: The Silent Wake — Campaign Presentation & Android Landscape Styles */
+:root {
+  --aeon-cyan: #72dce8;
+  --aeon-amber: #f2bd75;
+  --aeon-moss: #78c896;
+  --aeon-slate: #111720;
+  --aeon-panel: #141b24;
+  --aeon-border: #3a4a5e;
+}
+
+/* Title & World Polish */
+body.aeon-campaign #title {
+  background: radial-gradient(circle at 24% 38%, rgba(44, 96, 118, 0.24), transparent 54%),
+              radial-gradient(circle at 80% 72%, rgba(242, 189, 117, 0.14), transparent 48%),
+              linear-gradient(160deg, #070b11 0%, #0d1520 55%, #091015 100%);
+  padding-left: calc(var(--u) * 32);
+  gap: calc(var(--u) * 20);
+}
+body.aeon-campaign #title h1 span {
+  color: var(--aeon-cyan);
+  text-shadow: 0 0 calc(var(--u) * 10) rgba(114, 220, 232, 0.45);
+  font-size: calc(var(--u) * 21);
+}
+body.aeon-campaign #title .kicker { color: var(--aeon-amber); }
+body.aeon-campaign .menu-btn {
+  border-color: var(--aeon-border);
+  border-left: calc(var(--u) * 2) solid var(--aeon-cyan);
+  background: rgba(11, 16, 22, 0.92);
+}
+body.aeon-campaign .menu-btn:hover,
+body.aeon-campaign .menu-btn:focus-visible,
+body.aeon-campaign .menu-btn.active {
+  background: var(--aeon-cyan);
+  color: #061018;
+  border-color: var(--aeon-cyan);
+}
+body.aeon-campaign h2 {
+  border-bottom-color: var(--aeon-cyan);
+}
+
+/* Storyboard / Cinematic Layer */
+#cinematic-layer {
+  position: absolute;
+  inset: 0;
+  z-index: 12;
+  background: rgba(5, 9, 14, 0.92);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  padding-top: calc(var(--u) * 8);
+  pointer-events: none;
+}
+#cinematic-canvas {
+  width: calc(var(--u) * 380);
+  height: calc(var(--u) * 150);
+  border: calc(var(--u) * 1) solid var(--aeon-border);
+  background: #070c12;
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+  box-shadow: 0 calc(var(--u) * 4) calc(var(--u) * 14) rgba(0, 0, 0, 0.75);
+}
+#cinematic-caption {
+  margin-top: calc(var(--u) * 4);
+  width: calc(var(--u) * 380);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: calc(var(--u) * 8);
+  padding: calc(var(--u) * 2) calc(var(--u) * 6);
+  background: rgba(12, 18, 26, 0.9);
+  border: calc(var(--u) * 1) solid var(--aeon-border);
+  font-family: 'Silkscreen', monospace;
+  font-size: calc(var(--u) * 5.8);
+  color: var(--aeon-amber);
+}
+#cinematic-caption-text {
+  color: #dfe8ee;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Upgraded Dialog Box with Portrait & Reader Controls */
+#dialog {
+  z-index: 14;
+}
+body.aeon-campaign #dialog {
+  left: calc(var(--u) * 42);
+  right: calc(var(--u) * 42);
+  bottom: calc(var(--u) * 7);
+  min-height: calc(var(--u) * 66);
+  background: rgba(9, 14, 21, 0.95);
+  border-color: var(--aeon-cyan);
+  box-shadow: inset 0 0 0 calc(var(--u) * 1) #05080d, inset 0 0 0 calc(var(--u) * 2) #233346;
+  display: flex;
+  gap: calc(var(--u) * 8);
+  align-items: flex-start;
+  padding: calc(var(--u) * 6) calc(var(--u) * 7);
+}
+#dialog-portrait-wrap {
+  flex: 0 0 auto;
+  width: calc(var(--u) * 52);
+  height: calc(var(--u) * 52);
+  border: calc(var(--u) * 1) solid var(--aeon-border);
+  background: radial-gradient(circle at 50% 35%, #1c2c3d, #0a1017);
+  overflow: hidden;
+}
+#dialog-portrait-wrap.empty {
+  display: none;
+}
+#dialog-portrait {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+}
+#dialog-body {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+#dialog-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: calc(var(--u) * 6);
+  margin-bottom: calc(var(--u) * 2.5);
+}
+body.aeon-campaign #dialog-speaker {
+  margin-bottom: 0;
+  color: var(--aeon-cyan);
+  font-size: calc(var(--u) * 6.5);
+}
+#dialog-tools {
+  display: flex;
+  gap: calc(var(--u) * 3);
+  align-items: center;
+}
+.dialog-tool-btn {
+  font-family: 'Silkscreen', monospace;
+  font-size: calc(var(--u) * 5.2);
+  color: #c2d4df;
+  background: rgba(20, 30, 42, 0.92);
+  border: calc(var(--u) * 1) solid var(--aeon-border);
+  padding: calc(var(--u) * 2) calc(var(--u) * 4);
+  cursor: pointer;
+  white-space: nowrap;
+}
+.dialog-tool-btn:hover,
+.dialog-tool-btn:focus-visible {
+  background: var(--aeon-cyan);
+  color: #061018;
+  border-color: var(--aeon-cyan);
+  outline: none;
+}
+
+/* HUD Area Banner & Campaign Actions */
+#campaign-area-tag {
+  position: absolute;
+  left: 50%;
+  top: calc(var(--u) * 7);
+  transform: translateX(-50%);
+  padding: calc(var(--u) * 2) calc(var(--u) * 6);
+  background: rgba(10, 15, 22, 0.84);
+  border: calc(var(--u) * 1) solid var(--aeon-border);
+  font-family: 'Silkscreen', monospace;
+  font-size: calc(var(--u) * 5.5);
+  color: var(--aeon-amber);
+  letter-spacing: calc(var(--u) * 0.4);
+  pointer-events: none;
+  white-space: nowrap;
+}
+#campaign-log-btn {
+  right: calc(var(--u) * 96);
+  width: calc(var(--u) * 31);
+  font-size: calc(var(--u) * 6);
+}
+body.aeon-campaign .hud-obj {
+  right: calc(var(--u) * 132);
+  width: calc(var(--u) * 130);
+}
+body.aeon-campaign #campaign-field-menu {
+  border-color: var(--aeon-cyan);
+  color: var(--aeon-cyan);
+}
+
+/* Campaign Modals (Callsign, Puzzles, Dialogue Log, Save Terminal, Credits) */
+#campaign-modal {
+  z-index: 45;
+}
+#campaign-modal .panel.campaign-wide {
+  width: calc(var(--u) * 420);
+  max-height: 90%;
+  background: var(--aeon-panel);
+  border-color: var(--aeon-cyan);
+}
+.campaign-log-list {
+  list-style: none;
+  overflow-y: auto;
+  max-height: calc(var(--u) * 145);
+  display: flex;
+  flex-direction: column;
+  gap: calc(var(--u) * 3);
+  padding-right: calc(var(--u) * 3);
+}
+.campaign-log-row {
+  background: #0b1119;
+  border: calc(var(--u) * 1) solid var(--aeon-border);
+  padding: calc(var(--u) * 4) calc(var(--u) * 5);
+  font-size: calc(var(--u) * 9.5);
+  line-height: 1.15;
+}
+.campaign-log-speaker {
+  font-family: 'Silkscreen', monospace;
+  font-size: calc(var(--u) * 5.5);
+  color: var(--aeon-amber);
+  margin-bottom: calc(var(--u) * 1.5);
+}
+.campaign-input {
+  width: 100%;
+  padding: calc(var(--u) * 4) calc(var(--u) * 6);
+  background: #080d14;
+  border: calc(var(--u) * 1) solid var(--aeon-cyan);
+  color: #edf5f8;
+  font-family: 'Silkscreen', monospace;
+  font-size: calc(var(--u) * 8);
+}
+.campaign-pronouns {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: calc(var(--u) * 4);
+}
+.campaign-puzzle-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: calc(var(--u) * 4);
+}
+.campaign-party-strip {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: calc(var(--u) * 3);
+  font-family: 'Silkscreen', monospace;
+  font-size: calc(var(--u) * 5.5);
+}
+.campaign-party-chip {
+  background: #0b1118;
+  border: calc(var(--u) * 1) solid var(--aeon-border);
+  padding: calc(var(--u) * 3);
+  color: #dbe7ee;
+}
+
+/* Reduced motion mode */
+body.reduced-motion *,
+@media (prefers-reduced-motion: reduce) {
+  body.reduced-motion #fade,
+  body.reduced-motion #card.play,
+  body.reduced-motion #dialog:not(.hidden),
+  body.reduced-motion .overlay:not(.hidden) > .panel {
+    animation: none !important;
+    transition: none !important;
+  }
+}
+
+/* Android / Touch Landscape ergonomics (min 44px targets) */
+@media (pointer: coarse), (max-height: 520px) {
+  .pix-btn,
+  .dialog-tool-btn,
+  .menu-btn.sm,
+  #rpg-lab-battle button {
+    min-height: 44px;
+    min-width: 44px;
+  }
+  body.aeon-campaign #dialog {
+    left: calc(var(--u) * 18);
+    right: calc(var(--u) * 18);
+  }
+}

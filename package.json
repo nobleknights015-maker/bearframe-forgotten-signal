@@ -1,0 +1,12 @@
+{
+  "name": "bearframe-aeon-circuit-workspace",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Bearframe Labs: Ghost Signal Engine & Aeon Circuit JRPG workspace",
+  "scripts": {
+    "dev": "PORT=3000 HOST=0.0.0.0 node frontend/serve.js",
+    "start": "PORT=3000 HOST=0.0.0.0 node frontend/serve.js",
+    "build": "npm run build --prefix frontend",
+    "lint": "find frontend/public/js frontend/tests -type f \\( -name '*.js' -o -name '*.mjs' \\) -exec node --check {} +"
+  }
+}

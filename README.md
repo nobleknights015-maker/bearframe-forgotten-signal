@@ -1,11 +1,15 @@
-<div align="center">
+# bearframe-ghost-signal
+## BEARFRAME: GHOST SIGNAL — Mission 01: The Silent Facility
 
-<img width="1200" height="475" alt="GHBanner" src="https://github.com/user-attachments/assets/0aa67016-6eaf-458a-adb2-6e31a0763ed6" />
+A proposed future side story. HTML5 Canvas + plain JavaScript modules, no dependencies, no accounts, saves in the browser.
 
-  <h1>Built with AI Studio</h2>
+Run: `cd frontend && PORT=3000 HOST=0.0.0.0 yarn start` (or serve `frontend/public` with any static host).
 
-  <p>The fastest path from prompt to production with Gemini.</p>
+Controls: WASD/arrows move · E use · F flashlight · Q scan · Esc pause. Touch: D-pad left, USE / LIGHT / SCAN right.
 
-  <a href="https://aistudio.google.com/apps">Start building</a>
+Add missions in `frontend/public/js/missions/` and register them in `missions/index.js`.
 
-</div>
+## Bearframe Sprite Studio
+
+Standalone pixel-art sprite and animation tool for Bearframe Labs games, served at `/studio/`.
+Source and documentation: `frontend/public/studio/` (see its README). It does not depend on Ghost Signal.
