@@ -1,8 +1,8 @@
 // Campaign field record: reuse Ghost Signal menu styling and the tested
-// reusable RPG menu/party models. No gameplay math, screenplay or private
-// art is defined here; each view reads the durable campaign journal.
+// reusable RPG menu/party models. Reads and mutates only via durable campaign journal.
 import {rpgMenuModel,RPG_TABS} from './rpg-menu-model.js';
-import {createCampaignParty,swapPartyReserve} from './rpg-party.js';
+import {createCampaignParty,createParty,equipItem,swapPartyReserve} from './rpg-party.js';
+import {CAMPAIGN_GEAR,CAMPAIGN_CONSUMABLES,nextLevelXp} from './campaign-gear.js';
 
 const $=id=>document.getElementById(id);
 const node=(tag,text,cls)=>{
@@ -16,7 +16,7 @@ const button=(label,fn)=>{
   n.type='button';n.addEventListener('click',fn);return n;
 };
 
-export function mountCampaignFieldMenu({game,ui,journal,touchMode,questJournal=null}){
+export function mountCampaignFieldMenu({game,ui,journal,touchMode,questJournal=null,onOpenLog=null,audio=null}){
   if(!game||!ui||!journal||typeof journal.readWorld!=='function'||
      typeof journal.writeJournal!=='function')
     throw new TypeError('Campaign field menu requires existing game and journal');
@@ -37,7 +37,7 @@ export function mountCampaignFieldMenu({game,ui,journal,touchMode,questJournal=n
   const objHud=document.querySelector?.('.hud-obj');
   if(objHud)objHud.style.right='calc(var(--u) * 98)';
 
-  let opened=false,stopped=false,tab='status';
+  let opened=false,stopped=false,tab='status',selectedIdx=0;
   const visible=()=>!stopped&&game.mode==='rpgmenu'&&opened;
   function close(){
     if(!visible())return false;
@@ -90,6 +90,7 @@ export function mountCampaignFieldMenu({game,ui,journal,touchMode,questJournal=n
           if(!persistParty({...world,activeParty:[...next.active]})){
             ui.toast('FORMATION CHANGE NOT SAVED',3);return;
           }
+          audio?.puzzleSolve?.();
           ui.toast('FORMATION RECORDED',2);
           formation();
         }catch(error){ui.toast('FORMATION REJECTED — '+error.message,3);}
@@ -98,46 +99,135 @@ export function mountCampaignFieldMenu({game,ui,journal,touchMode,questJournal=n
     row.append(back);panel.append(row);
     row.querySelector('button')?.focus();
   }
+  function quietCycleInfo(world){
+    const flags=world.flags||{};
+    const qc=flags.sleepers_power_stable?4:flags.exception_rule_found?3:
+      flags.air_exchange_restored?2:flags.quiet_cycle_phase_1?1:0;
+    const rillTrust=(flags.trust_rill_1?1:0)+(flags.trust_rill_2?1:0);
+    const miyaTrust=(flags.trust_miya_1?1:0)+(flags.miya_marker_corrected?1:0);
+    const proofs=['proof_witness','proof_structure','proof_route'].filter(f=>flags[f]).length;
+    return `QUIET CYCLE PHASE: ${qc}/4  |  RILL TRUST: ${rillTrust}  |  MIYA TRUST: ${miyaTrust}  |  PROOFS: ${proofs}/3`;
+  }
+  function buildActionPanel(world,idx){
+    const wrap=node('div',undefined,'btn-row');
+    wrap.style.cssText='flex-wrap:wrap;margin-top:calc(var(--u)*2)';
+    if(tab==='equipment'){
+      const member=world.party?.[idx];
+      if(!member)return wrap;
+      const partyModel=createParty({
+        members:world.party,
+        active:world.activeParty||world.party.map(u=>u.id),
+        inventory:world.inventory||{},
+        equipment:world.equipment||{},
+        ...(Array.isArray(world.activeParty)?{mode:'campaign'}:{})
+      });
+      for(const [itemId,count] of Object.entries(world.inventory||{})){
+        const def=CAMPAIGN_GEAR[itemId];
+        if(!def||!(count>0))continue;
+        if(def.allowedLineages&&!def.allowedLineages.includes(member.lineage))continue;
+        if(world.equipment?.[member.id]?.[def.slot]===itemId)continue;
+        const b=button(`EQUIP ${def.label.toUpperCase()} (${def.slot.toUpperCase()})`,()=>{
+          try{
+            const next=equipItem(partyModel,member.id,def.slot,itemId,CAMPAIGN_GEAR);
+            const updated={...world,inventory:{...next.inventory},equipment:{...next.equipment}};
+            if(!persistParty(updated)){ui.toast('EQUIPMENT SAVE FAILED',3);return;}
+            audio?.puzzleSolve?.();
+            ui.toast(`${member.name||member.id} EQUIPPED ${def.label.toUpperCase()}`,2);
+            render();
+          }catch(error){ui.toast('EQUIP REJECTED — '+error.message,3);}
+        });
+        wrap.append(b);
+      }
+    }else if(tab==='items'){
+      const keys=Object.keys(world.inventory||{}).filter(k=>CAMPAIGN_CONSUMABLES[k]&&world.inventory[k]>0);
+      const itemId=keys[idx];
+      if(!itemId)return wrap;
+      const def=CAMPAIGN_CONSUMABLES[itemId];
+      for(const m of world.party||[]){
+        const needs=(m.hp<m.maxHp)||(def.healEp>0&&(m.ep||0)<(m.maxEp||0));
+        const b=button(`USE ON ${m.name||m.id} (${m.hp}/${m.maxHp})`,()=>{
+          const next=structuredClone(world);
+          next.inventory[itemId]--;
+          if(next.inventory[itemId]<=0)delete next.inventory[itemId];
+          const u=next.party.find(x=>x.id===m.id);
+          u.hp=Math.min(u.maxHp,u.hp+def.healHp);
+          if(def.healEp>0&&u.maxEp>0)u.ep=Math.min(u.maxEp,(u.ep||0)+def.healEp);
+          if(!persistParty(next)){ui.toast('ITEM USE SAVE FAILED',3);return;}
+          audio?.battleRepair?.();
+          ui.toast(`${m.name||m.id} RESTORED (+${def.healHp} HP)`,2);
+          render();
+        });
+        b.disabled=!needs;
+        wrap.append(b);
+      }
+    }
+    return wrap;
+  }
   function render(){
     if(!visible())return;
     const world=journal.readWorld();
-    // Present only quests unlocked by source-authored durable flags. Keep
-    // manually recorded quest entries intact; this view never edits saves.
     const staged=questJournal?.project(world.flags)||{};
     const menuWorld={...world,quests:{...staged,...world.quests}};
     const model=rpgMenuModel(menuWorld,tab,journal.inspect());
+    if(selectedIdx>=model.rows.length)selectedIdx=0;
     panel.replaceChildren();
     const header=node('div',undefined,'case-head');
-    header.append(node('h2',model.title),button('CLOSE',close));
+    const headActions=node('div',undefined,'btn-row');
+    if(onOpenLog)headActions.append(button('DIALOGUE LOG',()=>{close();onOpenLog();}));
+    headActions.append(button('CLOSE',close));
+    header.append(node('h2',model.title),headActions);
     panel.append(header);
     const tabs=node('div',undefined,'btn-row');tabs.style.flexWrap='wrap';
     for(const id of RPG_TABS){
-      const b=button(id.toUpperCase(),()=>{tab=id;render();});
+      const b=button(id.toUpperCase(),()=>{tab=id;selectedIdx=0;render();});
       if(tab===id)b.classList.add('active');
       tabs.append(b);
     }
     panel.append(tabs);
+    if(tab==='status'){
+      const m0=world.party?.[0];
+      const xp=world.progression?.xp||0;
+      const nxt=nextLevelXp(m0?.level||1);
+      const bar=node('p',`XP: ${xp} / NEXT LV: ${nxt}  |  CALLSIGN: ${(world.stats?.callsign||'SLEEPER').toUpperCase()}`,'fine');
+      panel.append(bar);
+    }else if(tab==='quests'){
+      panel.append(node('p',quietCycleInfo(world),'fine'));
+    }
     const body=node('div',undefined,'case-body');
     const list=node('ul');
-    list.style.cssText='list-style:none;width:42%;overflow:auto;max-height:calc(var(--u)*126)';
-    const detail=node('pre',model.rows[0].detail);
+    list.style.cssText='list-style:none;width:42%;overflow:auto;max-height:calc(var(--u)*112)';
+    const detail=node('pre',model.rows[selectedIdx]?.detail||model.rows[0].detail);
     detail.style.cssText='white-space:pre-wrap;overflow:auto;flex:1;font-size:calc(var(--u)*9)';
-    for(const row of model.rows){
+    const rightCol=node('div');
+    rightCol.style.cssText='display:flex;flex-direction:column;flex:1;overflow:auto';
+    rightCol.append(detail);
+    let actionSlot=buildActionPanel(world,selectedIdx);
+    rightCol.append(actionSlot);
+    model.rows.forEach((row,idx)=>{
       const item=node('li'),b=node('button',row.name,'case-item');
-      b.type='button';b.addEventListener('click',()=>{detail.textContent=row.detail;});
+      b.type='button';
+      if(idx===selectedIdx)b.classList.add('active');
+      b.addEventListener('click',()=>{
+        selectedIdx=idx;
+        detail.textContent=row.detail;
+        const fresh=buildActionPanel(world,selectedIdx);
+        actionSlot.replaceWith(fresh);
+        actionSlot=fresh;
+      });
       item.append(b);list.append(item);
-    }
-    body.append(list,detail);panel.append(body);
+    });
+    body.append(list,rightCol);panel.append(body);
     if(tab==='party'&&Array.isArray(world.activeParty)&&world.party.length>1)
       panel.append(button('FORMATION / RESERVE',formation));
     if(tab==='save'){
       panel.append(button('SAVE CAMPAIGN RECORD',()=>{
         const ok=journal.saveField(game.m.id,game.snapshot());
+        if(ok)audio?.saveTerminal?.();
         ui.toast(ok?'CAMPAIGN FIELD RECORD SAVED':'CAMPAIGN SAVE FAILED',3);
         if(ok)render();
       }));
     }
-    panel.querySelector('.case-head button')?.focus();
+    panel.querySelector('.case-head button:last-child')?.focus();
   }
   function keydown(event){
     if(stopped)return;

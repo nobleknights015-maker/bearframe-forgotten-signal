@@ -1,4 +1,3 @@
-
 /frontend/build
 node_modules
 .env
@@ -8,10 +7,15 @@ credentials.json
 *.pem
 *.key
 .credentials
+.aistudio/
+.emergent/
 
-# Native CLI scratch projects and previews; publish only separately reviewed art.
+# Native CLI scratch projects and previews
 /frontend/character-output/
-/frontend/test-artifacts/generated-character/
+/frontend/test-artifacts/
 
-# Owner-only Aeon v5 artwork. Install locally; do not push to the public repository.
-/frontend/public/assets/aeon/
+# Private lore, unpublished screenplay data, restricted artwork, and private export bundle
+/public/assets/aistudio/
+/frontend/public/assets/aeon/story/
+/frontend/public/studio/refs/
+/private-export/

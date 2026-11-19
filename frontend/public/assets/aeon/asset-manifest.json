@@ -1,0 +1,6641 @@
+{
+  "schema": "aeon.asset-library.v4",
+  "characters": [
+    {
+      "id": "sleeper_A",
+      "name": "Sleeper A (Vanguard)",
+      "world": {
+        "src": "assets/world/sleeper_A.png",
+        "frameWidth": 32,
+        "frameHeight": 56,
+        "columns": 9,
+        "rows": 4,
+        "idleColumn": 0,
+        "fps": 8,
+        "anchor": [
+          16,
+          56
+        ],
+        "directions": [
+          "down",
+          "left",
+          "right",
+          "up"
+        ],
+        "walkColumns": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8
+        ]
+      },
+      "battle": {
+        "src": "assets/battlers/sleeper_A.png",
+        "frameWidth": 64,
+        "frameHeight": 64,
+        "columns": 6,
+        "rows": 9,
+        "animations": {
+          "idle": {
+            "row": 0,
+            "frames": 4,
+            "durationsMs": [
+              240,
+              240,
+              240,
+              240
+            ],
+            "loop": true
+          },
+          "attack": {
+            "row": 1,
+            "frames": 4,
+            "durationsMs": [
+              90,
+              110,
+              120,
+              130
+            ],
+            "loop": false,
+            "events": [
+              {
+                "kind": "release",
+                "atMs": 260
+              }
+            ]
+          },
+          "ranged": {
+            "row": 2,
+            "frames": 4,
+            "durationsMs": [
+              100,
+              110,
+              110,
+              130
+            ],
+            "loop": false,
+            "events": [
+              {
+                "kind": "release",
+                "atMs": 260
+              }
+            ]
+          },
+          "cast": {
+            "row": 3,
+            "frames": 4,
+            "durationsMs": [
+              110,
+              120,
+              120,
+              140
+            ],
+            "loop": false,
+            "events": [
+              {
+                "kind": "release",
+                "atMs": 260
+              }
+            ]
+          },
+          "guard": {
+            "row": 4,
+            "frames": 3,
+            "durationsMs": [
+              140,
+              180,
+              180
+            ],
+            "loop": true
+          },
+          "hit": {
+            "row": 5,
+            "frames": 3,
+            "durationsMs": [
+              90,
+              130,
+              150
+            ],
+            "loop": false
+          },
+          "down": {
+            "row": 6,
+            "frames": 3,
+            "durationsMs": [
+              140,
+              180,
+              240
+            ],
+            "loop": false,
+            "holdLast": true
+          },
+          "victory": {
+            "row": 7,
+            "frames": 4,
+            "durationsMs": [
+              160,
+              160,
+              160,
+              220
+            ],
+            "loop": false,
+            "holdLast": true
+          },
+          "charge": {
+            "row": 8,
+            "frames": 4,
+            "durationsMs": [
+              110,
+              110,
+              110,
+              110
+            ],
+            "loop": true
+          }
+        }
+      }
+    },
+    {
+      "id": "sleeper_B",
+      "name": "Sleeper B (Surveyist)",
+      "world": {
+        "src": "assets/world/sleeper_B.png",
+        "frameWidth": 32,
+        "frameHeight": 56,
+        "columns": 9,
+        "rows": 4,
+        "idleColumn": 0,
+        "fps": 8,
+        "anchor": [
+          16,
+          56
+        ],
+        "directions": [
+          "down",
+          "left",
+          "right",
+          "up"
+        ],
+        "walkColumns": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8
+        ]
+      },
+      "battle": {
+        "src": "assets/battlers/sleeper_B.png",
+        "frameWidth": 64,
+        "frameHeight": 64,
+        "columns": 6,
+        "rows": 9,
+        "animations": {
+          "idle": {
+            "row": 0,
+            "frames": 4,
+            "durationsMs": [
+              240,
+              240,
+              240,
+              240
+            ],
+            "loop": true
+          },
+          "attack": {
+            "row": 1,
+            "frames": 4,
+            "durationsMs": [
+              90,
+              110,
+              120,
+              130
+            ],
+            "loop": false,
+            "events": [
+              {
+                "kind": "release",
+                "atMs": 260
+              }
+            ]
+          },
+          "ranged": {
+            "row": 2,
+            "frames": 4,
+            "durationsMs": [
+              100,
+              110,
+              110,
+              130
+            ],
+            "loop": false,
+            "events": [
+              {
+                "kind": "release",
+                "atMs": 260
+              }
+            ]
+          },
+          "cast": {
+            "row": 3,
+            "frames": 4,
+            "durationsMs": [
+              110,
+              120,
+              120,
+              140
+            ],
+            "loop": false,
+            "events": [
+              {
+                "kind": "release",
+                "atMs": 260
+              }
+            ]
+          },
+          "guard": {
+            "row": 4,
+            "frames": 3,
+            "durationsMs": [
+              140,
+              180,
+              180
+            ],
+            "loop": true
+          },
+          "hit": {
+            "row": 5,
+            "frames": 3,
+            "durationsMs": [
+              90,
+              130,
+              150
+            ],
+            "loop": false
+          },
+          "down": {
+            "row": 6,
+            "frames": 3,
+            "durationsMs": [
+              140,
+              180,
+              240
+            ],
+            "loop": false,
+            "holdLast": true
+          },
+          "victory": {
+            "row": 7,
+            "frames": 4,
+            "durationsMs": [
+              160,
+              160,
+              160,
+              220
+            ],
+            "loop": false,
+            "holdLast": true
+          },
+          "charge": {
+            "row": 8,
+            "frames": 4,
+            "durationsMs": [
+              110,
+              110,
+              110,
+              110
+            ],
+            "loop": true
+          }
+        }
+      }
+    },
+    {
+      "id": "sleeper_C",
+      "name": "Sleeper C (Technician)",
+      "world": {
+        "src": "assets/world/sleeper_C.png",
+        "frameWidth": 32,
+        "frameHeight": 56,
+        "columns": 9,
+        "rows": 4,
+        "idleColumn": 0,
+        "fps": 8,
+        "anchor": [
+          16,
+          56
+        ],
+        "directions": [
+          "down",
+          "left",
+          "right",
+          "up"
+        ],
+        "walkColumns": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8
+        ]
+      },
+      "battle": {
+        "src": "assets/battlers/sleeper_C.png",
+        "frameWidth": 64,
+        "frameHeight": 64,
+        "columns": 6,
+        "rows": 9,
+        "animations": {
+          "idle": {
+            "row": 0,
+            "frames": 4,
+            "durationsMs": [
+              240,
+              240,
+              240,
+              240
+            ],
+            "loop": true
+          },
+          "attack": {
+            "row": 1,
+            "frames": 4,
+            "durationsMs": [
+              90,
+              110,
+              120,
+              130
+            ],
+            "loop": false,
+            "events": [
+              {
+                "kind": "release",
+                "atMs": 260
+              }
+            ]
+          },
+          "ranged": {
+            "row": 2,
+            "frames": 4,
+            "durationsMs": [
+              100,
+              110,
+              110,
+              130
+            ],
+            "loop": false,
+            "events": [
+              {
+                "kind": "release",
+                "atMs": 260
+              }
+            ]
+          },
+          "cast": {
+            "row": 3,
+            "frames": 4,
+            "durationsMs": [
+              110,
+              120,
+              120,
+              140
+            ],
+            "loop": false,
+            "events": [
+              {
+                "kind": "release",
+                "atMs": 260
+              }
+            ]
+          },
+          "guard": {
+            "row": 4,
+            "frames": 3,
+            "durationsMs": [
+              140,
+              180,
+              180
+            ],
+            "loop": true
+          },
+          "hit": {
+            "row": 5,
+            "frames": 3,
+            "durationsMs": [
+              90,
+              130,
+              150
+            ],
+            "loop": false
+          },
+          "down": {
+            "row": 6,
+            "frames": 3,
+            "durationsMs": [
+              140,
+              180,
+              240
+            ],
+            "loop": false,
+            "holdLast": true
+          },
+          "victory": {
+            "row": 7,
+            "frames": 4,
+            "durationsMs": [
+              160,
+              160,
+              160,
+              220
+            ],
+            "loop": false,
+            "holdLast": true
+          },
+          "charge": {
+            "row": 8,
+            "frames": 4,
+            "durationsMs": [
+              110,
+              110,
+              110,
+              110
+            ],
+            "loop": true
+          }
+        }
+      }
+    },
+    {
+      "id": "sleeper_D",
+      "name": "Sleeper D (Courier)",
+      "world": {
+        "src": "assets/world/sleeper_D.png",
+        "frameWidth": 32,
+        "frameHeight": 56,
+        "columns": 9,
+        "rows": 4,
+        "idleColumn": 0,
+        "fps": 8,
+        "anchor": [
+          16,
+          56
+        ],
+        "directions": [
+          "down",
+          "left",
+          "right",
+          "up"
+        ],
+        "walkColumns": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8
+        ]
+      },
+      "battle": {
+        "src": "assets/battlers/sleeper_D.png",
+        "frameWidth": 64,
+        "frameHeight": 64,
+        "columns": 6,
+        "rows": 9,
+        "animations": {
+          "idle": {
+            "row": 0,
+            "frames": 4,
+            "durationsMs": [
+              240,
+              240,
+              240,
+              240
+            ],
+            "loop": true
+          },
+          "attack": {
+            "row": 1,
+            "frames": 4,
+            "durationsMs": [
+              90,
+              110,
+              120,
+              130
+            ],
+            "loop": false,
+            "events": [
+              {
+                "kind": "release",
+                "atMs": 260
+              }
+            ]
+          },
+          "ranged": {
+            "row": 2,
+            "frames": 4,
+            "durationsMs": [
+              100,
+              110,
+              110,
+              130
+            ],
+            "loop": false,
+            "events": [
+              {
+                "kind": "release",
+                "atMs": 260
+              }
+            ]
+          },
+          "cast": {
+            "row": 3,
+            "frames": 4,
+            "durationsMs": [
+              110,
+              120,
+              120,
+              140
+            ],
+            "loop": false,
+            "events": [
+              {
+                "kind": "release",
+                "atMs": 260
+              }
+            ]
+          },
+          "guard": {
+            "row": 4,
+            "frames": 3,
+            "durationsMs": [
+              140,
+              180,
+              180
+            ],
+            "loop": true
+          },
+          "hit": {
+            "row": 5,
+            "frames": 3,
+            "durationsMs": [
+              90,
+              130,
+              150
+            ],
+            "loop": false
+          },
+          "down": {
+            "row": 6,
+            "frames": 3,
+            "durationsMs": [
+              140,
+              180,
+              240
+            ],
+            "loop": false,
+            "holdLast": true
+          },
+          "victory": {
+            "row": 7,
+            "frames": 4,
+            "durationsMs": [
+              160,
+              160,
+              160,
+              220
+            ],
+            "loop": false,
+            "holdLast": true
+          },
+          "charge": {
+            "row": 8,
+            "frames": 4,
+            "durationsMs": [
+              110,
+              110,
+              110,
+              110
+            ],
+            "loop": true
+          }
+        }
+      }
+    },
+    {
+      "id": "echo_industrial_maintenance",
+      "name": "Rill (Echo Courier)",
+      "world": {
+        "src": "assets/world/echo_industrial_maintenance.png",
+        "frameWidth": 32,
+        "frameHeight": 56,
+        "columns": 9,
+        "rows": 4,
+        "idleColumn": 0,
+        "fps": 8,
+        "anchor": [
+          16,
+          56
+        ],
+        "directions": [
+          "down",
+          "left",
+          "right",
+          "up"
+        ],
+        "walkColumns": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8
+        ]
+      },
+      "battle": {
+        "src": "assets/battlers/echo_industrial_maintenance.png",
+        "frameWidth": 96,
+        "frameHeight": 96,
+        "columns": 6,
+        "rows": 9,
+        "animations": {
+          "idle": {
+            "row": 0,
+            "frames": 4,
+            "durationsMs": [
+              240,
+              240,
+              240,
+              240
+            ],
+            "loop": true
+          },
+          "attack": {
+            "row": 1,
+            "frames": 4,
+            "durationsMs": [
+              90,
+              110,
+              120,
+              130
+            ],
+            "loop": false,
+            "events": [
+              {
+                "kind": "release",
+                "atMs": 260
+              }
+            ]
+          },
+          "ranged": {
+            "row": 2,
+            "frames": 4,
+            "durationsMs": [
+              100,
+              110,
+              110,
+              130
+            ],
+            "loop": false,
+            "events": [
+              {
+                "kind": "release",
+                "atMs": 260
+              }
+            ]
+          },
+          "cast": {
+            "row": 3,
+            "frames": 4,
+            "durationsMs": [
+              110,
+              120,
+              120,
+              140
+            ],
+            "loop": false,
+            "events": [
+              {
+                "kind": "release",
+                "atMs": 260
+              }
+            ]
+          },
+          "guard": {
+            "row": 4,
+            "frames": 3,
+            "durationsMs": [
+              140,
+              180,
+              180
+            ],
+            "loop": true
+          },
+          "hit": {
+            "row": 5,
+            "frames": 3,
+            "durationsMs": [
+              90,
+              130,
+              150
+            ],
+            "loop": false
+          },
+          "down": {
+            "row": 6,
+            "frames": 3,
+            "durationsMs": [
+              140,
+              180,
+              240
+            ],
+            "loop": false,
+            "holdLast": true
+          },
+          "victory": {
+            "row": 7,
+            "frames": 4,
+            "durationsMs": [
+              160,
+              160,
+              160,
+              220
+            ],
+            "loop": false,
+            "holdLast": true
+          },
+          "charge": {
+            "row": 8,
+            "frames": 4,
+            "durationsMs": [
+              110,
+              110,
+              110,
+              110
+            ],
+            "loop": true
+          }
+        }
+      }
+    },
+    {
+      "id": "ghostgrid_utility_pica",
+      "name": "Pica (Ghost-Grid Utility)",
+      "world": {
+        "src": "assets/world/ghostgrid_utility_pica.png",
+        "frameWidth": 32,
+        "frameHeight": 56,
+        "columns": 9,
+        "rows": 4,
+        "idleColumn": 0,
+        "fps": 8,
+        "anchor": [
+          16,
+          56
+        ],
+        "directions": [
+          "down",
+          "left",
+          "right",
+          "up"
+        ],
+        "walkColumns": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8
+        ]
+      },
+      "battle": {
+        "src": "assets/battlers/ghostgrid_utility_pica.png",
+        "frameWidth": 64,
+        "frameHeight": 64,
+        "columns": 6,
+        "rows": 9,
+        "animations": {
+          "idle": {
+            "row": 0,
+            "frames": 4,
+            "durationsMs": [
+              240,
+              240,
+              240,
+              240
+            ],
+            "loop": true
+          },
+          "attack": {
+            "row": 1,
+            "frames": 4,
+            "durationsMs": [
+              90,
+              110,
+              120,
+              130
+            ],
+            "loop": false,
+            "events": [
+              {
+                "kind": "release",
+                "atMs": 260
+              }
+            ]
+          },
+          "ranged": {
+            "row": 2,
+            "frames": 4,
+            "durationsMs": [
+              100,
+              110,
+              110,
+              130
+            ],
+            "loop": false,
+            "events": [
+              {
+                "kind": "release",
+                "atMs": 260
+              }
+            ]
+          },
+          "cast": {
+            "row": 3,
+            "frames": 4,
+            "durationsMs": [
+              110,
+              120,
+              120,
+              140
+            ],
+            "loop": false,
+            "events": [
+              {
+                "kind": "release",
+                "atMs": 260
+              }
+            ]
+          },
+          "guard": {
+            "row": 4,
+            "frames": 3,
+            "durationsMs": [
+              140,
+              180,
+              180
+            ],
+            "loop": true
+          },
+          "hit": {
+            "row": 5,
+            "frames": 3,
+            "durationsMs": [
+              90,
+              130,
+              150
+            ],
+            "loop": false
+          },
+          "down": {
+            "row": 6,
+            "frames": 3,
+            "durationsMs": [
+              140,
+              180,
+              240
+            ],
+            "loop": false,
+            "holdLast": true
+          },
+          "victory": {
+            "row": 7,
+            "frames": 4,
+            "durationsMs": [
+              160,
+              160,
+              160,
+              220
+            ],
+            "loop": false,
+            "holdLast": true
+          },
+          "charge": {
+            "row": 8,
+            "frames": 4,
+            "durationsMs": [
+              110,
+              110,
+              110,
+              110
+            ],
+            "loop": true
+          }
+        }
+      }
+    },
+    {
+      "id": "bearframe_exploration_miya",
+      "name": "Miya (Bearframe Exploration)",
+      "world": {
+        "src": "assets/world/bearframe_exploration_miya.png",
+        "frameWidth": 32,
+        "frameHeight": 56,
+        "columns": 9,
+        "rows": 4,
+        "idleColumn": 0,
+        "fps": 8,
+        "anchor": [
+          16,
+          56
+        ],
+        "directions": [
+          "down",
+          "left",
+          "right",
+          "up"
+        ],
+        "walkColumns": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8
+        ]
+      },
+      "battle": {
+        "src": "assets/battlers/bearframe_exploration_miya.png",
+        "frameWidth": 64,
+        "frameHeight": 64,
+        "columns": 6,
+        "rows": 9,
+        "animations": {
+          "idle": {
+            "row": 0,
+            "frames": 4,
+            "durationsMs": [
+              240,
+              240,
+              240,
+              240
+            ],
+            "loop": true
+          },
+          "attack": {
+            "row": 1,
+            "frames": 4,
+            "durationsMs": [
+              90,
+              110,
+              120,
+              130
+            ],
+            "loop": false,
+            "events": [
+              {
+                "kind": "release",
+                "atMs": 260
+              }
+            ]
+          },
+          "ranged": {
+            "row": 2,
+            "frames": 4,
+            "durationsMs": [
+              100,
+              110,
+              110,
+              130
+            ],
+            "loop": false,
+            "events": [
+              {
+                "kind": "release",
+                "atMs": 260
+              }
+            ]
+          },
+          "cast": {
+            "row": 3,
+            "frames": 4,
+            "durationsMs": [
+              110,
+              120,
+              120,
+              140
+            ],
+            "loop": false,
+            "events": [
+              {
+                "kind": "release",
+                "atMs": 260
+              }
+            ]
+          },
+          "guard": {
+            "row": 4,
+            "frames": 3,
+            "durationsMs": [
+              140,
+              180,
+              180
+            ],
+            "loop": true
+          },
+          "hit": {
+            "row": 5,
+            "frames": 3,
+            "durationsMs": [
+              90,
+              130,
+              150
+            ],
+            "loop": false
+          },
+          "down": {
+            "row": 6,
+            "frames": 3,
+            "durationsMs": [
+              140,
+              180,
+              240
+            ],
+            "loop": false,
+            "holdLast": true
+          },
+          "victory": {
+            "row": 7,
+            "frames": 4,
+            "durationsMs": [
+              160,
+              160,
+              160,
+              220
+            ],
+            "loop": false,
+            "holdLast": true
+          },
+          "charge": {
+            "row": 8,
+            "frames": 4,
+            "durationsMs": [
+              110,
+              110,
+              110,
+              110
+            ],
+            "loop": true
+          }
+        }
+      }
+    },
+    {
+      "id": "npc_guardian",
+      "name": "Guardian (Echo-SE7 Keeper)",
+      "world": {
+        "src": "assets/world/npc_guardian.png",
+        "frameWidth": 64,
+        "frameHeight": 72,
+        "columns": 9,
+        "rows": 4,
+        "idleColumn": 0,
+        "fps": 8,
+        "anchor": [
+          32,
+          72
+        ],
+        "directions": [
+          "down",
+          "left",
+          "right",
+          "up"
+        ],
+        "walkColumns": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8
+        ]
+      },
+      "battle": {
+        "src": "assets/battlers/npc_guardian.png",
+        "frameWidth": 96,
+        "frameHeight": 96,
+        "columns": 6,
+        "rows": 9,
+        "animations": {
+          "idle": {
+            "row": 0,
+            "frames": 4,
+            "durationsMs": [
+              240,
+              240,
+              240,
+              240
+            ],
+            "loop": true
+          },
+          "attack": {
+            "row": 1,
+            "frames": 4,
+            "durationsMs": [
+              90,
+              110,
+              120,
+              130
+            ],
+            "loop": false,
+            "events": [
+              {
+                "kind": "release",
+                "atMs": 260
+              }
+            ]
+          },
+          "ranged": {
+            "row": 2,
+            "frames": 4,
+            "durationsMs": [
+              100,
+              110,
+              110,
+              130
+            ],
+            "loop": false,
+            "events": [
+              {
+                "kind": "release",
+                "atMs": 260
+              }
+            ]
+          },
+          "cast": {
+            "row": 3,
+            "frames": 4,
+            "durationsMs": [
+              110,
+              120,
+              120,
+              140
+            ],
+            "loop": false,
+            "events": [
+              {
+                "kind": "release",
+                "atMs": 260
+              }
+            ]
+          },
+          "guard": {
+            "row": 4,
+            "frames": 3,
+            "durationsMs": [
+              140,
+              180,
+              180
+            ],
+            "loop": true
+          },
+          "hit": {
+            "row": 5,
+            "frames": 3,
+            "durationsMs": [
+              90,
+              130,
+              150
+            ],
+            "loop": false
+          },
+          "down": {
+            "row": 6,
+            "frames": 3,
+            "durationsMs": [
+              140,
+              180,
+              240
+            ],
+            "loop": false,
+            "holdLast": true
+          },
+          "victory": {
+            "row": 7,
+            "frames": 4,
+            "durationsMs": [
+              160,
+              160,
+              160,
+              220
+            ],
+            "loop": false,
+            "holdLast": true
+          },
+          "charge": {
+            "row": 8,
+            "frames": 4,
+            "durationsMs": [
+              110,
+              110,
+              110,
+              110
+            ],
+            "loop": true
+          }
+        }
+      }
+    },
+    {
+      "id": "npc_noll",
+      "name": "Noll (Lamp Keeper)",
+      "world": {
+        "src": "assets/world/npc_noll.png",
+        "frameWidth": 32,
+        "frameHeight": 56,
+        "columns": 9,
+        "rows": 4,
+        "idleColumn": 0,
+        "fps": 8,
+        "anchor": [
+          16,
+          56
+        ],
+        "directions": [
+          "down",
+          "left",
+          "right",
+          "up"
+        ],
+        "walkColumns": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8
+        ]
+      },
+      "battle": {
+        "src": "assets/battlers/npc_noll.png",
+        "frameWidth": 64,
+        "frameHeight": 64,
+        "columns": 6,
+        "rows": 9,
+        "animations": {
+          "idle": {
+            "row": 0,
+            "frames": 4,
+            "durationsMs": [
+              240,
+              240,
+              240,
+              240
+            ],
+            "loop": true
+          },
+          "attack": {
+            "row": 1,
+            "frames": 4,
+            "durationsMs": [
+              90,
+              110,
+              120,
+              130
+            ],
+            "loop": false,
+            "events": [
+              {
+                "kind": "release",
+                "atMs": 260
+              }
+            ]
+          },
+          "ranged": {
+            "row": 2,
+            "frames": 4,
+            "durationsMs": [
+              100,
+              110,
+              110,
+              130
+            ],
+            "loop": false,
+            "events": [
+              {
+                "kind": "release",
+                "atMs": 260
+              }
+            ]
+          },
+          "cast": {
+            "row": 3,
+            "frames": 4,
+            "durationsMs": [
+              110,
+              120,
+              120,
+              140
+            ],
+            "loop": false,
+            "events": [
+              {
+                "kind": "release",
+                "atMs": 260
+              }
+            ]
+          },
+          "guard": {
+            "row": 4,
+            "frames": 3,
+            "durationsMs": [
+              140,
+              180,
+              180
+            ],
+            "loop": true
+          },
+          "hit": {
+            "row": 5,
+            "frames": 3,
+            "durationsMs": [
+              90,
+              130,
+              150
+            ],
+            "loop": false
+          },
+          "down": {
+            "row": 6,
+            "frames": 3,
+            "durationsMs": [
+              140,
+              180,
+              240
+            ],
+            "loop": false,
+            "holdLast": true
+          },
+          "victory": {
+            "row": 7,
+            "frames": 4,
+            "durationsMs": [
+              160,
+              160,
+              160,
+              220
+            ],
+            "loop": false,
+            "holdLast": true
+          },
+          "charge": {
+            "row": 8,
+            "frames": 4,
+            "durationsMs": [
+              110,
+              110,
+              110,
+              110
+            ],
+            "loop": true
+          }
+        }
+      }
+    },
+    {
+      "id": "npc_ves",
+      "name": "Ves (Shelf Coordinator)",
+      "world": {
+        "src": "assets/world/npc_ves.png",
+        "frameWidth": 32,
+        "frameHeight": 56,
+        "columns": 9,
+        "rows": 4,
+        "idleColumn": 0,
+        "fps": 8,
+        "anchor": [
+          16,
+          56
+        ],
+        "directions": [
+          "down",
+          "left",
+          "right",
+          "up"
+        ],
+        "walkColumns": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8
+        ]
+      },
+      "battle": {
+        "src": "assets/battlers/npc_ves.png",
+        "frameWidth": 64,
+        "frameHeight": 64,
+        "columns": 6,
+        "rows": 9,
+        "animations": {
+          "idle": {
+            "row": 0,
+            "frames": 4,
+            "durationsMs": [
+              240,
+              240,
+              240,
+              240
+            ],
+            "loop": true
+          },
+          "attack": {
+            "row": 1,
+            "frames": 4,
+            "durationsMs": [
+              90,
+              110,
+              120,
+              130
+            ],
+            "loop": false,
+            "events": [
+              {
+                "kind": "release",
+                "atMs": 260
+              }
+            ]
+          },
+          "ranged": {
+            "row": 2,
+            "frames": 4,
+            "durationsMs": [
+              100,
+              110,
+              110,
+              130
+            ],
+            "loop": false,
+            "events": [
+              {
+                "kind": "release",
+                "atMs": 260
+              }
+            ]
+          },
+          "cast": {
+            "row": 3,
+            "frames": 4,
+            "durationsMs": [
+              110,
+              120,
+              120,
+              140
+            ],
+            "loop": false,
+            "events": [
+              {
+                "kind": "release",
+                "atMs": 260
+              }
+            ]
+          },
+          "guard": {
+            "row": 4,
+            "frames": 3,
+            "durationsMs": [
+              140,
+              180,
+              180
+            ],
+            "loop": true
+          },
+          "hit": {
+            "row": 5,
+            "frames": 3,
+            "durationsMs": [
+              90,
+              130,
+              150
+            ],
+            "loop": false
+          },
+          "down": {
+            "row": 6,
+            "frames": 3,
+            "durationsMs": [
+              140,
+              180,
+              240
+            ],
+            "loop": false,
+            "holdLast": true
+          },
+          "victory": {
+            "row": 7,
+            "frames": 4,
+            "durationsMs": [
+              160,
+              160,
+              160,
+              220
+            ],
+            "loop": false,
+            "holdLast": true
+          },
+          "charge": {
+            "row": 8,
+            "frames": 4,
+            "durationsMs": [
+              110,
+              110,
+              110,
+              110
+            ],
+            "loop": true
+          }
+        }
+      }
+    },
+    {
+      "id": "npc_ilen",
+      "name": "Ilen (Archive Painter)",
+      "world": {
+        "src": "assets/world/npc_ilen.png",
+        "frameWidth": 32,
+        "frameHeight": 56,
+        "columns": 9,
+        "rows": 4,
+        "idleColumn": 0,
+        "fps": 8,
+        "anchor": [
+          16,
+          56
+        ],
+        "directions": [
+          "down",
+          "left",
+          "right",
+          "up"
+        ],
+        "walkColumns": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8
+        ]
+      },
+      "battle": {
+        "src": "assets/battlers/npc_ilen.png",
+        "frameWidth": 64,
+        "frameHeight": 64,
+        "columns": 6,
+        "rows": 9,
+        "animations": {
+          "idle": {
+            "row": 0,
+            "frames": 4,
+            "durationsMs": [
+              240,
+              240,
+              240,
+              240
+            ],
+            "loop": true
+          },
+          "attack": {
+            "row": 1,
+            "frames": 4,
+            "durationsMs": [
+              90,
+              110,
+              120,
+              130
+            ],
+            "loop": false,
+            "events": [
+              {
+                "kind": "release",
+                "atMs": 260
+              }
+            ]
+          },
+          "ranged": {
+            "row": 2,
+            "frames": 4,
+            "durationsMs": [
+              100,
+              110,
+              110,
+              130
+            ],
+            "loop": false,
+            "events": [
+              {
+                "kind": "release",
+                "atMs": 260
+              }
+            ]
+          },
+          "cast": {
+            "row": 3,
+            "frames": 4,
+            "durationsMs": [
+              110,
+              120,
+              120,
+              140
+            ],
+            "loop": false,
+            "events": [
+              {
+                "kind": "release",
+                "atMs": 260
+              }
+            ]
+          },
+          "guard": {
+            "row": 4,
+            "frames": 3,
+            "durationsMs": [
+              140,
+              180,
+              180
+            ],
+            "loop": true
+          },
+          "hit": {
+            "row": 5,
+            "frames": 3,
+            "durationsMs": [
+              90,
+              130,
+              150
+            ],
+            "loop": false
+          },
+          "down": {
+            "row": 6,
+            "frames": 3,
+            "durationsMs": [
+              140,
+              180,
+              240
+            ],
+            "loop": false,
+            "holdLast": true
+          },
+          "victory": {
+            "row": 7,
+            "frames": 4,
+            "durationsMs": [
+              160,
+              160,
+              160,
+              220
+            ],
+            "loop": false,
+            "holdLast": true
+          },
+          "charge": {
+            "row": 8,
+            "frames": 4,
+            "durationsMs": [
+              110,
+              110,
+              110,
+              110
+            ],
+            "loop": true
+          }
+        }
+      }
+    },
+    {
+      "id": "npc_talla",
+      "name": "Talla (Unpainted Echo)",
+      "world": {
+        "src": "assets/world/npc_talla.png",
+        "frameWidth": 32,
+        "frameHeight": 56,
+        "columns": 9,
+        "rows": 4,
+        "idleColumn": 0,
+        "fps": 8,
+        "anchor": [
+          16,
+          56
+        ],
+        "directions": [
+          "down",
+          "left",
+          "right",
+          "up"
+        ],
+        "walkColumns": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8
+        ]
+      },
+      "battle": {
+        "src": "assets/battlers/npc_talla.png",
+        "frameWidth": 64,
+        "frameHeight": 64,
+        "columns": 6,
+        "rows": 9,
+        "animations": {
+          "idle": {
+            "row": 0,
+            "frames": 4,
+            "durationsMs": [
+              240,
+              240,
+              240,
+              240
+            ],
+            "loop": true
+          },
+          "attack": {
+            "row": 1,
+            "frames": 4,
+            "durationsMs": [
+              90,
+              110,
+              120,
+              130
+            ],
+            "loop": false,
+            "events": [
+              {
+                "kind": "release",
+                "atMs": 260
+              }
+            ]
+          },
+          "ranged": {
+            "row": 2,
+            "frames": 4,
+            "durationsMs": [
+              100,
+              110,
+              110,
+              130
+            ],
+            "loop": false,
+            "events": [
+              {
+                "kind": "release",
+                "atMs": 260
+              }
+            ]
+          },
+          "cast": {
+            "row": 3,
+            "frames": 4,
+            "durationsMs": [
+              110,
+              120,
+              120,
+              140
+            ],
+            "loop": false,
+            "events": [
+              {
+                "kind": "release",
+                "atMs": 260
+              }
+            ]
+          },
+          "guard": {
+            "row": 4,
+            "frames": 3,
+            "durationsMs": [
+              140,
+              180,
+              180
+            ],
+            "loop": true
+          },
+          "hit": {
+            "row": 5,
+            "frames": 3,
+            "durationsMs": [
+              90,
+              130,
+              150
+            ],
+            "loop": false
+          },
+          "down": {
+            "row": 6,
+            "frames": 3,
+            "durationsMs": [
+              140,
+              180,
+              240
+            ],
+            "loop": false,
+            "holdLast": true
+          },
+          "victory": {
+            "row": 7,
+            "frames": 4,
+            "durationsMs": [
+              160,
+              160,
+              160,
+              220
+            ],
+            "loop": false,
+            "holdLast": true
+          },
+          "charge": {
+            "row": 8,
+            "frames": 4,
+            "durationsMs": [
+              110,
+              110,
+              110,
+              110
+            ],
+            "loop": true
+          }
+        }
+      }
+    },
+    {
+      "id": "ward7_monolith",
+      "name": "WARD-7 Controller",
+      "world": {
+        "src": "assets/world/ward7_monolith.png",
+        "frameWidth": 64,
+        "frameHeight": 64,
+        "columns": 9,
+        "rows": 4,
+        "idleColumn": 0,
+        "fps": 8,
+        "anchor": [
+          32,
+          64
+        ],
+        "directions": [
+          "down",
+          "left",
+          "right",
+          "up"
+        ],
+        "walkColumns": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8
+        ]
+      },
+      "battle": {
+        "src": "assets/battlers/ward7_monolith.png",
+        "frameWidth": 96,
+        "frameHeight": 96,
+        "columns": 6,
+        "rows": 9,
+        "animations": {
+          "idle": {
+            "row": 0,
+            "frames": 4,
+            "durationsMs": [
+              240,
+              240,
+              240,
+              240
+            ],
+            "loop": true
+          },
+          "attack": {
+            "row": 1,
+            "frames": 4,
+            "durationsMs": [
+              90,
+              110,
+              120,
+              130
+            ],
+            "loop": false,
+            "events": [
+              {
+                "kind": "release",
+                "atMs": 260
+              }
+            ]
+          },
+          "ranged": {
+            "row": 2,
+            "frames": 4,
+            "durationsMs": [
+              100,
+              110,
+              110,
+              130
+            ],
+            "loop": false,
+            "events": [
+              {
+                "kind": "release",
+                "atMs": 260
+              }
+            ]
+          },
+          "cast": {
+            "row": 3,
+            "frames": 4,
+            "durationsMs": [
+              110,
+              120,
+              120,
+              140
+            ],
+            "loop": false,
+            "events": [
+              {
+                "kind": "release",
+                "atMs": 260
+              }
+            ]
+          },
+          "guard": {
+            "row": 4,
+            "frames": 3,
+            "durationsMs": [
+              140,
+              180,
+              180
+            ],
+            "loop": true
+          },
+          "hit": {
+            "row": 5,
+            "frames": 3,
+            "durationsMs": [
+              90,
+              130,
+              150
+            ],
+            "loop": false
+          },
+          "down": {
+            "row": 6,
+            "frames": 3,
+            "durationsMs": [
+              140,
+              180,
+              240
+            ],
+            "loop": false,
+            "holdLast": true
+          },
+          "victory": {
+            "row": 7,
+            "frames": 4,
+            "durationsMs": [
+              160,
+              160,
+              160,
+              220
+            ],
+            "loop": false,
+            "holdLast": true
+          },
+          "charge": {
+            "row": 8,
+            "frames": 4,
+            "durationsMs": [
+              110,
+              110,
+              110,
+              110
+            ],
+            "loop": true
+          }
+        }
+      }
+    },
+    {
+      "id": "old_sentry",
+      "name": "Old Sentry",
+      "world": {
+        "src": "assets/world/old_sentry.png",
+        "frameWidth": 96,
+        "frameHeight": 96,
+        "columns": 9,
+        "rows": 4,
+        "idleColumn": 0,
+        "fps": 8,
+        "anchor": [
+          48,
+          96
+        ],
+        "directions": [
+          "down",
+          "left",
+          "right",
+          "up"
+        ],
+        "walkColumns": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8
+        ]
+      },
+      "battle": {
+        "src": "assets/battlers/old_sentry.png",
+        "frameWidth": 96,
+        "frameHeight": 96,
+        "columns": 6,
+        "rows": 9,
+        "animations": {
+          "idle": {
+            "row": 0,
+            "frames": 4,
+            "durationsMs": [
+              240,
+              240,
+              240,
+              240
+            ],
+            "loop": true
+          },
+          "attack": {
+            "row": 1,
+            "frames": 4,
+            "durationsMs": [
+              90,
+              110,
+              120,
+              130
+            ],
+            "loop": false,
+            "events": [
+              {
+                "kind": "release",
+                "atMs": 260
+              }
+            ]
+          },
+          "ranged": {
+            "row": 2,
+            "frames": 4,
+            "durationsMs": [
+              100,
+              110,
+              110,
+              130
+            ],
+            "loop": false,
+            "events": [
+              {
+                "kind": "release",
+                "atMs": 260
+              }
+            ]
+          },
+          "cast": {
+            "row": 3,
+            "frames": 4,
+            "durationsMs": [
+              110,
+              120,
+              120,
+              140
+            ],
+            "loop": false,
+            "events": [
+              {
+                "kind": "release",
+                "atMs": 260
+              }
+            ]
+          },
+          "guard": {
+            "row": 4,
+            "frames": 3,
+            "durationsMs": [
+              140,
+              180,
+              180
+            ],
+            "loop": true
+          },
+          "hit": {
+            "row": 5,
+            "frames": 3,
+            "durationsMs": [
+              90,
+              130,
+              150
+            ],
+            "loop": false
+          },
+          "down": {
+            "row": 6,
+            "frames": 3,
+            "durationsMs": [
+              140,
+              180,
+              240
+            ],
+            "loop": false,
+            "holdLast": true
+          },
+          "victory": {
+            "row": 7,
+            "frames": 4,
+            "durationsMs": [
+              160,
+              160,
+              160,
+              220
+            ],
+            "loop": false,
+            "holdLast": true
+          },
+          "charge": {
+            "row": 8,
+            "frames": 4,
+            "durationsMs": [
+              110,
+              110,
+              110,
+              110
+            ],
+            "loop": true
+          }
+        }
+      }
+    },
+    {
+      "id": "boss_fuse_warden",
+      "name": "Fuse Warden",
+      "world": {
+        "src": "assets/world/boss_fuse_warden.png",
+        "frameWidth": 64,
+        "frameHeight": 84,
+        "columns": 9,
+        "rows": 4,
+        "idleColumn": 0,
+        "fps": 8,
+        "anchor": [
+          32,
+          84
+        ],
+        "directions": [
+          "down",
+          "left",
+          "right",
+          "up"
+        ],
+        "walkColumns": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8
+        ]
+      },
+      "battle": {
+        "src": "assets/battlers/boss_fuse_warden.png",
+        "frameWidth": 128,
+        "frameHeight": 128,
+        "columns": 6,
+        "rows": 9,
+        "animations": {
+          "idle": {
+            "row": 0,
+            "frames": 4,
+            "durationsMs": [
+              240,
+              240,
+              240,
+              240
+            ],
+            "loop": true
+          },
+          "attack": {
+            "row": 1,
+            "frames": 4,
+            "durationsMs": [
+              90,
+              110,
+              120,
+              130
+            ],
+            "loop": false,
+            "events": [
+              {
+                "kind": "release",
+                "atMs": 260
+              }
+            ]
+          },
+          "ranged": {
+            "row": 2,
+            "frames": 4,
+            "durationsMs": [
+              100,
+              110,
+              110,
+              130
+            ],
+            "loop": false,
+            "events": [
+              {
+                "kind": "release",
+                "atMs": 260
+              }
+            ]
+          },
+          "cast": {
+            "row": 3,
+            "frames": 4,
+            "durationsMs": [
+              110,
+              120,
+              120,
+              140
+            ],
+            "loop": false,
+            "events": [
+              {
+                "kind": "release",
+                "atMs": 260
+              }
+            ]
+          },
+          "guard": {
+            "row": 4,
+            "frames": 3,
+            "durationsMs": [
+              140,
+              180,
+              180
+            ],
+            "loop": true
+          },
+          "hit": {
+            "row": 5,
+            "frames": 3,
+            "durationsMs": [
+              90,
+              130,
+              150
+            ],
+            "loop": false
+          },
+          "down": {
+            "row": 6,
+            "frames": 3,
+            "durationsMs": [
+              140,
+              180,
+              240
+            ],
+            "loop": false,
+            "holdLast": true
+          },
+          "victory": {
+            "row": 7,
+            "frames": 4,
+            "durationsMs": [
+              160,
+              160,
+              160,
+              220
+            ],
+            "loop": false,
+            "holdLast": true
+          },
+          "charge": {
+            "row": 8,
+            "frames": 4,
+            "durationsMs": [
+              110,
+              110,
+              110,
+              110
+            ],
+            "loop": true
+          }
+        }
+      }
+    },
+    {
+      "id": "boss_quay_grapple",
+      "name": "Quay Grapple Rig",
+      "world": {
+        "src": "assets/world/boss_quay_grapple.png",
+        "frameWidth": 96,
+        "frameHeight": 72,
+        "columns": 9,
+        "rows": 4,
+        "idleColumn": 0,
+        "fps": 8,
+        "anchor": [
+          48,
+          72
+        ],
+        "directions": [
+          "down",
+          "left",
+          "right",
+          "up"
+        ],
+        "walkColumns": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8
+        ]
+      },
+      "battle": {
+        "src": "assets/battlers/boss_quay_grapple.png",
+        "frameWidth": 128,
+        "frameHeight": 128,
+        "columns": 6,
+        "rows": 9,
+        "animations": {
+          "idle": {
+            "row": 0,
+            "frames": 4,
+            "durationsMs": [
+              240,
+              240,
+              240,
+              240
+            ],
+            "loop": true
+          },
+          "attack": {
+            "row": 1,
+            "frames": 4,
+            "durationsMs": [
+              90,
+              110,
+              120,
+              130
+            ],
+            "loop": false,
+            "events": [
+              {
+                "kind": "release",
+                "atMs": 260
+              }
+            ]
+          },
+          "ranged": {
+            "row": 2,
+            "frames": 4,
+            "durationsMs": [
+              100,
+              110,
+              110,
+              130
+            ],
+            "loop": false,
+            "events": [
+              {
+                "kind": "release",
+                "atMs": 260
+              }
+            ]
+          },
+          "cast": {
+            "row": 3,
+            "frames": 4,
+            "durationsMs": [
+              110,
+              120,
+              120,
+              140
+            ],
+            "loop": false,
+            "events": [
+              {
+                "kind": "release",
+                "atMs": 260
+              }
+            ]
+          },
+          "guard": {
+            "row": 4,
+            "frames": 3,
+            "durationsMs": [
+              140,
+              180,
+              180
+            ],
+            "loop": true
+          },
+          "hit": {
+            "row": 5,
+            "frames": 3,
+            "durationsMs": [
+              90,
+              130,
+              150
+            ],
+            "loop": false
+          },
+          "down": {
+            "row": 6,
+            "frames": 3,
+            "durationsMs": [
+              140,
+              180,
+              240
+            ],
+            "loop": false,
+            "holdLast": true
+          },
+          "victory": {
+            "row": 7,
+            "frames": 4,
+            "durationsMs": [
+              160,
+              160,
+              160,
+              220
+            ],
+            "loop": false,
+            "holdLast": true
+          },
+          "charge": {
+            "row": 8,
+            "frames": 4,
+            "durationsMs": [
+              110,
+              110,
+              110,
+              110
+            ],
+            "loop": true
+          }
+        }
+      }
+    },
+    {
+      "id": "boss_registry_auditor",
+      "name": "Registry Auditor",
+      "world": {
+        "src": "assets/world/boss_registry_auditor.png",
+        "frameWidth": 64,
+        "frameHeight": 88,
+        "columns": 9,
+        "rows": 4,
+        "idleColumn": 0,
+        "fps": 8,
+        "anchor": [
+          32,
+          88
+        ],
+        "directions": [
+          "down",
+          "left",
+          "right",
+          "up"
+        ],
+        "walkColumns": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8
+        ]
+      },
+      "battle": {
+        "src": "assets/battlers/boss_registry_auditor.png",
+        "frameWidth": 128,
+        "frameHeight": 128,
+        "columns": 6,
+        "rows": 9,
+        "animations": {
+          "idle": {
+            "row": 0,
+            "frames": 4,
+            "durationsMs": [
+              240,
+              240,
+              240,
+              240
+            ],
+            "loop": true
+          },
+          "attack": {
+            "row": 1,
+            "frames": 4,
+            "durationsMs": [
+              90,
+              110,
+              120,
+              130
+            ],
+            "loop": false,
+            "events": [
+              {
+                "kind": "release",
+                "atMs": 260
+              }
+            ]
+          },
+          "ranged": {
+            "row": 2,
+            "frames": 4,
+            "durationsMs": [
+              100,
+              110,
+              110,
+              130
+            ],
+            "loop": false,
+            "events": [
+              {
+                "kind": "release",
+                "atMs": 260
+              }
+            ]
+          },
+          "cast": {
+            "row": 3,
+            "frames": 4,
+            "durationsMs": [
+              110,
+              120,
+              120,
+              140
+            ],
+            "loop": false,
+            "events": [
+              {
+                "kind": "release",
+                "atMs": 260
+              }
+            ]
+          },
+          "guard": {
+            "row": 4,
+            "frames": 3,
+            "durationsMs": [
+              140,
+              180,
+              180
+            ],
+            "loop": true
+          },
+          "hit": {
+            "row": 5,
+            "frames": 3,
+            "durationsMs": [
+              90,
+              130,
+              150
+            ],
+            "loop": false
+          },
+          "down": {
+            "row": 6,
+            "frames": 3,
+            "durationsMs": [
+              140,
+              180,
+              240
+            ],
+            "loop": false,
+            "holdLast": true
+          },
+          "victory": {
+            "row": 7,
+            "frames": 4,
+            "durationsMs": [
+              160,
+              160,
+              160,
+              220
+            ],
+            "loop": false,
+            "holdLast": true
+          },
+          "charge": {
+            "row": 8,
+            "frames": 4,
+            "durationsMs": [
+              110,
+              110,
+              110,
+              110
+            ],
+            "loop": true
+          }
+        }
+      }
+    },
+    {
+      "id": "boss_switchyard_mast",
+      "name": "Switchyard Mast",
+      "world": {
+        "src": "assets/world/boss_switchyard_mast.png",
+        "frameWidth": 64,
+        "frameHeight": 88,
+        "columns": 9,
+        "rows": 4,
+        "idleColumn": 0,
+        "fps": 8,
+        "anchor": [
+          32,
+          88
+        ],
+        "directions": [
+          "down",
+          "left",
+          "right",
+          "up"
+        ],
+        "walkColumns": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8
+        ]
+      },
+      "battle": {
+        "src": "assets/battlers/boss_switchyard_mast.png",
+        "frameWidth": 128,
+        "frameHeight": 128,
+        "columns": 6,
+        "rows": 9,
+        "animations": {
+          "idle": {
+            "row": 0,
+            "frames": 4,
+            "durationsMs": [
+              240,
+              240,
+              240,
+              240
+            ],
+            "loop": true
+          },
+          "attack": {
+            "row": 1,
+            "frames": 4,
+            "durationsMs": [
+              90,
+              110,
+              120,
+              130
+            ],
+            "loop": false,
+            "events": [
+              {
+                "kind": "release",
+                "atMs": 260
+              }
+            ]
+          },
+          "ranged": {
+            "row": 2,
+            "frames": 4,
+            "durationsMs": [
+              100,
+              110,
+              110,
+              130
+            ],
+            "loop": false,
+            "events": [
+              {
+                "kind": "release",
+                "atMs": 260
+              }
+            ]
+          },
+          "cast": {
+            "row": 3,
+            "frames": 4,
+            "durationsMs": [
+              110,
+              120,
+              120,
+              140
+            ],
+            "loop": false,
+            "events": [
+              {
+                "kind": "release",
+                "atMs": 260
+              }
+            ]
+          },
+          "guard": {
+            "row": 4,
+            "frames": 3,
+            "durationsMs": [
+              140,
+              180,
+              180
+            ],
+            "loop": true
+          },
+          "hit": {
+            "row": 5,
+            "frames": 3,
+            "durationsMs": [
+              90,
+              130,
+              150
+            ],
+            "loop": false
+          },
+          "down": {
+            "row": 6,
+            "frames": 3,
+            "durationsMs": [
+              140,
+              180,
+              240
+            ],
+            "loop": false,
+            "holdLast": true
+          },
+          "victory": {
+            "row": 7,
+            "frames": 4,
+            "durationsMs": [
+              160,
+              160,
+              160,
+              220
+            ],
+            "loop": false,
+            "holdLast": true
+          },
+          "charge": {
+            "row": 8,
+            "frames": 4,
+            "durationsMs": [
+              110,
+              110,
+              110,
+              110
+            ],
+            "loop": true
+          }
+        }
+      }
+    },
+    {
+      "id": "boss_floodgate_warden",
+      "name": "Floodgate Construct",
+      "world": {
+        "src": "assets/world/boss_floodgate_warden.png",
+        "frameWidth": 64,
+        "frameHeight": 84,
+        "columns": 9,
+        "rows": 4,
+        "idleColumn": 0,
+        "fps": 8,
+        "anchor": [
+          32,
+          84
+        ],
+        "directions": [
+          "down",
+          "left",
+          "right",
+          "up"
+        ],
+        "walkColumns": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8
+        ]
+      },
+      "battle": {
+        "src": "assets/battlers/boss_floodgate_warden.png",
+        "frameWidth": 128,
+        "frameHeight": 128,
+        "columns": 6,
+        "rows": 9,
+        "animations": {
+          "idle": {
+            "row": 0,
+            "frames": 4,
+            "durationsMs": [
+              240,
+              240,
+              240,
+              240
+            ],
+            "loop": true
+          },
+          "attack": {
+            "row": 1,
+            "frames": 4,
+            "durationsMs": [
+              90,
+              110,
+              120,
+              130
+            ],
+            "loop": false,
+            "events": [
+              {
+                "kind": "release",
+                "atMs": 260
+              }
+            ]
+          },
+          "ranged": {
+            "row": 2,
+            "frames": 4,
+            "durationsMs": [
+              100,
+              110,
+              110,
+              130
+            ],
+            "loop": false,
+            "events": [
+              {
+                "kind": "release",
+                "atMs": 260
+              }
+            ]
+          },
+          "cast": {
+            "row": 3,
+            "frames": 4,
+            "durationsMs": [
+              110,
+              120,
+              120,
+              140
+            ],
+            "loop": false,
+            "events": [
+              {
+                "kind": "release",
+                "atMs": 260
+              }
+            ]
+          },
+          "guard": {
+            "row": 4,
+            "frames": 3,
+            "durationsMs": [
+              140,
+              180,
+              180
+            ],
+            "loop": true
+          },
+          "hit": {
+            "row": 5,
+            "frames": 3,
+            "durationsMs": [
+              90,
+              130,
+              150
+            ],
+            "loop": false
+          },
+          "down": {
+            "row": 6,
+            "frames": 3,
+            "durationsMs": [
+              140,
+              180,
+              240
+            ],
+            "loop": false,
+            "holdLast": true
+          },
+          "victory": {
+            "row": 7,
+            "frames": 4,
+            "durationsMs": [
+              160,
+              160,
+              160,
+              220
+            ],
+            "loop": false,
+            "holdLast": true
+          },
+          "charge": {
+            "row": 8,
+            "frames": 4,
+            "durationsMs": [
+              110,
+              110,
+              110,
+              110
+            ],
+            "loop": true
+          }
+        }
+      }
+    },
+    {
+      "id": "boss_counting_tower",
+      "name": "Counting Tower",
+      "world": {
+        "src": "assets/world/boss_counting_tower.png",
+        "frameWidth": 64,
+        "frameHeight": 88,
+        "columns": 9,
+        "rows": 4,
+        "idleColumn": 0,
+        "fps": 8,
+        "anchor": [
+          32,
+          88
+        ],
+        "directions": [
+          "down",
+          "left",
+          "right",
+          "up"
+        ],
+        "walkColumns": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8
+        ]
+      },
+      "battle": {
+        "src": "assets/battlers/boss_counting_tower.png",
+        "frameWidth": 128,
+        "frameHeight": 128,
+        "columns": 6,
+        "rows": 9,
+        "animations": {
+          "idle": {
+            "row": 0,
+            "frames": 4,
+            "durationsMs": [
+              240,
+              240,
+              240,
+              240
+            ],
+            "loop": true
+          },
+          "attack": {
+            "row": 1,
+            "frames": 4,
+            "durationsMs": [
+              90,
+              110,
+              120,
+              130
+            ],
+            "loop": false,
+            "events": [
+              {
+                "kind": "release",
+                "atMs": 260
+              }
+            ]
+          },
+          "ranged": {
+            "row": 2,
+            "frames": 4,
+            "durationsMs": [
+              100,
+              110,
+              110,
+              130
+            ],
+            "loop": false,
+            "events": [
+              {
+                "kind": "release",
+                "atMs": 260
+              }
+            ]
+          },
+          "cast": {
+            "row": 3,
+            "frames": 4,
+            "durationsMs": [
+              110,
+              120,
+              120,
+              140
+            ],
+            "loop": false,
+            "events": [
+              {
+                "kind": "release",
+                "atMs": 260
+              }
+            ]
+          },
+          "guard": {
+            "row": 4,
+            "frames": 3,
+            "durationsMs": [
+              140,
+              180,
+              180
+            ],
+            "loop": true
+          },
+          "hit": {
+            "row": 5,
+            "frames": 3,
+            "durationsMs": [
+              90,
+              130,
+              150
+            ],
+            "loop": false
+          },
+          "down": {
+            "row": 6,
+            "frames": 3,
+            "durationsMs": [
+              140,
+              180,
+              240
+            ],
+            "loop": false,
+            "holdLast": true
+          },
+          "victory": {
+            "row": 7,
+            "frames": 4,
+            "durationsMs": [
+              160,
+              160,
+              160,
+              220
+            ],
+            "loop": false,
+            "holdLast": true
+          },
+          "charge": {
+            "row": 8,
+            "frames": 4,
+            "durationsMs": [
+              110,
+              110,
+              110,
+              110
+            ],
+            "loop": true
+          }
+        }
+      }
+    },
+    {
+      "id": "boss_ward_sentinel",
+      "name": "Ward Sentinel",
+      "world": {
+        "src": "assets/world/boss_ward_sentinel.png",
+        "frameWidth": 64,
+        "frameHeight": 84,
+        "columns": 9,
+        "rows": 4,
+        "idleColumn": 0,
+        "fps": 8,
+        "anchor": [
+          32,
+          84
+        ],
+        "directions": [
+          "down",
+          "left",
+          "right",
+          "up"
+        ],
+        "walkColumns": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8
+        ]
+      },
+      "battle": {
+        "src": "assets/battlers/boss_ward_sentinel.png",
+        "frameWidth": 128,
+        "frameHeight": 128,
+        "columns": 6,
+        "rows": 9,
+        "animations": {
+          "idle": {
+            "row": 0,
+            "frames": 4,
+            "durationsMs": [
+              240,
+              240,
+              240,
+              240
+            ],
+            "loop": true
+          },
+          "attack": {
+            "row": 1,
+            "frames": 4,
+            "durationsMs": [
+              90,
+              110,
+              120,
+              130
+            ],
+            "loop": false,
+            "events": [
+              {
+                "kind": "release",
+                "atMs": 260
+              }
+            ]
+          },
+          "ranged": {
+            "row": 2,
+            "frames": 4,
+            "durationsMs": [
+              100,
+              110,
+              110,
+              130
+            ],
+            "loop": false,
+            "events": [
+              {
+                "kind": "release",
+                "atMs": 260
+              }
+            ]
+          },
+          "cast": {
+            "row": 3,
+            "frames": 4,
+            "durationsMs": [
+              110,
+              120,
+              120,
+              140
+            ],
+            "loop": false,
+            "events": [
+              {
+                "kind": "release",
+                "atMs": 260
+              }
+            ]
+          },
+          "guard": {
+            "row": 4,
+            "frames": 3,
+            "durationsMs": [
+              140,
+              180,
+              180
+            ],
+            "loop": true
+          },
+          "hit": {
+            "row": 5,
+            "frames": 3,
+            "durationsMs": [
+              90,
+              130,
+              150
+            ],
+            "loop": false
+          },
+          "down": {
+            "row": 6,
+            "frames": 3,
+            "durationsMs": [
+              140,
+              180,
+              240
+            ],
+            "loop": false,
+            "holdLast": true
+          },
+          "victory": {
+            "row": 7,
+            "frames": 4,
+            "durationsMs": [
+              160,
+              160,
+              160,
+              220
+            ],
+            "loop": false,
+            "holdLast": true
+          },
+          "charge": {
+            "row": 8,
+            "frames": 4,
+            "durationsMs": [
+              110,
+              110,
+              110,
+              110
+            ],
+            "loop": true
+          }
+        }
+      }
+    },
+    {
+      "id": "boss_quiet_engine",
+      "name": "The Quiet Engine",
+      "world": {
+        "src": "assets/world/boss_quiet_engine.png",
+        "frameWidth": 96,
+        "frameHeight": 72,
+        "columns": 9,
+        "rows": 4,
+        "idleColumn": 0,
+        "fps": 8,
+        "anchor": [
+          48,
+          72
+        ],
+        "directions": [
+          "down",
+          "left",
+          "right",
+          "up"
+        ],
+        "walkColumns": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8
+        ]
+      },
+      "battle": {
+        "src": "assets/battlers/boss_quiet_engine.png",
+        "frameWidth": 128,
+        "frameHeight": 128,
+        "columns": 6,
+        "rows": 9,
+        "animations": {
+          "idle": {
+            "row": 0,
+            "frames": 4,
+            "durationsMs": [
+              240,
+              240,
+              240,
+              240
+            ],
+            "loop": true
+          },
+          "attack": {
+            "row": 1,
+            "frames": 4,
+            "durationsMs": [
+              90,
+              110,
+              120,
+              130
+            ],
+            "loop": false,
+            "events": [
+              {
+                "kind": "release",
+                "atMs": 260
+              }
+            ]
+          },
+          "ranged": {
+            "row": 2,
+            "frames": 4,
+            "durationsMs": [
+              100,
+              110,
+              110,
+              130
+            ],
+            "loop": false,
+            "events": [
+              {
+                "kind": "release",
+                "atMs": 260
+              }
+            ]
+          },
+          "cast": {
+            "row": 3,
+            "frames": 4,
+            "durationsMs": [
+              110,
+              120,
+              120,
+              140
+            ],
+            "loop": false,
+            "events": [
+              {
+                "kind": "release",
+                "atMs": 260
+              }
+            ]
+          },
+          "guard": {
+            "row": 4,
+            "frames": 3,
+            "durationsMs": [
+              140,
+              180,
+              180
+            ],
+            "loop": true
+          },
+          "hit": {
+            "row": 5,
+            "frames": 3,
+            "durationsMs": [
+              90,
+              130,
+              150
+            ],
+            "loop": false
+          },
+          "down": {
+            "row": 6,
+            "frames": 3,
+            "durationsMs": [
+              140,
+              180,
+              240
+            ],
+            "loop": false,
+            "holdLast": true
+          },
+          "victory": {
+            "row": 7,
+            "frames": 4,
+            "durationsMs": [
+              160,
+              160,
+              160,
+              220
+            ],
+            "loop": false,
+            "holdLast": true
+          },
+          "charge": {
+            "row": 8,
+            "frames": 4,
+            "durationsMs": [
+              110,
+              110,
+              110,
+              110
+            ],
+            "loop": true
+          }
+        }
+      }
+    },
+    {
+      "id": "grid_sweeper",
+      "name": "Grid Sweeper",
+      "world": {
+        "src": "assets/world/grid_sweeper.png",
+        "frameWidth": 48,
+        "frameHeight": 48,
+        "columns": 9,
+        "rows": 4,
+        "idleColumn": 0,
+        "fps": 8,
+        "anchor": [
+          24,
+          48
+        ],
+        "directions": [
+          "down",
+          "left",
+          "right",
+          "up"
+        ],
+        "walkColumns": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8
+        ]
+      },
+      "battle": {
+        "src": "assets/battlers/grid_sweeper.png",
+        "frameWidth": 64,
+        "frameHeight": 64,
+        "columns": 6,
+        "rows": 9,
+        "animations": {
+          "idle": {
+            "row": 0,
+            "frames": 4,
+            "durationsMs": [
+              240,
+              240,
+              240,
+              240
+            ],
+            "loop": true
+          },
+          "attack": {
+            "row": 1,
+            "frames": 4,
+            "durationsMs": [
+              90,
+              110,
+              120,
+              130
+            ],
+            "loop": false,
+            "events": [
+              {
+                "kind": "release",
+                "atMs": 260
+              }
+            ]
+          },
+          "ranged": {
+            "row": 2,
+            "frames": 4,
+            "durationsMs": [
+              100,
+              110,
+              110,
+              130
+            ],
+            "loop": false,
+            "events": [
+              {
+                "kind": "release",
+                "atMs": 260
+              }
+            ]
+          },
+          "cast": {
+            "row": 3,
+            "frames": 4,
+            "durationsMs": [
+              110,
+              120,
+              120,
+              140
+            ],
+            "loop": false,
+            "events": [
+              {
+                "kind": "release",
+                "atMs": 260
+              }
+            ]
+          },
+          "guard": {
+            "row": 4,
+            "frames": 3,
+            "durationsMs": [
+              140,
+              180,
+              180
+            ],
+            "loop": true
+          },
+          "hit": {
+            "row": 5,
+            "frames": 3,
+            "durationsMs": [
+              90,
+              130,
+              150
+            ],
+            "loop": false
+          },
+          "down": {
+            "row": 6,
+            "frames": 3,
+            "durationsMs": [
+              140,
+              180,
+              240
+            ],
+            "loop": false,
+            "holdLast": true
+          },
+          "victory": {
+            "row": 7,
+            "frames": 4,
+            "durationsMs": [
+              160,
+              160,
+              160,
+              220
+            ],
+            "loop": false,
+            "holdLast": true
+          },
+          "charge": {
+            "row": 8,
+            "frames": 4,
+            "durationsMs": [
+              110,
+              110,
+              110,
+              110
+            ],
+            "loop": true
+          }
+        }
+      }
+    },
+    {
+      "id": "grid_relay_hound",
+      "name": "Grid Relay Hound",
+      "world": {
+        "src": "assets/world/grid_relay_hound.png",
+        "frameWidth": 48,
+        "frameHeight": 48,
+        "columns": 9,
+        "rows": 4,
+        "idleColumn": 0,
+        "fps": 8,
+        "anchor": [
+          24,
+          48
+        ],
+        "directions": [
+          "down",
+          "left",
+          "right",
+          "up"
+        ],
+        "walkColumns": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8
+        ]
+      },
+      "battle": {
+        "src": "assets/battlers/grid_relay_hound.png",
+        "frameWidth": 64,
+        "frameHeight": 64,
+        "columns": 6,
+        "rows": 9,
+        "animations": {
+          "idle": {
+            "row": 0,
+            "frames": 4,
+            "durationsMs": [
+              240,
+              240,
+              240,
+              240
+            ],
+            "loop": true
+          },
+          "attack": {
+            "row": 1,
+            "frames": 4,
+            "durationsMs": [
+              90,
+              110,
+              120,
+              130
+            ],
+            "loop": false,
+            "events": [
+              {
+                "kind": "release",
+                "atMs": 260
+              }
+            ]
+          },
+          "ranged": {
+            "row": 2,
+            "frames": 4,
+            "durationsMs": [
+              100,
+              110,
+              110,
+              130
+            ],
+            "loop": false,
+            "events": [
+              {
+                "kind": "release",
+                "atMs": 260
+              }
+            ]
+          },
+          "cast": {
+            "row": 3,
+            "frames": 4,
+            "durationsMs": [
+              110,
+              120,
+              120,
+              140
+            ],
+            "loop": false,
+            "events": [
+              {
+                "kind": "release",
+                "atMs": 260
+              }
+            ]
+          },
+          "guard": {
+            "row": 4,
+            "frames": 3,
+            "durationsMs": [
+              140,
+              180,
+              180
+            ],
+            "loop": true
+          },
+          "hit": {
+            "row": 5,
+            "frames": 3,
+            "durationsMs": [
+              90,
+              130,
+              150
+            ],
+            "loop": false
+          },
+          "down": {
+            "row": 6,
+            "frames": 3,
+            "durationsMs": [
+              140,
+              180,
+              240
+            ],
+            "loop": false,
+            "holdLast": true
+          },
+          "victory": {
+            "row": 7,
+            "frames": 4,
+            "durationsMs": [
+              160,
+              160,
+              160,
+              220
+            ],
+            "loop": false,
+            "holdLast": true
+          },
+          "charge": {
+            "row": 8,
+            "frames": 4,
+            "durationsMs": [
+              110,
+              110,
+              110,
+              110
+            ],
+            "loop": true
+          }
+        }
+      }
+    },
+    {
+      "id": "grid_shutter_drone",
+      "name": "Grid Shutter Drone",
+      "world": {
+        "src": "assets/world/grid_shutter_drone.png",
+        "frameWidth": 48,
+        "frameHeight": 48,
+        "columns": 9,
+        "rows": 4,
+        "idleColumn": 0,
+        "fps": 8,
+        "anchor": [
+          24,
+          48
+        ],
+        "directions": [
+          "down",
+          "left",
+          "right",
+          "up"
+        ],
+        "walkColumns": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8
+        ]
+      },
+      "battle": {
+        "src": "assets/battlers/grid_shutter_drone.png",
+        "frameWidth": 64,
+        "frameHeight": 64,
+        "columns": 6,
+        "rows": 9,
+        "animations": {
+          "idle": {
+            "row": 0,
+            "frames": 4,
+            "durationsMs": [
+              240,
+              240,
+              240,
+              240
+            ],
+            "loop": true
+          },
+          "attack": {
+            "row": 1,
+            "frames": 4,
+            "durationsMs": [
+              90,
+              110,
+              120,
+              130
+            ],
+            "loop": false,
+            "events": [
+              {
+                "kind": "release",
+                "atMs": 260
+              }
+            ]
+          },
+          "ranged": {
+            "row": 2,
+            "frames": 4,
+            "durationsMs": [
+              100,
+              110,
+              110,
+              130
+            ],
+            "loop": false,
+            "events": [
+              {
+                "kind": "release",
+                "atMs": 260
+              }
+            ]
+          },
+          "cast": {
+            "row": 3,
+            "frames": 4,
+            "durationsMs": [
+              110,
+              120,
+              120,
+              140
+            ],
+            "loop": false,
+            "events": [
+              {
+                "kind": "release",
+                "atMs": 260
+              }
+            ]
+          },
+          "guard": {
+            "row": 4,
+            "frames": 3,
+            "durationsMs": [
+              140,
+              180,
+              180
+            ],
+            "loop": true
+          },
+          "hit": {
+            "row": 5,
+            "frames": 3,
+            "durationsMs": [
+              90,
+              130,
+              150
+            ],
+            "loop": false
+          },
+          "down": {
+            "row": 6,
+            "frames": 3,
+            "durationsMs": [
+              140,
+              180,
+              240
+            ],
+            "loop": false,
+            "holdLast": true
+          },
+          "victory": {
+            "row": 7,
+            "frames": 4,
+            "durationsMs": [
+              160,
+              160,
+              160,
+              220
+            ],
+            "loop": false,
+            "holdLast": true
+          },
+          "charge": {
+            "row": 8,
+            "frames": 4,
+            "durationsMs": [
+              110,
+              110,
+              110,
+              110
+            ],
+            "loop": true
+          }
+        }
+      }
+    },
+    {
+      "id": "grid_census_clerk",
+      "name": "Grid Census Clerk",
+      "world": {
+        "src": "assets/world/grid_census_clerk.png",
+        "frameWidth": 48,
+        "frameHeight": 48,
+        "columns": 9,
+        "rows": 4,
+        "idleColumn": 0,
+        "fps": 8,
+        "anchor": [
+          24,
+          48
+        ],
+        "directions": [
+          "down",
+          "left",
+          "right",
+          "up"
+        ],
+        "walkColumns": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8
+        ]
+      },
+      "battle": {
+        "src": "assets/battlers/grid_census_clerk.png",
+        "frameWidth": 64,
+        "frameHeight": 64,
+        "columns": 6,
+        "rows": 9,
+        "animations": {
+          "idle": {
+            "row": 0,
+            "frames": 4,
+            "durationsMs": [
+              240,
+              240,
+              240,
+              240
+            ],
+            "loop": true
+          },
+          "attack": {
+            "row": 1,
+            "frames": 4,
+            "durationsMs": [
+              90,
+              110,
+              120,
+              130
+            ],
+            "loop": false,
+            "events": [
+              {
+                "kind": "release",
+                "atMs": 260
+              }
+            ]
+          },
+          "ranged": {
+            "row": 2,
+            "frames": 4,
+            "durationsMs": [
+              100,
+              110,
+              110,
+              130
+            ],
+            "loop": false,
+            "events": [
+              {
+                "kind": "release",
+                "atMs": 260
+              }
+            ]
+          },
+          "cast": {
+            "row": 3,
+            "frames": 4,
+            "durationsMs": [
+              110,
+              120,
+              120,
+              140
+            ],
+            "loop": false,
+            "events": [
+              {
+                "kind": "release",
+                "atMs": 260
+              }
+            ]
+          },
+          "guard": {
+            "row": 4,
+            "frames": 3,
+            "durationsMs": [
+              140,
+              180,
+              180
+            ],
+            "loop": true
+          },
+          "hit": {
+            "row": 5,
+            "frames": 3,
+            "durationsMs": [
+              90,
+              130,
+              150
+            ],
+            "loop": false
+          },
+          "down": {
+            "row": 6,
+            "frames": 3,
+            "durationsMs": [
+              140,
+              180,
+              240
+            ],
+            "loop": false,
+            "holdLast": true
+          },
+          "victory": {
+            "row": 7,
+            "frames": 4,
+            "durationsMs": [
+              160,
+              160,
+              160,
+              220
+            ],
+            "loop": false,
+            "holdLast": true
+          },
+          "charge": {
+            "row": 8,
+            "frames": 4,
+            "durationsMs": [
+              110,
+              110,
+              110,
+              110
+            ],
+            "loop": true
+          }
+        }
+      }
+    },
+    {
+      "id": "grid_quarantine_unit",
+      "name": "Grid Quarantine Unit",
+      "world": {
+        "src": "assets/world/grid_quarantine_unit.png",
+        "frameWidth": 48,
+        "frameHeight": 48,
+        "columns": 9,
+        "rows": 4,
+        "idleColumn": 0,
+        "fps": 8,
+        "anchor": [
+          24,
+          48
+        ],
+        "directions": [
+          "down",
+          "left",
+          "right",
+          "up"
+        ],
+        "walkColumns": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8
+        ]
+      },
+      "battle": {
+        "src": "assets/battlers/grid_quarantine_unit.png",
+        "frameWidth": 64,
+        "frameHeight": 64,
+        "columns": 6,
+        "rows": 9,
+        "animations": {
+          "idle": {
+            "row": 0,
+            "frames": 4,
+            "durationsMs": [
+              240,
+              240,
+              240,
+              240
+            ],
+            "loop": true
+          },
+          "attack": {
+            "row": 1,
+            "frames": 4,
+            "durationsMs": [
+              90,
+              110,
+              120,
+              130
+            ],
+            "loop": false,
+            "events": [
+              {
+                "kind": "release",
+                "atMs": 260
+              }
+            ]
+          },
+          "ranged": {
+            "row": 2,
+            "frames": 4,
+            "durationsMs": [
+              100,
+              110,
+              110,
+              130
+            ],
+            "loop": false,
+            "events": [
+              {
+                "kind": "release",
+                "atMs": 260
+              }
+            ]
+          },
+          "cast": {
+            "row": 3,
+            "frames": 4,
+            "durationsMs": [
+              110,
+              120,
+              120,
+              140
+            ],
+            "loop": false,
+            "events": [
+              {
+                "kind": "release",
+                "atMs": 260
+              }
+            ]
+          },
+          "guard": {
+            "row": 4,
+            "frames": 3,
+            "durationsMs": [
+              140,
+              180,
+              180
+            ],
+            "loop": true
+          },
+          "hit": {
+            "row": 5,
+            "frames": 3,
+            "durationsMs": [
+              90,
+              130,
+              150
+            ],
+            "loop": false
+          },
+          "down": {
+            "row": 6,
+            "frames": 3,
+            "durationsMs": [
+              140,
+              180,
+              240
+            ],
+            "loop": false,
+            "holdLast": true
+          },
+          "victory": {
+            "row": 7,
+            "frames": 4,
+            "durationsMs": [
+              160,
+              160,
+              160,
+              220
+            ],
+            "loop": false,
+            "holdLast": true
+          },
+          "charge": {
+            "row": 8,
+            "frames": 4,
+            "durationsMs": [
+              110,
+              110,
+              110,
+              110
+            ],
+            "loop": true
+          }
+        }
+      }
+    },
+    {
+      "id": "grid_rail_walker",
+      "name": "Grid Rail Walker",
+      "world": {
+        "src": "assets/world/grid_rail_walker.png",
+        "frameWidth": 48,
+        "frameHeight": 48,
+        "columns": 9,
+        "rows": 4,
+        "idleColumn": 0,
+        "fps": 8,
+        "anchor": [
+          24,
+          48
+        ],
+        "directions": [
+          "down",
+          "left",
+          "right",
+          "up"
+        ],
+        "walkColumns": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8
+        ]
+      },
+      "battle": {
+        "src": "assets/battlers/grid_rail_walker.png",
+        "frameWidth": 64,
+        "frameHeight": 64,
+        "columns": 6,
+        "rows": 9,
+        "animations": {
+          "idle": {
+            "row": 0,
+            "frames": 4,
+            "durationsMs": [
+              240,
+              240,
+              240,
+              240
+            ],
+            "loop": true
+          },
+          "attack": {
+            "row": 1,
+            "frames": 4,
+            "durationsMs": [
+              90,
+              110,
+              120,
+              130
+            ],
+            "loop": false,
+            "events": [
+              {
+                "kind": "release",
+                "atMs": 260
+              }
+            ]
+          },
+          "ranged": {
+            "row": 2,
+            "frames": 4,
+            "durationsMs": [
+              100,
+              110,
+              110,
+              130
+            ],
+            "loop": false,
+            "events": [
+              {
+                "kind": "release",
+                "atMs": 260
+              }
+            ]
+          },
+          "cast": {
+            "row": 3,
+            "frames": 4,
+            "durationsMs": [
+              110,
+              120,
+              120,
+              140
+            ],
+            "loop": false,
+            "events": [
+              {
+                "kind": "release",
+                "atMs": 260
+              }
+            ]
+          },
+          "guard": {
+            "row": 4,
+            "frames": 3,
+            "durationsMs": [
+              140,
+              180,
+              180
+            ],
+            "loop": true
+          },
+          "hit": {
+            "row": 5,
+            "frames": 3,
+            "durationsMs": [
+              90,
+              130,
+              150
+            ],
+            "loop": false
+          },
+          "down": {
+            "row": 6,
+            "frames": 3,
+            "durationsMs": [
+              140,
+              180,
+              240
+            ],
+            "loop": false,
+            "holdLast": true
+          },
+          "victory": {
+            "row": 7,
+            "frames": 4,
+            "durationsMs": [
+              160,
+              160,
+              160,
+              220
+            ],
+            "loop": false,
+            "holdLast": true
+          },
+          "charge": {
+            "row": 8,
+            "frames": 4,
+            "durationsMs": [
+              110,
+              110,
+              110,
+              110
+            ],
+            "loop": true
+          }
+        }
+      }
+    },
+    {
+      "id": "grid_turbine_mite",
+      "name": "Grid Turbine Mite",
+      "world": {
+        "src": "assets/world/grid_turbine_mite.png",
+        "frameWidth": 48,
+        "frameHeight": 48,
+        "columns": 9,
+        "rows": 4,
+        "idleColumn": 0,
+        "fps": 8,
+        "anchor": [
+          24,
+          48
+        ],
+        "directions": [
+          "down",
+          "left",
+          "right",
+          "up"
+        ],
+        "walkColumns": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8
+        ]
+      },
+      "battle": {
+        "src": "assets/battlers/grid_turbine_mite.png",
+        "frameWidth": 64,
+        "frameHeight": 64,
+        "columns": 6,
+        "rows": 9,
+        "animations": {
+          "idle": {
+            "row": 0,
+            "frames": 4,
+            "durationsMs": [
+              240,
+              240,
+              240,
+              240
+            ],
+            "loop": true
+          },
+          "attack": {
+            "row": 1,
+            "frames": 4,
+            "durationsMs": [
+              90,
+              110,
+              120,
+              130
+            ],
+            "loop": false,
+            "events": [
+              {
+                "kind": "release",
+                "atMs": 260
+              }
+            ]
+          },
+          "ranged": {
+            "row": 2,
+            "frames": 4,
+            "durationsMs": [
+              100,
+              110,
+              110,
+              130
+            ],
+            "loop": false,
+            "events": [
+              {
+                "kind": "release",
+                "atMs": 260
+              }
+            ]
+          },
+          "cast": {
+            "row": 3,
+            "frames": 4,
+            "durationsMs": [
+              110,
+              120,
+              120,
+              140
+            ],
+            "loop": false,
+            "events": [
+              {
+                "kind": "release",
+                "atMs": 260
+              }
+            ]
+          },
+          "guard": {
+            "row": 4,
+            "frames": 3,
+            "durationsMs": [
+              140,
+              180,
+              180
+            ],
+            "loop": true
+          },
+          "hit": {
+            "row": 5,
+            "frames": 3,
+            "durationsMs": [
+              90,
+              130,
+              150
+            ],
+            "loop": false
+          },
+          "down": {
+            "row": 6,
+            "frames": 3,
+            "durationsMs": [
+              140,
+              180,
+              240
+            ],
+            "loop": false,
+            "holdLast": true
+          },
+          "victory": {
+            "row": 7,
+            "frames": 4,
+            "durationsMs": [
+              160,
+              160,
+              160,
+              220
+            ],
+            "loop": false,
+            "holdLast": true
+          },
+          "charge": {
+            "row": 8,
+            "frames": 4,
+            "durationsMs": [
+              110,
+              110,
+              110,
+              110
+            ],
+            "loop": true
+          }
+        }
+      }
+    },
+    {
+      "id": "grid_sump_crab",
+      "name": "Grid Sump Crab",
+      "world": {
+        "src": "assets/world/grid_sump_crab.png",
+        "frameWidth": 48,
+        "frameHeight": 48,
+        "columns": 9,
+        "rows": 4,
+        "idleColumn": 0,
+        "fps": 8,
+        "anchor": [
+          24,
+          48
+        ],
+        "directions": [
+          "down",
+          "left",
+          "right",
+          "up"
+        ],
+        "walkColumns": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8
+        ]
+      },
+      "battle": {
+        "src": "assets/battlers/grid_sump_crab.png",
+        "frameWidth": 64,
+        "frameHeight": 64,
+        "columns": 6,
+        "rows": 9,
+        "animations": {
+          "idle": {
+            "row": 0,
+            "frames": 4,
+            "durationsMs": [
+              240,
+              240,
+              240,
+              240
+            ],
+            "loop": true
+          },
+          "attack": {
+            "row": 1,
+            "frames": 4,
+            "durationsMs": [
+              90,
+              110,
+              120,
+              130
+            ],
+            "loop": false,
+            "events": [
+              {
+                "kind": "release",
+                "atMs": 260
+              }
+            ]
+          },
+          "ranged": {
+            "row": 2,
+            "frames": 4,
+            "durationsMs": [
+              100,
+              110,
+              110,
+              130
+            ],
+            "loop": false,
+            "events": [
+              {
+                "kind": "release",
+                "atMs": 260
+              }
+            ]
+          },
+          "cast": {
+            "row": 3,
+            "frames": 4,
+            "durationsMs": [
+              110,
+              120,
+              120,
+              140
+            ],
+            "loop": false,
+            "events": [
+              {
+                "kind": "release",
+                "atMs": 260
+              }
+            ]
+          },
+          "guard": {
+            "row": 4,
+            "frames": 3,
+            "durationsMs": [
+              140,
+              180,
+              180
+            ],
+            "loop": true
+          },
+          "hit": {
+            "row": 5,
+            "frames": 3,
+            "durationsMs": [
+              90,
+              130,
+              150
+            ],
+            "loop": false
+          },
+          "down": {
+            "row": 6,
+            "frames": 3,
+            "durationsMs": [
+              140,
+              180,
+              240
+            ],
+            "loop": false,
+            "holdLast": true
+          },
+          "victory": {
+            "row": 7,
+            "frames": 4,
+            "durationsMs": [
+              160,
+              160,
+              160,
+              220
+            ],
+            "loop": false,
+            "holdLast": true
+          },
+          "charge": {
+            "row": 8,
+            "frames": 4,
+            "durationsMs": [
+              110,
+              110,
+              110,
+              110
+            ],
+            "loop": true
+          }
+        }
+      }
+    },
+    {
+      "id": "grid_beacon_float",
+      "name": "Grid Beacon Float",
+      "world": {
+        "src": "assets/world/grid_beacon_float.png",
+        "frameWidth": 48,
+        "frameHeight": 48,
+        "columns": 9,
+        "rows": 4,
+        "idleColumn": 0,
+        "fps": 8,
+        "anchor": [
+          24,
+          48
+        ],
+        "directions": [
+          "down",
+          "left",
+          "right",
+          "up"
+        ],
+        "walkColumns": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8
+        ]
+      },
+      "battle": {
+        "src": "assets/battlers/grid_beacon_float.png",
+        "frameWidth": 64,
+        "frameHeight": 64,
+        "columns": 6,
+        "rows": 9,
+        "animations": {
+          "idle": {
+            "row": 0,
+            "frames": 4,
+            "durationsMs": [
+              240,
+              240,
+              240,
+              240
+            ],
+            "loop": true
+          },
+          "attack": {
+            "row": 1,
+            "frames": 4,
+            "durationsMs": [
+              90,
+              110,
+              120,
+              130
+            ],
+            "loop": false,
+            "events": [
+              {
+                "kind": "release",
+                "atMs": 260
+              }
+            ]
+          },
+          "ranged": {
+            "row": 2,
+            "frames": 4,
+            "durationsMs": [
+              100,
+              110,
+              110,
+              130
+            ],
+            "loop": false,
+            "events": [
+              {
+                "kind": "release",
+                "atMs": 260
+              }
+            ]
+          },
+          "cast": {
+            "row": 3,
+            "frames": 4,
+            "durationsMs": [
+              110,
+              120,
+              120,
+              140
+            ],
+            "loop": false,
+            "events": [
+              {
+                "kind": "release",
+                "atMs": 260
+              }
+            ]
+          },
+          "guard": {
+            "row": 4,
+            "frames": 3,
+            "durationsMs": [
+              140,
+              180,
+              180
+            ],
+            "loop": true
+          },
+          "hit": {
+            "row": 5,
+            "frames": 3,
+            "durationsMs": [
+              90,
+              130,
+              150
+            ],
+            "loop": false
+          },
+          "down": {
+            "row": 6,
+            "frames": 3,
+            "durationsMs": [
+              140,
+              180,
+              240
+            ],
+            "loop": false,
+            "holdLast": true
+          },
+          "victory": {
+            "row": 7,
+            "frames": 4,
+            "durationsMs": [
+              160,
+              160,
+              160,
+              220
+            ],
+            "loop": false,
+            "holdLast": true
+          },
+          "charge": {
+            "row": 8,
+            "frames": 4,
+            "durationsMs": [
+              110,
+              110,
+              110,
+              110
+            ],
+            "loop": true
+          }
+        }
+      }
+    },
+    {
+      "id": "grid_cable_weasel",
+      "name": "Grid Cable Weasel",
+      "world": {
+        "src": "assets/world/grid_cable_weasel.png",
+        "frameWidth": 48,
+        "frameHeight": 48,
+        "columns": 9,
+        "rows": 4,
+        "idleColumn": 0,
+        "fps": 8,
+        "anchor": [
+          24,
+          48
+        ],
+        "directions": [
+          "down",
+          "left",
+          "right",
+          "up"
+        ],
+        "walkColumns": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8
+        ]
+      },
+      "battle": {
+        "src": "assets/battlers/grid_cable_weasel.png",
+        "frameWidth": 64,
+        "frameHeight": 64,
+        "columns": 6,
+        "rows": 9,
+        "animations": {
+          "idle": {
+            "row": 0,
+            "frames": 4,
+            "durationsMs": [
+              240,
+              240,
+              240,
+              240
+            ],
+            "loop": true
+          },
+          "attack": {
+            "row": 1,
+            "frames": 4,
+            "durationsMs": [
+              90,
+              110,
+              120,
+              130
+            ],
+            "loop": false,
+            "events": [
+              {
+                "kind": "release",
+                "atMs": 260
+              }
+            ]
+          },
+          "ranged": {
+            "row": 2,
+            "frames": 4,
+            "durationsMs": [
+              100,
+              110,
+              110,
+              130
+            ],
+            "loop": false,
+            "events": [
+              {
+                "kind": "release",
+                "atMs": 260
+              }
+            ]
+          },
+          "cast": {
+            "row": 3,
+            "frames": 4,
+            "durationsMs": [
+              110,
+              120,
+              120,
+              140
+            ],
+            "loop": false,
+            "events": [
+              {
+                "kind": "release",
+                "atMs": 260
+              }
+            ]
+          },
+          "guard": {
+            "row": 4,
+            "frames": 3,
+            "durationsMs": [
+              140,
+              180,
+              180
+            ],
+            "loop": true
+          },
+          "hit": {
+            "row": 5,
+            "frames": 3,
+            "durationsMs": [
+              90,
+              130,
+              150
+            ],
+            "loop": false
+          },
+          "down": {
+            "row": 6,
+            "frames": 3,
+            "durationsMs": [
+              140,
+              180,
+              240
+            ],
+            "loop": false,
+            "holdLast": true
+          },
+          "victory": {
+            "row": 7,
+            "frames": 4,
+            "durationsMs": [
+              160,
+              160,
+              160,
+              220
+            ],
+            "loop": false,
+            "holdLast": true
+          },
+          "charge": {
+            "row": 8,
+            "frames": 4,
+            "durationsMs": [
+              110,
+              110,
+              110,
+              110
+            ],
+            "loop": true
+          }
+        }
+      }
+    },
+    {
+      "id": "grid_lock_sentinel",
+      "name": "Grid Lock Sentinel",
+      "world": {
+        "src": "assets/world/grid_lock_sentinel.png",
+        "frameWidth": 48,
+        "frameHeight": 48,
+        "columns": 9,
+        "rows": 4,
+        "idleColumn": 0,
+        "fps": 8,
+        "anchor": [
+          24,
+          48
+        ],
+        "directions": [
+          "down",
+          "left",
+          "right",
+          "up"
+        ],
+        "walkColumns": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8
+        ]
+      },
+      "battle": {
+        "src": "assets/battlers/grid_lock_sentinel.png",
+        "frameWidth": 64,
+        "frameHeight": 64,
+        "columns": 6,
+        "rows": 9,
+        "animations": {
+          "idle": {
+            "row": 0,
+            "frames": 4,
+            "durationsMs": [
+              240,
+              240,
+              240,
+              240
+            ],
+            "loop": true
+          },
+          "attack": {
+            "row": 1,
+            "frames": 4,
+            "durationsMs": [
+              90,
+              110,
+              120,
+              130
+            ],
+            "loop": false,
+            "events": [
+              {
+                "kind": "release",
+                "atMs": 260
+              }
+            ]
+          },
+          "ranged": {
+            "row": 2,
+            "frames": 4,
+            "durationsMs": [
+              100,
+              110,
+              110,
+              130
+            ],
+            "loop": false,
+            "events": [
+              {
+                "kind": "release",
+                "atMs": 260
+              }
+            ]
+          },
+          "cast": {
+            "row": 3,
+            "frames": 4,
+            "durationsMs": [
+              110,
+              120,
+              120,
+              140
+            ],
+            "loop": false,
+            "events": [
+              {
+                "kind": "release",
+                "atMs": 260
+              }
+            ]
+          },
+          "guard": {
+            "row": 4,
+            "frames": 3,
+            "durationsMs": [
+              140,
+              180,
+              180
+            ],
+            "loop": true
+          },
+          "hit": {
+            "row": 5,
+            "frames": 3,
+            "durationsMs": [
+              90,
+              130,
+              150
+            ],
+            "loop": false
+          },
+          "down": {
+            "row": 6,
+            "frames": 3,
+            "durationsMs": [
+              140,
+              180,
+              240
+            ],
+            "loop": false,
+            "holdLast": true
+          },
+          "victory": {
+            "row": 7,
+            "frames": 4,
+            "durationsMs": [
+              160,
+              160,
+              160,
+              220
+            ],
+            "loop": false,
+            "holdLast": true
+          },
+          "charge": {
+            "row": 8,
+            "frames": 4,
+            "durationsMs": [
+              110,
+              110,
+              110,
+              110
+            ],
+            "loop": true
+          }
+        }
+      }
+    },
+    {
+      "id": "grid_cathedral_guard",
+      "name": "Grid Cathedral Guard",
+      "world": {
+        "src": "assets/world/grid_cathedral_guard.png",
+        "frameWidth": 48,
+        "frameHeight": 48,
+        "columns": 9,
+        "rows": 4,
+        "idleColumn": 0,
+        "fps": 8,
+        "anchor": [
+          24,
+          48
+        ],
+        "directions": [
+          "down",
+          "left",
+          "right",
+          "up"
+        ],
+        "walkColumns": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8
+        ]
+      },
+      "battle": {
+        "src": "assets/battlers/grid_cathedral_guard.png",
+        "frameWidth": 64,
+        "frameHeight": 64,
+        "columns": 6,
+        "rows": 9,
+        "animations": {
+          "idle": {
+            "row": 0,
+            "frames": 4,
+            "durationsMs": [
+              240,
+              240,
+              240,
+              240
+            ],
+            "loop": true
+          },
+          "attack": {
+            "row": 1,
+            "frames": 4,
+            "durationsMs": [
+              90,
+              110,
+              120,
+              130
+            ],
+            "loop": false,
+            "events": [
+              {
+                "kind": "release",
+                "atMs": 260
+              }
+            ]
+          },
+          "ranged": {
+            "row": 2,
+            "frames": 4,
+            "durationsMs": [
+              100,
+              110,
+              110,
+              130
+            ],
+            "loop": false,
+            "events": [
+              {
+                "kind": "release",
+                "atMs": 260
+              }
+            ]
+          },
+          "cast": {
+            "row": 3,
+            "frames": 4,
+            "durationsMs": [
+              110,
+              120,
+              120,
+              140
+            ],
+            "loop": false,
+            "events": [
+              {
+                "kind": "release",
+                "atMs": 260
+              }
+            ]
+          },
+          "guard": {
+            "row": 4,
+            "frames": 3,
+            "durationsMs": [
+              140,
+              180,
+              180
+            ],
+            "loop": true
+          },
+          "hit": {
+            "row": 5,
+            "frames": 3,
+            "durationsMs": [
+              90,
+              130,
+              150
+            ],
+            "loop": false
+          },
+          "down": {
+            "row": 6,
+            "frames": 3,
+            "durationsMs": [
+              140,
+              180,
+              240
+            ],
+            "loop": false,
+            "holdLast": true
+          },
+          "victory": {
+            "row": 7,
+            "frames": 4,
+            "durationsMs": [
+              160,
+              160,
+              160,
+              220
+            ],
+            "loop": false,
+            "holdLast": true
+          },
+          "charge": {
+            "row": 8,
+            "frames": 4,
+            "durationsMs": [
+              110,
+              110,
+              110,
+              110
+            ],
+            "loop": true
+          }
+        }
+      }
+    },
+    {
+      "id": "grid_telemetry_eye",
+      "name": "Grid Telemetry Eye",
+      "world": {
+        "src": "assets/world/grid_telemetry_eye.png",
+        "frameWidth": 48,
+        "frameHeight": 48,
+        "columns": 9,
+        "rows": 4,
+        "idleColumn": 0,
+        "fps": 8,
+        "anchor": [
+          24,
+          48
+        ],
+        "directions": [
+          "down",
+          "left",
+          "right",
+          "up"
+        ],
+        "walkColumns": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8
+        ]
+      },
+      "battle": {
+        "src": "assets/battlers/grid_telemetry_eye.png",
+        "frameWidth": 64,
+        "frameHeight": 64,
+        "columns": 6,
+        "rows": 9,
+        "animations": {
+          "idle": {
+            "row": 0,
+            "frames": 4,
+            "durationsMs": [
+              240,
+              240,
+              240,
+              240
+            ],
+            "loop": true
+          },
+          "attack": {
+            "row": 1,
+            "frames": 4,
+            "durationsMs": [
+              90,
+              110,
+              120,
+              130
+            ],
+            "loop": false,
+            "events": [
+              {
+                "kind": "release",
+                "atMs": 260
+              }
+            ]
+          },
+          "ranged": {
+            "row": 2,
+            "frames": 4,
+            "durationsMs": [
+              100,
+              110,
+              110,
+              130
+            ],
+            "loop": false,
+            "events": [
+              {
+                "kind": "release",
+                "atMs": 260
+              }
+            ]
+          },
+          "cast": {
+            "row": 3,
+            "frames": 4,
+            "durationsMs": [
+              110,
+              120,
+              120,
+              140
+            ],
+            "loop": false,
+            "events": [
+              {
+                "kind": "release",
+                "atMs": 260
+              }
+            ]
+          },
+          "guard": {
+            "row": 4,
+            "frames": 3,
+            "durationsMs": [
+              140,
+              180,
+              180
+            ],
+            "loop": true
+          },
+          "hit": {
+            "row": 5,
+            "frames": 3,
+            "durationsMs": [
+              90,
+              130,
+              150
+            ],
+            "loop": false
+          },
+          "down": {
+            "row": 6,
+            "frames": 3,
+            "durationsMs": [
+              140,
+              180,
+              240
+            ],
+            "loop": false,
+            "holdLast": true
+          },
+          "victory": {
+            "row": 7,
+            "frames": 4,
+            "durationsMs": [
+              160,
+              160,
+              160,
+              220
+            ],
+            "loop": false,
+            "holdLast": true
+          },
+          "charge": {
+            "row": 8,
+            "frames": 4,
+            "durationsMs": [
+              110,
+              110,
+              110,
+              110
+            ],
+            "loop": true
+          }
+        }
+      }
+    },
+    {
+      "id": "grid_pump_frame",
+      "name": "Grid Pump Frame",
+      "world": {
+        "src": "assets/world/grid_pump_frame.png",
+        "frameWidth": 48,
+        "frameHeight": 48,
+        "columns": 9,
+        "rows": 4,
+        "idleColumn": 0,
+        "fps": 8,
+        "anchor": [
+          24,
+          48
+        ],
+        "directions": [
+          "down",
+          "left",
+          "right",
+          "up"
+        ],
+        "walkColumns": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8
+        ]
+      },
+      "battle": {
+        "src": "assets/battlers/grid_pump_frame.png",
+        "frameWidth": 64,
+        "frameHeight": 64,
+        "columns": 6,
+        "rows": 9,
+        "animations": {
+          "idle": {
+            "row": 0,
+            "frames": 4,
+            "durationsMs": [
+              240,
+              240,
+              240,
+              240
+            ],
+            "loop": true
+          },
+          "attack": {
+            "row": 1,
+            "frames": 4,
+            "durationsMs": [
+              90,
+              110,
+              120,
+              130
+            ],
+            "loop": false,
+            "events": [
+              {
+                "kind": "release",
+                "atMs": 260
+              }
+            ]
+          },
+          "ranged": {
+            "row": 2,
+            "frames": 4,
+            "durationsMs": [
+              100,
+              110,
+              110,
+              130
+            ],
+            "loop": false,
+            "events": [
+              {
+                "kind": "release",
+                "atMs": 260
+              }
+            ]
+          },
+          "cast": {
+            "row": 3,
+            "frames": 4,
+            "durationsMs": [
+              110,
+              120,
+              120,
+              140
+            ],
+            "loop": false,
+            "events": [
+              {
+                "kind": "release",
+                "atMs": 260
+              }
+            ]
+          },
+          "guard": {
+            "row": 4,
+            "frames": 3,
+            "durationsMs": [
+              140,
+              180,
+              180
+            ],
+            "loop": true
+          },
+          "hit": {
+            "row": 5,
+            "frames": 3,
+            "durationsMs": [
+              90,
+              130,
+              150
+            ],
+            "loop": false
+          },
+          "down": {
+            "row": 6,
+            "frames": 3,
+            "durationsMs": [
+              140,
+              180,
+              240
+            ],
+            "loop": false,
+            "holdLast": true
+          },
+          "victory": {
+            "row": 7,
+            "frames": 4,
+            "durationsMs": [
+              160,
+              160,
+              160,
+              220
+            ],
+            "loop": false,
+            "holdLast": true
+          },
+          "charge": {
+            "row": 8,
+            "frames": 4,
+            "durationsMs": [
+              110,
+              110,
+              110,
+              110
+            ],
+            "loop": true
+          }
+        }
+      }
+    },
+    {
+      "id": "grid_scaffold_rig",
+      "name": "Grid Scaffold Rig",
+      "world": {
+        "src": "assets/world/grid_scaffold_rig.png",
+        "frameWidth": 48,
+        "frameHeight": 48,
+        "columns": 9,
+        "rows": 4,
+        "idleColumn": 0,
+        "fps": 8,
+        "anchor": [
+          24,
+          48
+        ],
+        "directions": [
+          "down",
+          "left",
+          "right",
+          "up"
+        ],
+        "walkColumns": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8
+        ]
+      },
+      "battle": {
+        "src": "assets/battlers/grid_scaffold_rig.png",
+        "frameWidth": 64,
+        "frameHeight": 64,
+        "columns": 6,
+        "rows": 9,
+        "animations": {
+          "idle": {
+            "row": 0,
+            "frames": 4,
+            "durationsMs": [
+              240,
+              240,
+              240,
+              240
+            ],
+            "loop": true
+          },
+          "attack": {
+            "row": 1,
+            "frames": 4,
+            "durationsMs": [
+              90,
+              110,
+              120,
+              130
+            ],
+            "loop": false,
+            "events": [
+              {
+                "kind": "release",
+                "atMs": 260
+              }
+            ]
+          },
+          "ranged": {
+            "row": 2,
+            "frames": 4,
+            "durationsMs": [
+              100,
+              110,
+              110,
+              130
+            ],
+            "loop": false,
+            "events": [
+              {
+                "kind": "release",
+                "atMs": 260
+              }
+            ]
+          },
+          "cast": {
+            "row": 3,
+            "frames": 4,
+            "durationsMs": [
+              110,
+              120,
+              120,
+              140
+            ],
+            "loop": false,
+            "events": [
+              {
+                "kind": "release",
+                "atMs": 260
+              }
+            ]
+          },
+          "guard": {
+            "row": 4,
+            "frames": 3,
+            "durationsMs": [
+              140,
+              180,
+              180
+            ],
+            "loop": true
+          },
+          "hit": {
+            "row": 5,
+            "frames": 3,
+            "durationsMs": [
+              90,
+              130,
+              150
+            ],
+            "loop": false
+          },
+          "down": {
+            "row": 6,
+            "frames": 3,
+            "durationsMs": [
+              140,
+              180,
+              240
+            ],
+            "loop": false,
+            "holdLast": true
+          },
+          "victory": {
+            "row": 7,
+            "frames": 4,
+            "durationsMs": [
+              160,
+              160,
+              160,
+              220
+            ],
+            "loop": false,
+            "holdLast": true
+          },
+          "charge": {
+            "row": 8,
+            "frames": 4,
+            "durationsMs": [
+              110,
+              110,
+              110,
+              110
+            ],
+            "loop": true
+          }
+        }
+      }
+    },
+    {
+      "id": "grid_vault_warden",
+      "name": "Grid Vault Warden",
+      "world": {
+        "src": "assets/world/grid_vault_warden.png",
+        "frameWidth": 48,
+        "frameHeight": 48,
+        "columns": 9,
+        "rows": 4,
+        "idleColumn": 0,
+        "fps": 8,
+        "anchor": [
+          24,
+          48
+        ],
+        "directions": [
+          "down",
+          "left",
+          "right",
+          "up"
+        ],
+        "walkColumns": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8
+        ]
+      },
+      "battle": {
+        "src": "assets/battlers/grid_vault_warden.png",
+        "frameWidth": 64,
+        "frameHeight": 64,
+        "columns": 6,
+        "rows": 9,
+        "animations": {
+          "idle": {
+            "row": 0,
+            "frames": 4,
+            "durationsMs": [
+              240,
+              240,
+              240,
+              240
+            ],
+            "loop": true
+          },
+          "attack": {
+            "row": 1,
+            "frames": 4,
+            "durationsMs": [
+              90,
+              110,
+              120,
+              130
+            ],
+            "loop": false,
+            "events": [
+              {
+                "kind": "release",
+                "atMs": 260
+              }
+            ]
+          },
+          "ranged": {
+            "row": 2,
+            "frames": 4,
+            "durationsMs": [
+              100,
+              110,
+              110,
+              130
+            ],
+            "loop": false,
+            "events": [
+              {
+                "kind": "release",
+                "atMs": 260
+              }
+            ]
+          },
+          "cast": {
+            "row": 3,
+            "frames": 4,
+            "durationsMs": [
+              110,
+              120,
+              120,
+              140
+            ],
+            "loop": false,
+            "events": [
+              {
+                "kind": "release",
+                "atMs": 260
+              }
+            ]
+          },
+          "guard": {
+            "row": 4,
+            "frames": 3,
+            "durationsMs": [
+              140,
+              180,
+              180
+            ],
+            "loop": true
+          },
+          "hit": {
+            "row": 5,
+            "frames": 3,
+            "durationsMs": [
+              90,
+              130,
+              150
+            ],
+            "loop": false
+          },
+          "down": {
+            "row": 6,
+            "frames": 3,
+            "durationsMs": [
+              140,
+              180,
+              240
+            ],
+            "loop": false,
+            "holdLast": true
+          },
+          "victory": {
+            "row": 7,
+            "frames": 4,
+            "durationsMs": [
+              160,
+              160,
+              160,
+              220
+            ],
+            "loop": false,
+            "holdLast": true
+          },
+          "charge": {
+            "row": 8,
+            "frames": 4,
+            "durationsMs": [
+              110,
+              110,
+              110,
+              110
+            ],
+            "loop": true
+          }
+        }
+      }
+    },
+    {
+      "id": "grid_perimeter_turret",
+      "name": "Grid Perimeter Turret",
+      "world": {
+        "src": "assets/world/grid_perimeter_turret.png",
+        "frameWidth": 48,
+        "frameHeight": 48,
+        "columns": 9,
+        "rows": 4,
+        "idleColumn": 0,
+        "fps": 8,
+        "anchor": [
+          24,
+          48
+        ],
+        "directions": [
+          "down",
+          "left",
+          "right",
+          "up"
+        ],
+        "walkColumns": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8
+        ]
+      },
+      "battle": {
+        "src": "assets/battlers/grid_perimeter_turret.png",
+        "frameWidth": 64,
+        "frameHeight": 64,
+        "columns": 6,
+        "rows": 9,
+        "animations": {
+          "idle": {
+            "row": 0,
+            "frames": 4,
+            "durationsMs": [
+              240,
+              240,
+              240,
+              240
+            ],
+            "loop": true
+          },
+          "attack": {
+            "row": 1,
+            "frames": 4,
+            "durationsMs": [
+              90,
+              110,
+              120,
+              130
+            ],
+            "loop": false,
+            "events": [
+              {
+                "kind": "release",
+                "atMs": 260
+              }
+            ]
+          },
+          "ranged": {
+            "row": 2,
+            "frames": 4,
+            "durationsMs": [
+              100,
+              110,
+              110,
+              130
+            ],
+            "loop": false,
+            "events": [
+              {
+                "kind": "release",
+                "atMs": 260
+              }
+            ]
+          },
+          "cast": {
+            "row": 3,
+            "frames": 4,
+            "durationsMs": [
+              110,
+              120,
+              120,
+              140
+            ],
+            "loop": false,
+            "events": [
+              {
+                "kind": "release",
+                "atMs": 260
+              }
+            ]
+          },
+          "guard": {
+            "row": 4,
+            "frames": 3,
+            "durationsMs": [
+              140,
+              180,
+              180
+            ],
+            "loop": true
+          },
+          "hit": {
+            "row": 5,
+            "frames": 3,
+            "durationsMs": [
+              90,
+              130,
+              150
+            ],
+            "loop": false
+          },
+          "down": {
+            "row": 6,
+            "frames": 3,
+            "durationsMs": [
+              140,
+              180,
+              240
+            ],
+            "loop": false,
+            "holdLast": true
+          },
+          "victory": {
+            "row": 7,
+            "frames": 4,
+            "durationsMs": [
+              160,
+              160,
+              160,
+              220
+            ],
+            "loop": false,
+            "holdLast": true
+          },
+          "charge": {
+            "row": 8,
+            "frames": 4,
+            "durationsMs": [
+              110,
+              110,
+              110,
+              110
+            ],
+            "loop": true
+          }
+        }
+      }
+    },
+    {
+      "id": "echo_messenger_old",
+      "name": "Echo Messenger Old",
+      "world": {
+        "src": "assets/world/echo_messenger_old.png",
+        "frameWidth": 48,
+        "frameHeight": 48,
+        "columns": 9,
+        "rows": 4,
+        "idleColumn": 0,
+        "fps": 8,
+        "anchor": [
+          24,
+          48
+        ],
+        "directions": [
+          "down",
+          "left",
+          "right",
+          "up"
+        ],
+        "walkColumns": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8
+        ]
+      },
+      "battle": {
+        "src": "assets/battlers/echo_messenger_old.png",
+        "frameWidth": 64,
+        "frameHeight": 64,
+        "columns": 6,
+        "rows": 9,
+        "animations": {
+          "idle": {
+            "row": 0,
+            "frames": 4,
+            "durationsMs": [
+              240,
+              240,
+              240,
+              240
+            ],
+            "loop": true
+          },
+          "attack": {
+            "row": 1,
+            "frames": 4,
+            "durationsMs": [
+              90,
+              110,
+              120,
+              130
+            ],
+            "loop": false,
+            "events": [
+              {
+                "kind": "release",
+                "atMs": 260
+              }
+            ]
+          },
+          "ranged": {
+            "row": 2,
+            "frames": 4,
+            "durationsMs": [
+              100,
+              110,
+              110,
+              130
+            ],
+            "loop": false,
+            "events": [
+              {
+                "kind": "release",
+                "atMs": 260
+              }
+            ]
+          },
+          "cast": {
+            "row": 3,
+            "frames": 4,
+            "durationsMs": [
+              110,
+              120,
+              120,
+              140
+            ],
+            "loop": false,
+            "events": [
+              {
+                "kind": "release",
+                "atMs": 260
+              }
+            ]
+          },
+          "guard": {
+            "row": 4,
+            "frames": 3,
+            "durationsMs": [
+              140,
+              180,
+              180
+            ],
+            "loop": true
+          },
+          "hit": {
+            "row": 5,
+            "frames": 3,
+            "durationsMs": [
+              90,
+              130,
+              150
+            ],
+            "loop": false
+          },
+          "down": {
+            "row": 6,
+            "frames": 3,
+            "durationsMs": [
+              140,
+              180,
+              240
+            ],
+            "loop": false,
+            "holdLast": true
+          },
+          "victory": {
+            "row": 7,
+            "frames": 4,
+            "durationsMs": [
+              160,
+              160,
+              160,
+              220
+            ],
+            "loop": false,
+            "holdLast": true
+          },
+          "charge": {
+            "row": 8,
+            "frames": 4,
+            "durationsMs": [
+              110,
+              110,
+              110,
+              110
+            ],
+            "loop": true
+          }
+        }
+      }
+    },
+    {
+      "id": "echo_archivist",
+      "name": "Echo Archivist",
+      "world": {
+        "src": "assets/world/echo_archivist.png",
+        "frameWidth": 48,
+        "frameHeight": 48,
+        "columns": 9,
+        "rows": 4,
+        "idleColumn": 0,
+        "fps": 8,
+        "anchor": [
+          24,
+          48
+        ],
+        "directions": [
+          "down",
+          "left",
+          "right",
+          "up"
+        ],
+        "walkColumns": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8
+        ]
+      },
+      "battle": {
+        "src": "assets/battlers/echo_archivist.png",
+        "frameWidth": 64,
+        "frameHeight": 64,
+        "columns": 6,
+        "rows": 9,
+        "animations": {
+          "idle": {
+            "row": 0,
+            "frames": 4,
+            "durationsMs": [
+              240,
+              240,
+              240,
+              240
+            ],
+            "loop": true
+          },
+          "attack": {
+            "row": 1,
+            "frames": 4,
+            "durationsMs": [
+              90,
+              110,
+              120,
+              130
+            ],
+            "loop": false,
+            "events": [
+              {
+                "kind": "release",
+                "atMs": 260
+              }
+            ]
+          },
+          "ranged": {
+            "row": 2,
+            "frames": 4,
+            "durationsMs": [
+              100,
+              110,
+              110,
+              130
+            ],
+            "loop": false,
+            "events": [
+              {
+                "kind": "release",
+                "atMs": 260
+              }
+            ]
+          },
+          "cast": {
+            "row": 3,
+            "frames": 4,
+            "durationsMs": [
+              110,
+              120,
+              120,
+              140
+            ],
+            "loop": false,
+            "events": [
+              {
+                "kind": "release",
+                "atMs": 260
+              }
+            ]
+          },
+          "guard": {
+            "row": 4,
+            "frames": 3,
+            "durationsMs": [
+              140,
+              180,
+              180
+            ],
+            "loop": true
+          },
+          "hit": {
+            "row": 5,
+            "frames": 3,
+            "durationsMs": [
+              90,
+              130,
+              150
+            ],
+            "loop": false
+          },
+          "down": {
+            "row": 6,
+            "frames": 3,
+            "durationsMs": [
+              140,
+              180,
+              240
+            ],
+            "loop": false,
+            "holdLast": true
+          },
+          "victory": {
+            "row": 7,
+            "frames": 4,
+            "durationsMs": [
+              160,
+              160,
+              160,
+              220
+            ],
+            "loop": false,
+            "holdLast": true
+          },
+          "charge": {
+            "row": 8,
+            "frames": 4,
+            "durationsMs": [
+              110,
+              110,
+              110,
+              110
+            ],
+            "loop": true
+          }
+        }
+      }
+    },
+    {
+      "id": "ward_micro_drone",
+      "name": "Ward Micro Drone",
+      "world": {
+        "src": "assets/world/ward_micro_drone.png",
+        "frameWidth": 48,
+        "frameHeight": 48,
+        "columns": 9,
+        "rows": 4,
+        "idleColumn": 0,
+        "fps": 8,
+        "anchor": [
+          24,
+          48
+        ],
+        "directions": [
+          "down",
+          "left",
+          "right",
+          "up"
+        ],
+        "walkColumns": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8
+        ]
+      },
+      "battle": {
+        "src": "assets/battlers/ward_micro_drone.png",
+        "frameWidth": 64,
+        "frameHeight": 64,
+        "columns": 6,
+        "rows": 9,
+        "animations": {
+          "idle": {
+            "row": 0,
+            "frames": 4,
+            "durationsMs": [
+              240,
+              240,
+              240,
+              240
+            ],
+            "loop": true
+          },
+          "attack": {
+            "row": 1,
+            "frames": 4,
+            "durationsMs": [
+              90,
+              110,
+              120,
+              130
+            ],
+            "loop": false,
+            "events": [
+              {
+                "kind": "release",
+                "atMs": 260
+              }
+            ]
+          },
+          "ranged": {
+            "row": 2,
+            "frames": 4,
+            "durationsMs": [
+              100,
+              110,
+              110,
+              130
+            ],
+            "loop": false,
+            "events": [
+              {
+                "kind": "release",
+                "atMs": 260
+              }
+            ]
+          },
+          "cast": {
+            "row": 3,
+            "frames": 4,
+            "durationsMs": [
+              110,
+              120,
+              120,
+              140
+            ],
+            "loop": false,
+            "events": [
+              {
+                "kind": "release",
+                "atMs": 260
+              }
+            ]
+          },
+          "guard": {
+            "row": 4,
+            "frames": 3,
+            "durationsMs": [
+              140,
+              180,
+              180
+            ],
+            "loop": true
+          },
+          "hit": {
+            "row": 5,
+            "frames": 3,
+            "durationsMs": [
+              90,
+              130,
+              150
+            ],
+            "loop": false
+          },
+          "down": {
+            "row": 6,
+            "frames": 3,
+            "durationsMs": [
+              140,
+              180,
+              240
+            ],
+            "loop": false,
+            "holdLast": true
+          },
+          "victory": {
+            "row": 7,
+            "frames": 4,
+            "durationsMs": [
+              160,
+              160,
+              160,
+              220
+            ],
+            "loop": false,
+            "holdLast": true
+          },
+          "charge": {
+            "row": 8,
+            "frames": 4,
+            "durationsMs": [
+              110,
+              110,
+              110,
+              110
+            ],
+            "loop": true
+          }
+        }
+      }
+    }
+  ]
+}

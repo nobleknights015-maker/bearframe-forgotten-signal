@@ -50,9 +50,13 @@ export function createSideViewBattleScene(manifest={},options={}) {
   }
   const elapsed=()=>Math.max(0,(performance.now()-started)/1000);
   function background(t) {
-    const sky=c.createLinearGradient(0,0,0,54);
-    sky.addColorStop(0,pal.skyTop);sky.addColorStop(1,pal.skyBot);
-    c.fillStyle=sky;c.fillRect(0,0,416,55);
+    if(typeof c.createLinearGradient==='function'){
+      const sky=c.createLinearGradient(0,0,0,54);
+      sky.addColorStop(0,pal.skyTop);sky.addColorStop(1,pal.skyBot);
+      c.fillStyle=sky;c.fillRect(0,0,416,55);
+    }else{
+      rect(c,0,0,416,28,pal.skyTop);rect(c,0,28,416,27,pal.skyBot);
+    }
     for(let x=0;x<416;x+=48){
       const bh=14+((x*7)%26);
       rect(c,x+4,50-bh,22,bh,pal.wall);
@@ -87,6 +91,8 @@ export function createSideViewBattleScene(manifest={},options={}) {
     c.textAlign='center';
     c.font='6px monospace';c.fillStyle='#9eb2bf';
     c.fillText('ALLY LINE',104,14);c.fillText('HOSTILE LINE',328,14);
+    c.fillStyle=pal.accent;
+    c.fillText(`SECTOR // ${envName.toUpperCase()}`,208,13);
   }
   function schematic(slot,unit,t,pose,selected){
     const {x,y,side,index}=slot;
@@ -136,11 +142,11 @@ export function createSideViewBattleScene(manifest={},options={}) {
     if(['attack','ranged','overload'].includes(pose))nudge=(slot.side==='party'?1:-1)*Math.min(12,clearance);
     if(pose==='hit')nudge=(Math.floor(t*24)%2?1:-1)*Math.min(2,clearance);
     rect(c,Math.round(slot.x+nudge)-15,Math.round(slot.y)-3,30,4,'rgba(4,7,11,0.58)');
-    if(unit.guard){
+    if(unit.guard&&typeof c.strokeRect==='function'){
       c.strokeStyle='#72e0ee';c.lineWidth=1;
       c.strokeRect(Math.round(slot.x+nudge)-14,Math.round(slot.y)-height+2,28,height-4);
     }
-    if(unit.chargeTarget){
+    if(unit.chargeTarget&&typeof c.strokeRect==='function'){
       c.strokeStyle=(Math.floor(t*8)%2)?'#ff3b30':'#f2bd75';c.lineWidth=1;
       c.strokeRect(Math.round(slot.x+nudge)-17,Math.round(slot.y)-height,34,height);
     }
@@ -218,7 +224,7 @@ export function createSideViewBattleScene(manifest={},options={}) {
     c.fillText('VS',210,44);
     c.fillStyle='#97949c';c.font='6px monospace';
     const bound=slots.every(slot=>images[slot.key]?.loaded);
-    c.fillText(bound?`SECTOR // ${envName.toUpperCase()}`:'SIDE-VIEW QA — ART UNBOUND',208,21);
+    c.fillText(bound?'SIDE-VIEW // TACTICAL LINK':'SIDE-VIEW QA — ART UNBOUND',208,21);
   }
   function tick(now) {
     if(!isRunning)return;
@@ -250,6 +256,27 @@ export function createSideViewBattleScene(manifest={},options={}) {
           terminalUntil=Math.max(terminalUntil,begins+battleClipDuration(art[slot.key]?.animations[name],.42));
         }
       }
+      if(state){
+        const slots=sideViewSlots(battle);
+        for(const slot of slots){
+          const unit=get(battle,slot.key);
+          const prev=lastHp.get(slot.key);
+          if(unit&&prev!==undefined&&unit.hp!==prev){
+            const diff=unit.hp-prev;
+            popups.push({
+              text:(diff>0?'+':'')+diff,
+              x:slot.x,
+              y:slot.y-42,
+              color:diff>0?'#7dffb0':'#ffcf70',
+              born:elapsed()
+            });
+          }
+          if(unit)lastHp.set(slot.key,unit.hp);
+        }
+      }else{
+        for(const unit of [...battle.party,...battle.enemies])
+          lastHp.set(unit.side+':'+unit.id,unit.hp);
+      }
       state=battle;activeKey=actor;
       canvas.setAttribute('aria-label','Side-view battle: '+battle.party.length+
         ' allied frames left, '+battle.enemies.length+' enemies right');
@@ -257,6 +284,7 @@ export function createSideViewBattleScene(manifest={},options={}) {
     },
     playActions(actions){
       if(!Array.isArray(actions))throw new TypeError('Expected ordered combat actions');
+      options?.onActions?.(actions);
       const now=elapsed();
       queue=queue.filter(entry=>entry.when+entry.duration>now);
       const last=queue.at(-1);

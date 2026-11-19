@@ -4,6 +4,7 @@
 import {createHybridSession,beginHybridEncounter,actHybrid} from './hybrid-session.js';
 import {currentCombatant,enemyDecision,enemyForecast,combatAction} from './rpg-combat.js';
 import {createSideViewBattleScene} from './rpg-sideview-scene.js';
+import {CAMPAIGN_GEAR,applyCampaignLevelProgression} from './campaign-gear.js';
 
 const $=id=>document.getElementById(id);
 const make=(tag,text,className='')=>{
@@ -14,29 +15,57 @@ const button=(text,fn)=>{
   const n=make('button',text,'menu-btn sm');n.type='button';n.onclick=fn;return n;
 };
 const battleWorld=world=>({...world,progression:world.progression||{xp:world.stats?.xp||0}});
-export function mountCampaignBattle({game,ui,journal,staging,manifest,starterId,touchMode,onSavedVictory=()=>{}}){
+const envForArea=id=>{
+  if(!id)return 'stasis';
+  if(['A02','A03','A04','A15','A16'].includes(id))return 'rootway';
+  if(['A05','A06','A07','A08','A12'].includes(id))return 'relay';
+  if(['A09','A10','A11','A20'].includes(id))return 'lantern';
+  if(['A13','A14','A17','A27','A28'].includes(id))return 'sky';
+  if(['A18','A19','A21','A22','A23'].includes(id))return 'archive';
+  if(['A24','A25','A26'].includes(id))return 'cathedral';
+  return 'stasis';
+};
+export function mountCampaignBattle({game,ui,journal,staging,manifest,starterId,touchMode,audio=null,onSavedVictory=()=>{}}){
   if(!staging)throw new Error('Author-reviewed campaign combat staging required');
   const root=make('div',undefined,'overlay hidden');root.id='rpg-lab-battle';root.style.zIndex='22';
   const panel=make('section',undefined,'panel case');panel.setAttribute('role','dialog');
   panel.setAttribute('aria-label','Aeon Circuit campaign encounter');
   panel.style.cssText='padding:calc(var(--u) * 6);gap:calc(var(--u) * 3)';
   root.append(panel);$('stage').append(root);
-  let session=null,encounter=null,sideView=null,busy=false,pending=null,lastOutcome=null;
+  let session=null,encounter=null,sideView=null,busy=false,pending=null,lastOutcome=null,lastRewards=null,lastLevels=[];
   let targetSelection=false,stopped=false;
-  const present=()=>{game.mode='battle';root.classList.remove('hidden');ui.show('touch',false);};
+  const present=()=>{
+    game.mode='battle';root.classList.remove('hidden');ui.show('touch',false);
+    const isBoss=encounter?.enemies?.some(e=>String(e.artId||'').startsWith('boss_')||e.tactics==='charged-strike');
+    audio?.setTheme?.(isBoss?'boss':'combat');
+  };
   const clearView=()=>{sideView?.stop();sideView=null;};
   const close=()=>{
     if(stopped||journal.readJournal()?.battle)return false;
     root.classList.add('hidden');game.mode='play';ui.show('touch',!!touchMode?.());
-    clearView();session=null;encounter=null;lastOutcome=null;targetSelection=false;return true;
+    clearView();session=null;encounter=null;lastOutcome=null;lastRewards=null;lastLevels=[];targetSelection=false;
+    audio?.setAreaTheme?.(game.m?.id||'A00');
+    return true;
+  };
+  const cueActions=actions=>{
+    if(!audio||!Array.isArray(actions))return;
+    for(const act of actions){
+      if(act.type==='pulse'||act.type==='overload')audio.battlePulse?.();
+      else if(act.type==='repair'||act.type==='item')audio.battleRepair?.();
+      else if(act.type==='guard')audio.battleGuard?.();
+      else if(act.type==='attack')audio.battleStrike?.();
+    }
   };
   function attach(loaded){
     if(stopped)throw new Error('Campaign battle host has been disposed');
     encounter=staging.encounter(loaded.handoff.encounter.id);
     if(!encounter)throw new Error('Encounter staging changed during saved battle');
     sideView?.stop();
-    sideView=createSideViewBattleScene(staging.artFor(manifest,starterId,loaded.exploration.party,encounter));
-    session=loaded;lastOutcome=null;pending=null;
+    sideView=createSideViewBattleScene(
+      staging.artFor(manifest,starterId,loaded.exploration.party,encounter),
+      {environment:envForArea(encounter.mapId||game.m?.id),onActions:cueActions}
+    );
+    session=loaded;lastOutcome=null;pending=null;lastRewards=encounter.rewards||null;lastLevels=[];
     present();draw();
   }
   function start(id){
@@ -48,6 +77,7 @@ export function mountCampaignBattle({game,ui,journal,staging,manifest,starterId,
     try{
       const initial=createHybridSession(battleWorld(world),{defaultMode:'normal',zones:[]});
       const active=beginHybridEncounter(initial,{...spec,
+        gearCatalog:CAMPAIGN_GEAR,
         enemies:spec.enemies,rewards:spec.rewards||{},canFlee:spec.canFlee!==false});
       if(!journal.beginBattle(id,active,game.snapshot())){
         ui.toast('ENCOUNTER SAVE FAILED — NO COMBAT STARTED',4);return false;
@@ -74,7 +104,20 @@ export function mountCampaignBattle({game,ui,journal,staging,manifest,starterId,
       journal.stepBattle(candidate):journal.finishBattle(candidate);
     if(!valid)return false;
     session=candidate;
-    if(candidate.phase==='exploration')lastOutcome=candidate.event.outcome;
+    if(candidate.phase==='exploration'){
+      lastOutcome=candidate.event.outcome;
+      if(lastOutcome==='victory'){
+        const currentWorld=journal.readWorld();
+        const prog=applyCampaignLevelProgression(currentWorld);
+        lastLevels=prog.leveledUp||[];
+        if(lastLevels.length){
+          journal.commitWorld(prog.world);
+          audio?.levelUp?.();
+        }else{
+          audio?.battleVictory?.();
+        }
+      }
+    }
     return true;
   }
   function showSaveRetry(candidate,visual,actions){
@@ -176,7 +219,7 @@ export function mountCampaignBattle({game,ui,journal,staging,manifest,starterId,
     if(!unit)return;
     const row=make('div',undefined,'btn-row');
     row.style.cssText='display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:calc(var(--u) * 3)';
-    const enemies=state.enemies.filter(x=>x.hp>0),allies=state.party.filter(x=>x.hp>0);
+    const enemies=state.enemies.filter(x=>x.hp>0);
     const command=(name,type,enabled,which,extras={})=>{
       const b=button(name,()=>{
         if(busy||pending)return;
@@ -205,10 +248,16 @@ export function mountCampaignBattle({game,ui,journal,staging,manifest,starterId,
     panel.replaceChildren();
     const outcome=lastOutcome||'defeat';
     panel.append(make('h2','ENCOUNTER // '+outcome.toUpperCase()));
-    panel.append(make('pre',outcome==='victory'?
-      'RESULT SAVED // XP AND SALVAGE RECORDED':
-      outcome==='fled'?'WITHDRAWAL SAVED // FIELD RECORD RESTORED':
-      'FRAME DISABLED // FIELD RECOVERY RECORDED'));
+    let summaryText='';
+    if(outcome==='victory'){
+      const xp=lastRewards?.xp||0;
+      const items=Object.entries(lastRewards?.items||{}).filter(([,n])=>n>0).map(([k,n])=>`${k} x${n}`).join(', ')||'None';
+      const lvlText=lastLevels.length?'\nLEVEL UP: '+lastLevels.map(l=>`${l.name} LV ${l.oldLevel} -> ${l.newLevel}`).join(', '):'';
+      summaryText=`RESULT SAVED // +${xp} XP // SALVAGE: ${items}${lvlText}`;
+    }else{
+      summaryText=outcome==='fled'?'WITHDRAWAL SAVED // FIELD RECORD RESTORED':'FRAME DISABLED // FIELD RECOVERY RECORDED';
+    }
+    panel.append(make('pre',summaryText));
     // Capture the source encounter before close() resets active presentation.
     const id=encounter?.id;
     const b=button('RETURN TO FIELD',()=>{
@@ -228,7 +277,7 @@ export function mountCampaignBattle({game,ui,journal,staging,manifest,starterId,
     stopped=true;
     document.removeEventListener('keydown',onKey);
     clearView();root.remove();
-    session=null;encounter=null;pending=null;lastOutcome=null;targetSelection=false;
+    session=null;encounter=null;pending=null;lastOutcome=null;lastRewards=null;lastLevels=[];targetSelection=false;
   };
   return Object.freeze({
     start,startForTrigger,resume,stop,
