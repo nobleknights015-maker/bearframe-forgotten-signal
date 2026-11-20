@@ -26,10 +26,12 @@ import {
   createCampaignMissionFactory
 } from '../public/js/engine/campaign-world.js';
 import { compileCampaignEnvironmentArt } from '../public/js/engine/campaign-environment-art.js';
+import { compileFullCampaignBundle, AREA_META } from '../public/js/engine/campaign-world-builder.js';
 
 const STORY_PATH = new URL('../public/assets/aeon/story/campaign.json', import.meta.url);
 const WORLD_PATH = new URL('../public/assets/aeon/story/opening-world-review-candidate.json', import.meta.url);
 const ENV_PATH = new URL('../public/assets/aeon/environment/environment-art.json', import.meta.url);
+const MANIFEST_PATH = new URL('../public/assets/aeon/asset-manifest.json', import.meta.url);
 const AEON_PUBLIC_ROOT = new URL('../public/', import.meta.url);
 
 test('campaign gear catalog enforces lineage rules and progression scales deterministically', () => {
@@ -164,6 +166,70 @@ test('full 29-area world compiles cleanly with environment art and 0 blocked rea
   for (const id of factory.graph.ids) {
     const mission = factory.missionForSync(id);
     assert.ok(mission, `Expected compiled mission for ${id}`);
+    assert.ok(mission.environmentDetails, `Expected layered environmentDetails for ${id}`);
+  }
+});
+
+test('shared campaign-world-builder compiles all 29 areas with public environment art and 0 blocked reachability', () => {
+  const manifest = JSON.parse(fs.readFileSync(MANIFEST_PATH, 'utf8'));
+  const envManifest = JSON.parse(fs.readFileSync(ENV_PATH, 'utf8'));
+  const readDims = rel => {
+    const buf = fs.readFileSync(new URL(rel, AEON_PUBLIC_ROOT));
+    return { width: buf.readUInt32BE(16), height: buf.readUInt32BE(20) };
+  };
+  const images = new Map();
+  for (const d of Object.values(envManifest.doorways)) {
+    if (d.closed) images.set(d.closed, readDims(d.closed));
+    if (d.open) images.set(d.open, readDims(d.open));
+  }
+  for (const p of Object.values(envManifest.palettes)) {
+    images.set(p.floor, readDims(p.floor));
+    images.set(p.wall, readDims(p.wall));
+  }
+  for (const s of Object.values(envManifest.objects || {})) {
+    images.set(s, readDims(s));
+  }
+  const environmentArt = compileCampaignEnvironmentArt(envManifest, images);
+
+  const syntheticRaw = {
+    schemaVersion: 1,
+    revision: 2,
+    flagSchema: { gameplay_flags: ['game_started'], exclusive_enums: {}, relationships: {} },
+    areas: Object.keys(AREA_META).map((id, i) => ({
+      id,
+      name: `Synthetic Sector ${id}`,
+      save_point: i % 4 === 0 ? 'yes' : 'no',
+      story_purpose: 'Synthetic QA verification'
+    })),
+    scenes: [
+      { id: 'SC-000', trigger: 'NEW_GAME', title: 'Synthetic Opening', dialogue: [], sets: 'game_started' },
+      { id: 'SC-008', trigger: 'SYNTH_BOSS', title: 'Synthetic Boss', dialogue: [], sets: 'boss_b01_defeated' }
+    ],
+    dialogue: [],
+    choices: [],
+    insertions: [],
+    quests: [],
+    encounters: [
+      { id: 'EN-001', kind: 'battle', area: 'A02', units: 'Crawler', set_flag: 'en001_done' },
+      { id: 'EN-005', kind: 'boss', area: 'A03', units: 'Boss', set_flag: 'boss_b01_defeated' }
+    ]
+  };
+
+  const { content, world } = compileFullCampaignBundle(syntheticRaw, manifest);
+  assert.equal(world.maps.length, 29);
+  assert.equal(world.combat.encounters.length, 2);
+  assert.equal(world.mandatoryCombats.length, 1);
+  assert.ok(content.flagSchema.gameplay_flags.includes('act2_complete'));
+
+  const reach = auditCampaignGameplayReachability(world);
+  const portals = auditCampaignPortalApproaches(world);
+  assert.equal(reach.blockedCount, 0, JSON.stringify(reach.blocked));
+  assert.equal(portals.inaccessiblePortals, 0, JSON.stringify(portals.blockedPortals));
+
+  const factory = createCampaignMissionFactory(world, { environmentArt });
+  assert.equal(factory.graph.ids.length, 29);
+  for (const id of factory.graph.ids) {
+    const mission = factory.missionForSync(id);
     assert.ok(mission.environmentDetails, `Expected layered environmentDetails for ${id}`);
   }
 });

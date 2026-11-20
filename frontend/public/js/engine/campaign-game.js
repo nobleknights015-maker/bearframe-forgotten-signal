@@ -14,6 +14,8 @@ import {mountCampaignBackupUI} from './campaign-backup-ui.js';
 import {createCampaignSecurityRuntime} from './campaign-security-runtime.js';
 import {createCampaignAudio} from './campaign-audio.js';
 import {createCampaignCinematics,formatCampaignDialogue,formatCampaignSpeaker} from './campaign-cinematics.js';
+import {compileFullCampaignBundle} from './campaign-world-builder.js';
+import {loadLocalPrivateCampaign,saveLocalPrivateCampaign,clearLocalPrivateCampaign} from './campaign-private-store.js';
 
 const ROOT=new URL('../../assets/aeon/',import.meta.url);
 const STARTERS=Object.freeze(['sleeper_A','sleeper_B','sleeper_C','sleeper_D']);
@@ -37,10 +39,75 @@ const COMPANION_TEMPLATES=Object.freeze({
   }
 });
 
-async function readPrivate(path){
-  const result=await fetch(new URL(path,ROOT),{cache:'no-store'});
-  if(!result.ok)throw new Error('Private campaign installation missing: '+path+' (HTTP '+result.status+')');
-  return result.json();
+async function readPrivateOptional(path){
+  try{
+    const result=await fetch(new URL(path,ROOT),{cache:'no-store'});
+    if(!result.ok)return null;
+    const text=await result.text();
+    if(text.trim().startsWith('<'))return null;
+    return JSON.parse(text);
+  }catch{return null;}
+}
+function mountPrivateCampaignInstaller({title,manifest,ui,sfx,onInstalled}){
+  const menu=title.querySelector('.menu');
+  const sub=title.querySelector('.sub');
+  const fine=title.querySelector('.fine');
+  $('btn-new').disabled=true;
+  $('btn-continue').disabled=true;
+  sub.textContent='PRIVATE STORY PACKAGE NOT INSTALLED ON THIS DEVICE';
+  fine.textContent='Import your private Director\'s Cut v2 campaign JSON locally (stored only in this browser, never uploaded). Original Ghost Signal remains playable at /index.html.';
+
+  const oldWrap=$('aeon-private-install-wrap');
+  if(oldWrap)oldWrap.remove();
+  const wrap=document.createElement('div');
+  wrap.id='aeon-private-install-wrap';
+  wrap.style.cssText='display:flex;flex-direction:column;gap:calc(var(--u)*4);margin-top:calc(var(--u)*4)';
+
+  const fileInput=document.createElement('input');
+  fileInput.type='file';
+  fileInput.accept='.json,application/json';
+  fileInput.style.display='none';
+
+  const importBtn=document.createElement('button');
+  importBtn.type='button';
+  importBtn.className='menu-btn';
+  importBtn.id='btn-import-private-campaign';
+  importBtn.textContent='IMPORT DIRECTOR\'S CUT V2 JSON';
+  importBtn.onclick=()=>{sfx?.blip?.();fileInput.value='';fileInput.click();};
+
+  const gsBtn=document.createElement('button');
+  gsBtn.type='button';
+  gsBtn.className='menu-btn sm';
+  gsBtn.textContent='PLAY GHOST SIGNAL (/index.html)';
+  gsBtn.onclick=()=>location.assign(new URL('index.html',location.href).href);
+
+  const status=document.createElement('div');
+  status.className='fine';
+  status.id='aeon-install-status';
+  status.textContent='Ready for Aeon_Circuit_Directors_Cut_v2_campaign.json (compiles all 29 sectors locally).';
+
+  fileInput.onchange=async()=>{
+    const file=fileInput.files?.[0];
+    if(!file)return;
+    status.textContent='Compiling 29 sectors & validating campaign contracts...';
+    try{
+      const parsed=JSON.parse(await file.text());
+      const bundle=parsed?.content&&parsed?.world
+        ? {content:parsed.content,world:parsed.world}
+        : compileFullCampaignBundle(parsed,manifest);
+      await saveLocalPrivateCampaign(bundle);
+      sfx?.beep?.();
+      wrap.remove();
+      $('btn-new').disabled=false;
+      await onInstalled(bundle);
+    }catch(err){
+      console.error('Private campaign import failed',err);
+      status.textContent='Import failed: '+(err?.message||'Invalid campaign JSON');
+      ui.toast('INVALID CAMPAIGN JSON — CHECK FILE',4);
+    }
+  };
+  wrap.append(fileInput,importBtn,gsBtn,status);
+  menu.after(wrap);
 }
 const saveFor=id=>'bearframe_aeon_campaign_'+id+'_v1';
 
@@ -71,11 +138,40 @@ export async function mountCampaignGame({game,ui,sfx,touchMode,refreshTouch}){
   title.querySelector('.fine').textContent='Built on the Ghost Signal JRPG engine. Original Ghost Signal missions remain at /index.html.';
   title.querySelector('.title-art').classList.add('hidden');$('btn-m2').classList.add('hidden');
   $('btn-new').textContent='NEW CAMPAIGN';
-  const [manifest,content,worldSpec]=await Promise.all([
-    loadAeonV5(),readPrivate('story/campaign.json'),readPrivate('story/opening-world-review-candidate.json')
+  const [manifest,diskContent,diskWorld]=await Promise.all([
+    loadAeonV5(),
+    readPrivateOptional('story/campaign.json'),
+    readPrivateOptional('story/opening-world-review-candidate.json')
   ]);
+  let content=diskContent,worldSpec=diskWorld,installedFromBrowser=false;
+  if(!content||!worldSpec){
+    const cached=await loadLocalPrivateCampaign();
+    if(cached?.content&&cached?.world){
+      content=cached.content;worldSpec=cached.world;installedFromBrowser=true;
+    }
+  }
+  if(!content||!worldSpec){
+    mountPrivateCampaignInstaller({
+      title,manifest,ui,sfx,
+      onInstalled:async()=>{await mountCampaignGame({game,ui,sfx,touchMode,refreshTouch});}
+    });
+    return {get active(){return false;},get needsInstall(){return true;}};
+  }
   if(worldSpec?.status!=='authored-blockout-review-candidate'||worldSpec.campaignRevision!==content.revision)
     throw new Error('Campaign layout is absent or does not match the approved story revision');
+  $('btn-new').disabled=false;
+  if(installedFromBrowser&&!$('btn-clear-local-campaign')){
+    const clr=document.createElement('button');
+    clr.id='btn-clear-local-campaign';
+    clr.type='button';
+    clr.className='menu-btn sm';
+    clr.textContent='UNLOAD LOCAL PRIVATE CAMPAIGN';
+    clr.onclick=async()=>{
+      await clearLocalPrivateCampaign();
+      location.reload();
+    };
+    title.querySelector('.menu')?.append(clr);
+  }
 
   const combatStaging=compileCampaignCombatStaging(worldSpec.combat,{worldSpec,content,manifest});
   const questJournal=compileCampaignQuestJournal(content,worldSpec);

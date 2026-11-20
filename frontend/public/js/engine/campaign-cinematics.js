@@ -15,7 +15,7 @@ const SPEAKER_PORTRAIT_MAP = Object.freeze({
   TALLA: 'talla',
   'WARD-7': 'ward7',
   'WARD-7 / VOICE SYNTHESIS': 'ward7',
-  AUDITOR: 'registry_auditor',
+  AUDITOR: 'ward7',
   'OLD POD DISPLAY': 'system',
   SYSTEM: 'system'
 });
@@ -256,6 +256,7 @@ export function createCampaignCinematics({ game, ui, content, sfx, readWorld, co
       return;
     }
     portraitWrap.classList.remove('empty');
+    portraitImg.onerror = () => { portraitWrap.classList.add('empty'); };
     portraitImg.src = new URL('portraits/' + pid + '.png', ROOT).href;
     portraitImg.alt = speaker + ' portrait';
   };

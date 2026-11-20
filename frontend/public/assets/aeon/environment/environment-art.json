@@ -1,0 +1,87 @@
+{
+  "schema": "aeon.private-environment-art.v1",
+  "tileSize": 32,
+  "doorways": {
+    "service": {
+      "closed": "assets/aeon/environment/doors/service_closed.png",
+      "open": "assets/aeon/environment/doors/service_open.png"
+    },
+    "overgrown": {
+      "closed": "assets/aeon/environment/doors/overgrown_closed.png",
+      "open": "assets/aeon/environment/doors/overgrown_open.png"
+    },
+    "elevator": {
+      "closed": "assets/aeon/environment/doors/elevator_closed.png",
+      "open": "assets/aeon/environment/doors/elevator_open.png"
+    },
+    "archive_seal": {
+      "closed": "assets/aeon/environment/doors/archive_seal_closed.png",
+      "open": "assets/aeon/environment/doors/archive_seal_open.png"
+    },
+    "cathedral_gate": {
+      "closed": "assets/aeon/environment/doors/cathedral_gate_closed.png",
+      "open": "assets/aeon/environment/doors/cathedral_gate_open.png"
+    },
+    "roof_hatch": {
+      "closed": "assets/aeon/environment/doors/roof_hatch_closed.png",
+      "open": "assets/aeon/environment/doors/roof_hatch_open.png"
+    },
+    "water_lock": {
+      "closed": "assets/aeon/environment/doors/water_lock_closed.png",
+      "open": "assets/aeon/environment/doors/water_lock_open.png"
+    }
+  },
+  "palettes": {
+    "stasis_hollow": {
+      "floor": "assets/aeon/environment/terrain/stasis_hollow_floor.png",
+      "wall": "assets/aeon/environment/terrain/stasis_hollow_wall.png"
+    },
+    "rootway_ruins": {
+      "floor": "assets/aeon/environment/terrain/rootway_ruins_floor.png",
+      "wall": "assets/aeon/environment/terrain/rootway_ruins_wall.png",
+      "backdrop": "terrain"
+    },
+    "relay_court": {
+      "floor": "assets/aeon/environment/terrain/relay_court_floor.png",
+      "wall": "assets/aeon/environment/terrain/relay_court_wall.png"
+    },
+    "lantern_shelter": {
+      "floor": "assets/aeon/environment/terrain/lantern_shelter_floor.png",
+      "wall": "assets/aeon/environment/terrain/lantern_shelter_wall.png"
+    },
+    "broken_rail": {
+      "floor": "assets/aeon/environment/terrain/broken_rail_floor.png",
+      "wall": "assets/aeon/environment/terrain/broken_rail_wall.png",
+      "backdrop": "terrain"
+    },
+    "survey_wetland": {
+      "floor": "assets/aeon/environment/terrain/survey_wetland_floor.png",
+      "wall": "assets/aeon/environment/terrain/survey_wetland_wall.png",
+      "backdrop": "terrain"
+    },
+    "census_archive": {
+      "floor": "assets/aeon/environment/terrain/census_archive_floor.png",
+      "wall": "assets/aeon/environment/terrain/census_archive_wall.png"
+    },
+    "quarantine_spine": {
+      "floor": "assets/aeon/environment/terrain/quarantine_spine_floor.png",
+      "wall": "assets/aeon/environment/terrain/quarantine_spine_wall.png"
+    },
+    "control_cathedral": {
+      "floor": "assets/aeon/environment/terrain/control_cathedral_floor.png",
+      "wall": "assets/aeon/environment/terrain/control_cathedral_wall.png"
+    },
+    "sky_morning": {
+      "floor": "assets/aeon/environment/terrain/sky_morning_floor.png",
+      "wall": "assets/aeon/environment/terrain/sky_morning_wall.png",
+      "backdrop": "terrain"
+    }
+  },
+  "objects": {
+    "atlas_ruins_flora": "assets/aeon/environment/atlases/atlas_ruins_flora.png",
+    "atlas_bunker_machinery": "assets/aeon/environment/atlases/atlas_bunker_machinery.png",
+    "atlas_shelter_warmth": "assets/aeon/environment/atlases/atlas_shelter_warmth.png",
+    "atlas_archive_cathedral": "assets/aeon/environment/atlases/atlas_archive_cathedral.png",
+    "atlas_sky_rail": "assets/aeon/environment/atlases/atlas_sky_rail.png"
+  }
+}
