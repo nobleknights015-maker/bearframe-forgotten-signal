@@ -29,6 +29,14 @@
     "water_lock": {
       "closed": "assets/aeon/environment/doors/water_lock_closed.png",
       "open": "assets/aeon/environment/doors/water_lock_open.png"
+    },
+    "sluice_gate": {
+      "closed": "assets/aeon/environment/doors/sluice_gate_closed.png",
+      "open": "assets/aeon/environment/doors/sluice_gate_open.png"
+    },
+    "quarantine_lock": {
+      "closed": "assets/aeon/environment/doors/quarantine_lock_closed.png",
+      "open": "assets/aeon/environment/doors/quarantine_lock_open.png"
     }
   },
   "palettes": {
@@ -75,6 +83,25 @@
       "floor": "assets/aeon/environment/terrain/sky_morning_floor.png",
       "wall": "assets/aeon/environment/terrain/sky_morning_wall.png",
       "backdrop": "terrain"
+    },
+    "wetland_pier": {
+      "floor": "assets/aeon/environment/terrain/wetland_pier_floor.png",
+      "wall": "assets/aeon/environment/terrain/wetland_pier_wall.png",
+      "backdrop": "terrain"
+    },
+    "wasteland_ridge": {
+      "floor": "assets/aeon/environment/terrain/wasteland_ridge_floor.png",
+      "wall": "assets/aeon/environment/terrain/wasteland_ridge_wall.png",
+      "backdrop": "terrain"
+    },
+    "flooded_quay": {
+      "floor": "assets/aeon/environment/terrain/flooded_quay_floor.png",
+      "wall": "assets/aeon/environment/terrain/flooded_quay_wall.png",
+      "backdrop": "terrain"
+    },
+    "mail_vault": {
+      "floor": "assets/aeon/environment/terrain/mail_vault_floor.png",
+      "wall": "assets/aeon/environment/terrain/mail_vault_wall.png"
     }
   },
   "objects": {
@@ -82,6 +109,10 @@
     "atlas_bunker_machinery": "assets/aeon/environment/atlases/atlas_bunker_machinery.png",
     "atlas_shelter_warmth": "assets/aeon/environment/atlases/atlas_shelter_warmth.png",
     "atlas_archive_cathedral": "assets/aeon/environment/atlases/atlas_archive_cathedral.png",
-    "atlas_sky_rail": "assets/aeon/environment/atlases/atlas_sky_rail.png"
+    "atlas_sky_rail": "assets/aeon/environment/atlases/atlas_sky_rail.png",
+    "atlas_wetland_water": "assets/aeon/environment/atlases/atlas_wetland_water.png",
+    "atlas_quarantine_void": "assets/aeon/environment/atlases/atlas_quarantine_void.png",
+    "atlas_wasteland_exterior": "assets/aeon/environment/atlases/atlas_wasteland_exterior.png",
+    "atlas_settlement_interiors": "assets/aeon/environment/atlases/atlas_settlement_interiors.png"
   }
 }

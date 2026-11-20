@@ -1,0 +1,89 @@
+{
+  "schema": "aeon.ui-icons.v1",
+  "sheet": "assets/aeon/icons/ui-icons.png",
+  "size": 16,
+  "columns": 10,
+  "rows": 2,
+  "icons": {
+    "status": {
+      "x": 0,
+      "y": 0
+    },
+    "party": {
+      "x": 16,
+      "y": 0
+    },
+    "inventory": {
+      "x": 32,
+      "y": 0
+    },
+    "equipment": {
+      "x": 48,
+      "y": 0
+    },
+    "skills": {
+      "x": 64,
+      "y": 0
+    },
+    "quests": {
+      "x": 80,
+      "y": 0
+    },
+    "worldmap": {
+      "x": 96,
+      "y": 0
+    },
+    "dialogue": {
+      "x": 112,
+      "y": 0
+    },
+    "saveload": {
+      "x": 128,
+      "y": 0
+    },
+    "settings": {
+      "x": 144,
+      "y": 0
+    },
+    "help": {
+      "x": 0,
+      "y": 16
+    },
+    "exit": {
+      "x": 16,
+      "y": 16
+    },
+    "weapon": {
+      "x": 32,
+      "y": 16
+    },
+    "armor": {
+      "x": 48,
+      "y": 16
+    },
+    "accessory": {
+      "x": 64,
+      "y": 16
+    },
+    "consumable": {
+      "x": 80,
+      "y": 16
+    },
+    "keyitem": {
+      "x": 96,
+      "y": 16
+    },
+    "proof": {
+      "x": 112,
+      "y": 16
+    },
+    "alert": {
+      "x": 128,
+      "y": 16
+    },
+    "menu": {
+      "x": 144,
+      "y": 16
+    }
+  }
+}

@@ -363,6 +363,105 @@ export class Game {
   renderSecurityUnit(ctx,drone,time) {
     if(this.drawSecurityUnit?.(ctx,drone,time)!==true)drawDrone(ctx,drone,time);
   }
+  drawCampaignBackdrop(c, cx, cy, t) {
+    const kind = this.m?.skyBackdrop;
+    if (!kind) return false;
+    const gr = c.createLinearGradient(0, 0, 0, VH);
+    if (kind === 'dawn_sky') {
+      gr.addColorStop(0, '#1e324a'); gr.addColorStop(0.48, '#3d5870'); gr.addColorStop(0.82, '#c88c5a'); gr.addColorStop(1, '#f0c478');
+    } else if (kind === 'wetland_mist') {
+      gr.addColorStop(0, '#0d1e24'); gr.addColorStop(0.55, '#18373e'); gr.addColorStop(1, '#265359');
+    } else if (kind === 'wasteland_canyon') {
+      gr.addColorStop(0, '#241824'); gr.addColorStop(0.45, '#59332c'); gr.addColorStop(0.85, '#a8643c'); gr.addColorStop(1, '#d69754');
+    } else if (kind === 'canopy_ruins') {
+      gr.addColorStop(0, '#091512'); gr.addColorStop(0.55, '#132a22'); gr.addColorStop(1, '#1c3c2f');
+    } else {
+      gr.addColorStop(0, '#05080f'); gr.addColorStop(0.55, '#0c1421'); gr.addColorStop(1, '#121f30');
+    }
+    c.fillStyle = gr; c.fillRect(0, 0, VW, VH);
+    // Distant parallax skyline / ridges / drifting clouds
+    const pxFar = -(cx * 0.14) % VW;
+    const pxMid = -(cx * 0.26) % VW;
+    if (kind === 'dawn_sky' || kind === 'wasteland_canyon') {
+      const cloudCol = kind === 'dawn_sky' ? 'rgba(255,232,188,0.22)' : 'rgba(245,176,120,0.18)';
+      c.fillStyle = cloudCol;
+      for (let i = 0; i < 6; i++) {
+        const bx = ((i * 96 + t * 5 + pxFar) % (VW + 96) + (VW + 96)) % (VW + 96) - 48;
+        const by = 22 + (i % 3) * 26;
+        c.fillRect(Math.round(bx), by, 54 + (i % 2) * 22, 8);
+        c.fillRect(Math.round(bx) + 10, by - 5, 32, 5);
+      }
+      c.fillStyle = kind === 'dawn_sky' ? '#1c2b3a' : '#2e1b18';
+      for (let i = 0; i < 9; i++) {
+        const rx = ((i * 72 + pxMid) % (VW + 72) + (VW + 72)) % (VW + 72) - 36;
+        const rh = 38 + ((i * 23) % 44);
+        c.fillRect(Math.round(rx), VH - rh, 58, rh);
+        if (i % 3 === 0) c.fillRect(Math.round(rx) + 22, VH - rh - 18, 8, 18);
+      }
+    } else if (kind === 'wetland_mist' || kind === 'canopy_ruins') {
+      c.fillStyle = kind === 'wetland_mist' ? 'rgba(110,190,195,0.10)' : 'rgba(92,168,112,0.10)';
+      for (let i = 0; i < 8; i++) {
+        const rx = ((i * 76 + pxMid) % (VW + 76) + (VW + 76)) % (VW + 76) - 38;
+        c.fillRect(Math.round(rx), 10, 14 + (i % 3) * 6, VH - 20);
+      }
+    } else {
+      // Subterranean abyssal relay struts & distant warning LEDs
+      c.fillStyle = 'rgba(20,34,48,0.45)';
+      for (let i = 0; i < 7; i++) {
+        const rx = ((i * 80 + pxMid) % (VW + 80) + (VW + 80)) % (VW + 80) - 40;
+        c.fillRect(Math.round(rx), 0, 10, VH);
+        c.fillStyle = i % 2 ? 'rgba(92,228,255,0.32)' : 'rgba(242,189,117,0.28)';
+        c.fillRect(Math.round(rx) + 4, 44 + (i * 29) % 160, 2, 2);
+        c.fillStyle = 'rgba(20,34,48,0.45)';
+      }
+    }
+    return true;
+  }
+  drawCampaignAnimatedEnv(c, cx, cy, t) {
+    const tLayer = this.m?.terrainLayer;
+    const w = this.map?.w || 0, h = this.map?.h || 0;
+    if (tLayer && tLayer.length === w * h) {
+      const x0 = Math.max(0, Math.floor(cx / T) - 1), x1 = Math.min(w - 1, Math.ceil((cx + VW) / T) + 1);
+      const y0 = Math.max(0, Math.floor(cy / T) - 1), y1 = Math.min(h - 1, Math.ceil((cy + VH) / T) + 1);
+      for (let y = y0; y <= y1; y++) for (let x = x0; x <= x1; x++) {
+        const code = tLayer[y * w + x];
+        if (code === 2) {
+          // Animated water surface shimmer & caustic ripples
+          const X = x * T, Y = y * T;
+          const s1 = Math.round(Math.sin(t * 2.4 + x * 0.9 + y * 0.7) * 4);
+          const s2 = Math.round(Math.cos(t * 1.9 + x * 1.3 - y * 0.8) * 3);
+          c.fillStyle = 'rgba(136,240,255,0.30)';
+          c.fillRect(X + 6 + s1, Y + 10, 8, 1);
+          c.fillRect(X + 14 + s2, Y + 21, 9, 1);
+          c.fillStyle = 'rgba(255,255,255,0.22)';
+          c.fillRect(X + 9 + s1, Y + 10, 3, 1);
+        } else if (code === 6) {
+          // Pulsing energy packets gliding along conduit trenches
+          const X = x * T, Y = y * T;
+          const py = ((Math.floor(t * 28) + y * 13 + x * 7) % T);
+          c.fillStyle = 'rgba(220,255,255,0.65)';
+          c.fillRect(X + 14, Y + py, 4, 4);
+        }
+      }
+    }
+    for (const wf of this.m?.waterfalls || []) {
+      const X = wf.x * T, Y = wf.y * T, W = (wf.w || 1) * T, H = (wf.h || 2) * T;
+      if (X + W < cx - 32 || X > cx + VW + 32 || Y + H < cy - 32 || Y > cy + VH + 32) continue;
+      c.fillStyle = wf.color || 'rgba(54,186,210,0.72)';
+      c.fillRect(X + 3, Y, W - 6, H);
+      c.fillStyle = 'rgba(176,246,255,0.62)';
+      for (let sx = 5; sx < W - 7; sx += 5) {
+        const off = ((Math.floor(t * 48) + sx * 7) % 14);
+        for (let sy = off; sy < H - 4; sy += 14) c.fillRect(X + sx, Y + sy, 2, 7);
+      }
+      // Churning mist foam at waterfall base
+      const bob = Math.round(Math.sin(t * 8 + wf.x) * 2);
+      c.fillStyle = 'rgba(224,252,255,0.78)';
+      c.fillRect(X + 1, Y + H - 5 + bob, W - 2, 4);
+      c.fillStyle = 'rgba(136,240,255,0.45)';
+      c.fillRect(X - 2, Y + H - 2, W + 4, 3);
+    }
+  }
   render() {
     if (!this.m) return;
     const c = this.ctx, p = this.player, f = this.flags, t = this.time, flick = this.settings.flicker;
@@ -370,7 +469,9 @@ export class Game {
     const cx = Math.round(this.cam.x), cy = Math.round(this.cam.y), fx = !this.lowFx;
     const vis = (x, y, r) => x > cx - r && y > cy - r && x < cx + VW + r && y < cy + VH + r;
     c.globalCompositeOperation = 'source-over'; c.globalAlpha = 1;
-    if(this.ownerTerrainPattern){
+    if (this.drawCampaignBackdrop(c, cx, cy, t)) {
+      // Biome parallax backdrop painted
+    } else if(this.ownerTerrainPattern){
       c.save();
       c.imageSmoothingEnabled=false;
       // Keep the owner PNG's original 32px pixel grid aligned as camera pans.
@@ -384,8 +485,9 @@ export class Game {
     }
     c.drawImage(this.base, cx, cy, VW, VH, 0, 0, VW, VH);
     c.save(); c.translate(-cx, -cy);
+    if (this.m?.campaignTheme) this.drawCampaignAnimatedEnv(c, cx, cy, t);
     const lampsOn = !!f.lights, lk = l => f.power ? 1 : flick ? (Math.sin(t * 7 + l.x * 3) > -.6 && Math.sin(t * 23 + l.y) > -.9 ? .75 + .25 * Math.sin(t * 3 + l.x) : .15) : .8;
-    for (const l of this.m.lamps) drawLamp(c, l, lampsOn, lk(l));
+    for (const l of this.m.lamps) if (!this.m?.campaignTheme) drawLamp(c, l, lampsOn, lk(l));
     const standingEnt = e => e.type === 'npc' || e.type === 'terminal' || e.type === 'cell' || e.type === 'gen' || e.type === 'breaker' || e.type === 'lever' || e.type === 'locker' || e.type === 'projector' || e.type === 'valve' || e.type === 'item' || e.type === 'lens' || e.type === 'save' || e.type === 'bench' || e.type === 'pod' || e.type === 'puzzle' || e.type === 'switch' || e.type === 'note' || e.type === 'crate' || (e.type === 'clue' && e.kind === 'machine');
     const entFootY = e => (e.ty + e.h) * T - 2;
     const visEnts = this.ents.filter(e => !e.hidden && !e.gone && vis((e.tx + e.w / 2) * T, (e.ty + e.h / 2) * T, 80));
@@ -434,40 +536,68 @@ export class Game {
 
     const theme = this.m?.campaignTheme;
     if (theme) {
-      // Sea-of-Stars inspired atmospheric twilight, biome bloom & golden/cyan glow pass
+      // Sea-of-Stars inspired atmospheric twilight, biome bloom, volumetric light shafts & lantern pools
       const lc = this.lc, sx = p.x - cx, sy = p.y - cy - 22;
       const ambientByTheme = {
-        stasis: 'rgba(10, 20, 34, 0.34)',
-        rootway: 'rgba(10, 26, 22, 0.28)',
-        relay: 'rgba(12, 18, 30, 0.30)',
-        lantern: 'rgba(22, 16, 14, 0.24)',
-        sky: 'rgba(20, 32, 48, 0.16)',
-        archive: 'rgba(10, 14, 26, 0.36)',
-        cathedral: 'rgba(14, 10, 26, 0.32)'
+        stasis: 'rgba(8, 20, 34, 0.34)',
+        rootway: 'rgba(10, 26, 20, 0.25)',
+        wetland: 'rgba(8, 26, 30, 0.24)',
+        quay: 'rgba(10, 22, 30, 0.28)',
+        relay: 'rgba(12, 18, 30, 0.28)',
+        lantern: 'rgba(22, 14, 10, 0.20)',
+        mail: 'rgba(22, 16, 12, 0.22)',
+        wasteland: 'rgba(26, 16, 12, 0.16)',
+        sky: 'rgba(18, 28, 44, 0.10)',
+        archive: 'rgba(10, 14, 28, 0.34)',
+        quarantine: 'rgba(12, 18, 24, 0.32)',
+        cathedral: 'rgba(14, 10, 28, 0.30)'
       };
       lc.globalCompositeOperation = 'source-over'; lc.clearRect(0, 0, VW, VH);
-      lc.fillStyle = ambientByTheme[theme] || ambientByTheme.stasis;
+      lc.fillStyle = this.m.ambientTint || ambientByTheme[theme] || ambientByTheme.stasis;
       lc.fillRect(0, 0, VW, VH);
       lc.globalCompositeOperation = 'destination-out';
       const hole = (x, y, r, a) => { if (x < -r || y < -r || x > VW + r || y > VH + r) return; const gr = lc.createRadialGradient(x, y, 2, x, y, r); gr.addColorStop(0, `rgba(0,0,0,${a})`); gr.addColorStop(1, 'rgba(0,0,0,0)'); lc.fillStyle = gr; lc.fillRect(x - r, y - r, r * 2, r * 2); };
-      hole(sx, sy, p.light ? 120 : 84, .92);
-      for (const l of this.m.lamps) hole(l.x * T + 16 - cx, l.y * T + 14 - cy, 88, .85);
+      hole(sx, sy, p.light ? 128 : 90, .92);
+      const lampPos = l => ({ x: l.x > 64 ? l.x : l.x * T + 16, y: l.y > 64 ? l.y : l.y * T + 14 });
+      for (const l of this.m.lamps) { const lp = lampPos(l); hole(lp.x - cx, lp.y - cy, l.r || 96, .88); }
       for (const e of this.ents) {
         if (e.hidden || e.gone) continue;
         const ex = (e.tx + e.w / 2) * T - cx, ey = (e.ty + e.h / 2) * T - cy;
-        if (['terminal', 'save', 'pod', 'npc', 'bulkhead', 'exit'].includes(e.type)) hole(ex, ey, 56, .75);
+        if (['terminal', 'save', 'pod', 'npc', 'bulkhead', 'exit', 'door', 'hatch'].includes(e.type)) hole(ex, ey, 60, .78);
       }
       c.drawImage(this.light, 0, 0);
 
       c.globalCompositeOperation = 'lighter';
       const glow = (x, y, r, col) => { if (x < -r || y < -r || x > VW + r || y > VH + r) return; const gr = c.createRadialGradient(x, y, 1, x, y, r); gr.addColorStop(0, col); gr.addColorStop(1, 'rgba(0,0,0,0)'); c.fillStyle = gr; c.fillRect(x - r, y - r, r * 2, r * 2); };
       const wedge = (x, y, a, half, r, col) => { if (x < -r || y < -r || x > VW + r || y > VH + r) return; c.fillStyle = col; c.beginPath(); c.moveTo(x, y); c.arc(x, y, r, a - half, a + half); c.closePath(); c.fill(); };
+      const hexToRgba = (hex, alpha) => {
+        if (!hex || typeof hex !== 'string' || !hex.startsWith('#') || hex.length !== 7) return `rgba(120,224,242,${alpha})`;
+        const r = parseInt(hex.slice(1, 3), 16), gv = parseInt(hex.slice(3, 5), 16), b = parseInt(hex.slice(5, 7), 16);
+        return `rgba(${r},${gv},${b},${alpha.toFixed(3)})`;
+      };
       for (const l of this.m.lamps) {
-        const pulse = 0.85 + 0.15 * Math.sin(t * 2.6 + l.x);
-        const warm = theme === 'lantern' || theme === 'rootway';
-        glow(l.x * T + 16 - cx, l.y * T + 14 - cy, 62, warm ? `rgba(255,198,108,${0.26 * pulse})` : `rgba(120,224,242,${0.22 * pulse})`);
+        const lp = lampPos(l);
+        const pulse = l.flicker ? (0.82 + 0.18 * Math.sin(t * 3.1 + l.x)) : (0.92 + 0.08 * Math.sin(t * 1.8 + l.y));
+        const col = l.color ? hexToRgba(l.color, 0.25 * pulse)
+          : (theme === 'lantern' || theme === 'mail' || theme === 'wasteland') ? `rgba(255,198,108,${(0.28 * pulse).toFixed(3)})`
+          : `rgba(120,224,242,${(0.22 * pulse).toFixed(3)})`;
+        glow(lp.x - cx, lp.y - cy, Math.min(96, (l.r || 72) * 0.85), col);
       }
+      // Volumetric diagonal sunlight / skylight shafts
       if (fx) {
+        for (const sh of this.m.lightShafts || []) {
+          const sx0 = sh.x * T - cx, sy0 = sh.y * T - cy, sw = (sh.w || 2) * T, shh = (sh.h || 4) * T;
+          if (sx0 + sw + 48 < 0 || sx0 - 48 > VW || sy0 + shh < 0 || sy0 > VH) continue;
+          const a = (sh.alpha || 0.10) * (0.85 + 0.15 * Math.sin(t * 1.1 + sh.x));
+          const gr = c.createLinearGradient(sx0, sy0, sx0 + 36, sy0 + shh);
+          gr.addColorStop(0, hexToRgba(sh.color || '#ffe8a8', a));
+          gr.addColorStop(1, 'rgba(0,0,0,0)');
+          c.fillStyle = gr;
+          c.beginPath();
+          c.moveTo(sx0, sy0); c.lineTo(sx0 + sw, sy0);
+          c.lineTo(sx0 + sw + 34, sy0 + shh); c.lineTo(sx0 + 34, sy0 + shh);
+          c.closePath(); c.fill();
+        }
         for (const e of this.ents) {
           if (e.hidden || e.gone) continue;
           const ex = (e.tx + e.w / 2) * T - cx, ey = (e.ty + e.h / 2) * T - cy;
@@ -478,8 +608,9 @@ export class Game {
         }
         for (const m of this.motes) {
           const pulse = 0.4 + 0.55 * Math.sin(t * 2.1 + m.ph);
-          c.fillStyle = theme === 'rootway' ? `rgba(148,244,170,${pulse.toFixed(2)})`
-            : theme === 'lantern' || theme === 'sky' ? `rgba(255,216,136,${pulse.toFixed(2)})`
+          c.fillStyle = (theme === 'rootway' || theme === 'wetland') ? `rgba(148,244,170,${pulse.toFixed(2)})`
+            : (theme === 'lantern' || theme === 'sky' || theme === 'wasteland' || theme === 'mail') ? `rgba(255,216,136,${pulse.toFixed(2)})`
+            : theme === 'cathedral' ? `rgba(216,164,255,${pulse.toFixed(2)})`
             : `rgba(142,232,250,${pulse.toFixed(2)})`;
           c.fillRect(Math.round((m.x - cx * .3 % VW + VW) % VW), Math.round(m.y), 2, 2);
         }

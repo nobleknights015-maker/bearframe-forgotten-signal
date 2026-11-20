@@ -571,11 +571,22 @@ Thank you for walking carefully across the dawn.`;
     });
   };
 
+  const toggleReducedMotion = () => {
+    reducedMotion = !reducedMotion;
+    try { localStorage.setItem(reducedMotionKey, reducedMotion ? '1' : '0'); } catch {}
+    syncMotionLabel();
+    sfx?.blip?.();
+    return reducedMotion;
+  };
+
   return Object.freeze({
     updatePortrait,
     showStoryboardShot,
     hideStoryboard,
     recordLine,
+    getBacklog: () => [...backlog],
+    getReducedMotion: () => reducedMotion,
+    toggleReducedMotion,
     openLogModal,
     promptCallsign,
     openSaveTerminal,

@@ -602,81 +602,208 @@ function renderPortrait(spec) {
   return cv;
 }
 
-// ---------------- 10 Sea-of-Stars Terrain Palettes (32x32) ----------------
+// ---------------- 14 Sea-of-Stars Terrain Palettes (32x32) ----------------
 const PALETTE_DEFS = {
-  stasis_hollow:     { fl: ['#17242b', '#1b2b34', '#243a45', '#0e171c'], wl: ['#21323b', '#2d434f', '#3b5866', '#0c1317'], moss: '#4a7a42', rust: '#6e3d24', trim: '#70d2dc', backdrop: null },
-  rootway_ruins:     { fl: ['#1f2b25', '#26352e', '#32453b', '#131b17'], wl: ['#2b3830', '#384a3f', '#4b6150', '#121915'], moss: '#5d913a', rust: '#754627', trim: '#84c256', backdrop: 'terrain' },
-  relay_court:       { fl: ['#22272d', '#2a3038', '#353d47', '#14181d'], wl: ['#303842', '#3f4857', '#525f70', '#13171d'], moss: '#4e6c38', rust: '#8c4c26', trim: '#e09d38', backdrop: null },
-  lantern_shelter:   { fl: ['#35281f', '#403025', '#4f3c2e', '#211812'], wl: ['#3f342c', '#524338', '#685548', '#1f1814'], moss: '#55783d', rust: '#8c4a26', trim: '#f5be58', backdrop: null },
-  broken_rail:       { fl: ['#272623', '#312f2a', '#3d3a34', '#171614'], wl: ['#31373e', '#404852', '#535d69', '#14171c'], moss: '#5c803b', rust: '#944f28', trim: '#cfb058', backdrop: 'terrain' },
-  survey_wetland:    { fl: ['#19282b', '#203336', '#2a4245', '#101b1d'], wl: ['#29393b', '#364b4d', '#486366', '#121c1e'], moss: '#5b9449', rust: '#754a2b', trim: '#56d8e3', backdrop: 'terrain' },
-  census_archive:    { fl: ['#1f222b', '#272b36', '#313645', '#13151c'], wl: ['#2c313f', '#394152', '#4c556b', '#13161e'], moss: '#42613c', rust: '#6e492e', trim: '#c29e52', backdrop: null },
-  quarantine_spine:  { fl: ['#1c2429', '#232c33', '#2d3840', '#11171b'], wl: ['#293338', '#35424a', '#465761', '#12171b'], moss: '#42633a', rust: '#7a4027', trim: '#eb913a', backdrop: null },
-  control_cathedral: { fl: ['#171c27', '#1e2533', '#273042', '#0e121a'], wl: ['#242c3d', '#303b52', '#404e6b', '#0f131c'], moss: '#446848', rust: '#6b4730', trim: '#5adfff', backdrop: null },
-  sky_morning:       { fl: ['#383e3b', '#454d49', '#56605b', '#242927'], wl: ['#4a5358', '#5e6970', '#77858c', '#282e33'], moss: '#6da849', rust: '#8c532e', trim: '#ffda75', backdrop: 'terrain' },
+  stasis_hollow:     { pattern: 'plate',  fl: ['#16242c', '#1c2e38', '#27404d', '#0d161b'], wl: ['#1f313b', '#2c4452', '#3c5c6e', '#0c1318'], moss: '#467a58', rust: '#6e3d24', trim: '#70d2dc', backdrop: null },
+  rootway_ruins:     { pattern: 'ashlar', fl: ['#1f2d25', '#27382f', '#344b3f', '#121b16'], wl: ['#29392f', '#384e40', '#4d6954', '#111a14'], moss: '#5d993b', rust: '#754627', trim: '#84c85a', backdrop: 'terrain' },
+  relay_court:       { pattern: 'plate',  fl: ['#21272e', '#2a323b', '#36404c', '#13171d'], wl: ['#2f3843', '#3e4a59', '#526275', '#12161c'], moss: '#4e6c38', rust: '#8c4c26', trim: '#e0a23c', backdrop: null },
+  lantern_shelter:   { pattern: 'timber', fl: ['#38281d', '#453224', '#573f2d', '#211710'], wl: ['#42342b', '#564438', '#6e5748', '#201813'], moss: '#567c3d', rust: '#8c4a26', trim: '#f5be58', backdrop: null },
+  broken_rail:       { pattern: 'grate',  fl: ['#272623', '#32302b', '#403d36', '#161513'], wl: ['#30373f', '#404954', '#54606e', '#13171c'], moss: '#5c803b', rust: '#965028', trim: '#d6b458', backdrop: 'terrain' },
+  survey_wetland:    { pattern: 'slate',  fl: ['#17282c', '#1f3438', '#2a454a', '#0f1b1e'], wl: ['#26393c', '#344d50', '#48686b', '#111d1f'], moss: '#5a9949', rust: '#754a2b', trim: '#56dce8', backdrop: 'terrain' },
+  census_archive:    { pattern: 'marble', fl: ['#1e222c', '#262b38', '#32384a', '#12151d'], wl: ['#2a303f', '#384054', '#4d5870', '#12151f'], moss: '#42613c', rust: '#6e492e', trim: '#cca452', backdrop: null },
+  quarantine_spine:  { pattern: 'plate',  fl: ['#1b2329', '#222d35', '#2e3c46', '#10161b'], wl: ['#273138', '#34424c', '#475a66', '#11161b'], moss: '#446840', rust: '#7d4126', trim: '#f09238', backdrop: null },
+  control_cathedral: { pattern: 'marble', fl: ['#151b27', '#1c2435', '#273247', '#0d111a'], wl: ['#222a3d', '#2e3a54', '#415273', '#0e121c'], moss: '#446848', rust: '#6b4730', trim: '#5ce4ff', backdrop: null },
+  sky_morning:       { pattern: 'ashlar', fl: ['#3a413d', '#48514c', '#5b6660', '#242927'], wl: ['#4a5459', '#5f6c73', '#7a8a91', '#282f34'], moss: '#6fae49', rust: '#8c532e', trim: '#ffdc78', backdrop: 'terrain' },
+  wetland_pier:      { pattern: 'timber', fl: ['#2b2c25', '#36382f', '#47493d', '#191a16'], wl: ['#283635', '#364a48', '#48625f', '#131b1b'], moss: '#609e4c', rust: '#7a4b2b', trim: '#66d6c8', backdrop: 'terrain' },
+  wasteland_ridge:   { pattern: 'slate',  fl: ['#3d3126', '#4c3d2f', '#5f4d3c', '#251d16'], wl: ['#4d3e31', '#634f3f', '#7c6550', '#292019'], moss: '#6c853c', rust: '#9c4e24', trim: '#f2b85c', backdrop: 'terrain' },
+  flooded_quay:      { pattern: 'grate',  fl: ['#1c272c', '#24333a', '#30434c', '#10171b'], wl: ['#2b373d', '#3a4a52', '#4d616b', '#141a1e'], moss: '#4d8746', rust: '#8a4c28', trim: '#58cfe0', backdrop: 'terrain' },
+  mail_vault:        { pattern: 'marble', fl: ['#2a2320', '#352c28', '#453933', '#191513'], wl: ['#372f2b', '#493e38', '#5f5149', '#1c1715'], moss: '#4e6e3e', rust: '#8a522a', trim: '#e0b15a', backdrop: null },
 };
 
 function makeFloorTile(def, seed = 0) {
   const cv = new PixelCanvas(32, 32);
   box(cv, 0, 0, 32, 32, def.fl[0]);
-  // Offset ashlar flagstones with micro-bevels, mortar channels, and moss creeps
-  const stones = [
-    [0, 0, 18, 15], [18, 0, 14, 15],
-    [0, 15, 11, 17], [11, 15, 21, 17]
-  ];
-  stones.forEach(([x, y, w, h], idx) => {
-    const col = def.fl[(idx + seed) % 2 ? 1 : 0];
-    box(cv, x + 1, y + 1, w - 2, h - 2, col);
-    box(cv, x + 1, y + 1, w - 2, 1, def.fl[2]);
-    box(cv, x + 1, y + 1, 1, h - 2, def.fl[2], 0.72);
-    box(cv, x, y + h - 1, w, 1, def.fl[3]);
-    box(cv, x + w - 1, y, 1, h, def.fl[3]);
-    box(cv, x + 3, y + 3, 2, 1, def.trim, 0.14);
-  });
+  const pat = def.pattern || 'ashlar';
+  if (pat === 'timber') {
+    // Warm jointed horizontal floorboards with staggered seams, wood grain & iron nail heads
+    for (let row = 0; row < 4; row++) {
+      const y = row * 8;
+      const seam = ((row * 11 + seed * 5) % 24) + 4;
+      const c1 = def.fl[row % 2 ? 1 : 0];
+      const c2 = def.fl[(row + 1) % 2 ? 1 : 0];
+      box(cv, 0, y + 1, seam - 1, 6, c1);
+      box(cv, seam + 1, y + 1, 31 - seam, 6, c2);
+      box(cv, 0, y + 1, 32, 1, def.fl[2], 0.7);
+      box(cv, 0, y + 7, 32, 1, def.fl[3]);
+      box(cv, seam, y, 1, 8, def.fl[3]);
+      pxSet(cv, (seam + 3) % 30, y + 3, def.fl[3]);
+      pxSet(cv, (seam + 28) % 30, y + 5, def.fl[3]);
+      for (let x = 2; x < 30; x += 5) {
+        if (hsh(x, y, seed + 4) > 0.5) box(cv, x, y + 3 + (x % 2), 3, 1, def.fl[2], 0.25);
+      }
+    }
+  } else if (pat === 'plate') {
+    // Precision interlocking industrial deck plating with recessed conduits & corner bolts
+    box(cv, 1, 1, 30, 30, def.fl[1]);
+    box(cv, 1, 1, 30, 1, def.fl[2], 0.85);
+    box(cv, 1, 1, 1, 30, def.fl[2], 0.65);
+    box(cv, 0, 31, 32, 1, def.fl[3]);
+    box(cv, 31, 0, 1, 32, def.fl[3]);
+    box(cv, 15, 2, 1, 28, def.fl[3], 0.75);
+    box(cv, 16, 2, 1, 28, def.fl[2], 0.35);
+    box(cv, 2, 15, 28, 1, def.fl[3], 0.75);
+    box(cv, 2, 16, 28, 1, def.fl[2], 0.35);
+    for (const [bx, by] of [[3, 3], [27, 3], [3, 27], [27, 27], [12, 12], [18, 18]]) {
+      box(cv, bx, by, 2, 2, def.fl[3]);
+      pxSet(cv, bx, by, def.fl[2], 0.9);
+    }
+    box(cv, 5, 5, 6, 1, def.trim, 0.24);
+    box(cv, 21, 25, 6, 1, def.trim, 0.24);
+  } else if (pat === 'grate') {
+    // Elevated steel mesh / harbor deck with shadowed drainage slots & rivets
+    box(cv, 0, 0, 32, 32, def.fl[3]);
+    box(cv, 1, 1, 30, 30, def.fl[1]);
+    for (let y = 3; y < 29; y += 5) {
+      box(cv, 3, y, 26, 2, def.fl[3]);
+      box(cv, 3, y + 2, 26, 1, def.fl[2], 0.65);
+    }
+    box(cv, 14, 1, 4, 30, def.fl[0]);
+    box(cv, 14, 1, 1, 30, def.fl[2], 0.7);
+    box(cv, 17, 1, 1, 30, def.fl[3]);
+    box(cv, 2, 2, 28, 1, def.fl[2], 0.8);
+    box(cv, 2, 29, 28, 1, def.fl[3]);
+    box(cv, 15, 6, 2, 2, def.trim, 0.45);
+    box(cv, 15, 23, 2, 2, def.trim, 0.45);
+  } else if (pat === 'slate') {
+    // Organic fractured slate flagstones with stepped veins & water/mineral sheen
+    const slabs = [[0, 0, 14, 12], [14, 0, 18, 10], [0, 12, 19, 11], [19, 10, 13, 13], [0, 23, 12, 9], [12, 23, 20, 9]];
+    slabs.forEach(([x, y, w, h], idx) => {
+      box(cv, x + 1, y + 1, w - 2, h - 2, def.fl[idx % 2 ? 1 : 0]);
+      box(cv, x + 1, y + 1, w - 2, 1, def.fl[2], 0.82);
+      box(cv, x + 1, y + 1, 1, h - 2, def.fl[2], 0.55);
+      box(cv, x, y + h - 1, w, 1, def.fl[3]);
+      box(cv, x + w - 1, y, 1, h, def.fl[3]);
+    });
+    box(cv, 6, 14, 8, 1, def.trim, 0.22);
+  } else if (pat === 'marble') {
+    // Ceremonial archive/cathedral inlaid stone with beveled diamond medallion & filigree trim
+    box(cv, 1, 1, 30, 30, def.fl[1]);
+    box(cv, 1, 1, 30, 1, def.fl[2], 0.85);
+    box(cv, 1, 1, 1, 30, def.fl[2], 0.7);
+    box(cv, 0, 31, 32, 1, def.fl[3]);
+    box(cv, 31, 0, 1, 32, def.fl[3]);
+    box(cv, 4, 4, 24, 24, def.fl[0]);
+    box(cv, 5, 5, 22, 1, def.trim, 0.35);
+    box(cv, 5, 26, 22, 1, def.trim, 0.25);
+    box(cv, 5, 5, 1, 22, def.trim, 0.35);
+    box(cv, 26, 5, 1, 22, def.trim, 0.25);
+    for (let d = 0; d < 6; d++) {
+      box(cv, 16 - d, 10 + d, d * 2, 1, def.fl[2], 0.45);
+      box(cv, 16 - d, 21 - d, d * 2, 1, def.fl[2], 0.32);
+    }
+    box(cv, 15, 15, 2, 2, def.trim, 0.55);
+  } else {
+    // Offset ashlar flagstones with micro-bevels, mortar channels, and moss creeps
+    const stones = [
+      [0, 0, 18, 15], [18, 0, 14, 15],
+      [0, 15, 11, 17], [11, 15, 21, 17]
+    ];
+    stones.forEach(([x, y, w, h], idx) => {
+      const col = def.fl[(idx + seed) % 2 ? 1 : 0];
+      box(cv, x + 1, y + 1, w - 2, h - 2, col);
+      box(cv, x + 1, y + 1, w - 2, 1, def.fl[2]);
+      box(cv, x + 1, y + 1, 1, h - 2, def.fl[2], 0.72);
+      box(cv, x, y + h - 1, w, 1, def.fl[3]);
+      box(cv, x + w - 1, y, 1, h, def.fl[3]);
+      box(cv, x + 3, y + 3, 2, 1, def.trim, 0.14);
+    });
+  }
   for (let y = 0; y < 32; y++) for (let x = 0; x < 32; x++) {
     const n = hsh(x, y, seed + 11);
-    if (n > 0.87) pxSet(cv, x, y, def.fl[2], 0.5);
-    else if (n < 0.08) pxSet(cv, x, y, def.fl[3], 0.6);
-    if ((x + y * 0.4) < 8 && hsh(x, y, 3 + seed) > 0.42) pxSet(cv, x, y, def.moss, 0.78);
-    if (x > 24 && y < 7 && hsh(x, y, 9 + seed) > 0.5) pxSet(cv, x, y, def.rust, 0.65);
+    if (n > 0.90) pxSet(cv, x, y, def.fl[2], 0.38);
+    else if (n < 0.06) pxSet(cv, x, y, def.fl[3], 0.45);
   }
   return cv;
 }
 
 function makeWallTile(def, seed = 0) {
   const cv = new PixelCanvas(32, 32);
+  const pat = def.pattern || 'ashlar';
   box(cv, 0, 0, 32, 32, def.wl[0]);
-  // Layered coping blocks + carved dado rail + mossy overhangs + shadow base
+  // Top coping ledge with bright Sea-of-Stars rim highlight
   box(cv, 0, 0, 32, 6, def.wl[2]);
-  box(cv, 0, 0, 32, 2, shade(def.wl[2], 0.3));
+  box(cv, 0, 0, 32, 2, shade(def.wl[2], 0.32));
   box(cv, 0, 6, 32, 1, def.wl[3]);
-  for (let bx = 0; bx < 32; bx += 16) {
-    box(cv, bx + 1, 8, 14, 15, def.wl[1]);
-    box(cv, bx + 1, 8, 14, 1, def.wl[2], 0.8);
-    box(cv, bx + 15, 7, 1, 17, def.wl[3]);
-    box(cv, bx + 3, 11, 2, 2, def.wl[3]); box(cv, bx + 11, 11, 2, 2, def.wl[3]);
-  }
-  box(cv, 0, 23, 32, 2, def.trim, 0.6);
-  box(cv, 0, 25, 32, 7, def.wl[3]);
-  for (let x = 1; x < 31; x += 2) {
-    if (hsh(x, seed, 21) > 0.52) {
-      const len = 4 + ((hsh(x, 7, seed) * 9) | 0);
-      box(cv, x, 5, 2, len, shade(def.moss, -0.2), 0.9);
-      box(cv, x, 6, 1, Math.max(2, len - 2), def.moss, 0.95);
+  if (pat === 'timber') {
+    // Wainscoted timber wall with horizontal beams & brass brackets
+    for (let x = 0; x < 32; x += 8) {
+      box(cv, x + 1, 8, 6, 15, def.wl[1]);
+      box(cv, x + 1, 8, 2, 15, def.wl[2], 0.42);
+      box(cv, x + 7, 7, 1, 17, def.wl[3]);
+    }
+    box(cv, 0, 14, 32, 2, def.wl[0]);
+    box(cv, 0, 23, 32, 2, def.trim, 0.72);
+    box(cv, 0, 25, 32, 7, def.wl[3]);
+  } else if (pat === 'marble') {
+    // Fluted monolithic archive/cathedral stonework with luminous trim band
+    for (let x = 2; x < 30; x += 6) {
+      box(cv, x, 8, 4, 14, def.wl[1]);
+      box(cv, x, 8, 1, 14, def.wl[2], 0.7);
+      box(cv, x + 4, 8, 1, 14, def.wl[3]);
+    }
+    box(cv, 0, 22, 32, 3, def.trim, 0.78);
+    box(cv, 0, 25, 32, 7, def.wl[3]);
+  } else if (pat === 'plate' || pat === 'grate') {
+    // Armored sci-fi bulkhead panels with vertical ribs & conduit track
+    for (let bx = 0; bx < 32; bx += 16) {
+      box(cv, bx + 1, 8, 14, 15, def.wl[1]);
+      box(cv, bx + 1, 8, 14, 1, def.wl[2], 0.85);
+      box(cv, bx + 15, 7, 1, 17, def.wl[3]);
+      box(cv, bx + 3, 11, 10, 2, def.wl[0]);
+      box(cv, bx + 3, 18, 2, 2, def.wl[3]); box(cv, bx + 11, 18, 2, 2, def.wl[3]);
+    }
+    box(cv, 0, 23, 32, 2, def.trim, 0.68);
+    box(cv, 0, 25, 32, 7, def.wl[3]);
+  } else {
+    // Layered masonry courses with overhang moss & deep mortar base
+    for (let bx = 0; bx < 32; bx += 16) {
+      box(cv, bx + 1, 8, 14, 7, def.wl[1]);
+      box(cv, bx + 1, 8, 14, 1, def.wl[2], 0.8);
+      box(cv, bx + 15, 7, 1, 9, def.wl[3]);
+    }
+    box(cv, 0, 15, 32, 1, def.wl[3]);
+    for (let bx = -8; bx < 32; bx += 16) {
+      const rx = Math.max(0, bx + 1), rw = Math.min(32, bx + 15) - rx;
+      if (rw > 0) {
+        box(cv, rx, 16, rw, 7, def.wl[1]);
+        box(cv, rx, 16, rw, 1, def.wl[2], 0.65);
+      }
+      if (bx + 15 >= 0 && bx + 15 < 32) box(cv, bx + 15, 16, 1, 8, def.wl[3]);
+    }
+    box(cv, 0, 23, 32, 2, def.trim, 0.55);
+    box(cv, 0, 25, 32, 7, def.wl[3]);
+    for (let x = 1; x < 31; x += 2) {
+      if (hsh(x, seed, 21) > 0.5) {
+        const len = 4 + ((hsh(x, 7, seed) * 9) | 0);
+        box(cv, x, 5, 2, len, shade(def.moss, -0.2), 0.9);
+        box(cv, x, 6, 1, Math.max(2, len - 2), def.moss, 0.95);
+      }
     }
   }
   return cv;
 }
 
-// ---------------- 7 Animated Doorway Sets (64x64 / 32x64) ----------------
+// ---------------- 9 Animated Doorway Sets (64x64 / 32x64) ----------------
 const DOOR_DEFS = {
-  service:        { w: 64, h: 64, frame: '#3d454d', panel: '#59636d', trim: '#c79a48', lightClosed: '#ff4e3a', lightOpen: '#6cf0a8' },
-  overgrown:      { w: 64, h: 64, frame: '#323f35', panel: '#495c4e', trim: '#5d8c42', lightClosed: '#e88b3a', lightOpen: '#7dffb0' },
-  elevator:       { w: 64, h: 64, frame: '#2c343d', panel: '#485463', trim: '#46c6d9', lightClosed: '#ffb020', lightOpen: '#56f0d8' },
-  archive_seal:   { w: 64, h: 64, frame: '#2c2f3b', panel: '#4a5063', trim: '#b8964e', lightClosed: '#ff5238', lightOpen: '#72f0e0' },
-  cathedral_gate: { w: 64, h: 64, frame: '#232836', panel: '#3a455e', trim: '#58d4eb', lightClosed: '#ff7038', lightOpen: '#72f5ff' },
-  roof_hatch:     { w: 32, h: 64, frame: '#363b42', panel: '#545b66', trim: '#d6a44e', lightClosed: '#ff4e3a', lightOpen: '#7dffb0' },
-  water_lock:     { w: 64, h: 64, frame: '#28383d', panel: '#3d565e', trim: '#4ac8d8', lightClosed: '#ff9632', lightOpen: '#68f2c8' },
+  service:         { w: 64, h: 64, frame: '#3d454d', panel: '#59636d', trim: '#c79a48', lightClosed: '#ff4e3a', lightOpen: '#6cf0a8' },
+  overgrown:       { w: 64, h: 64, frame: '#323f35', panel: '#495c4e', trim: '#5d8c42', lightClosed: '#e88b3a', lightOpen: '#7dffb0' },
+  elevator:        { w: 64, h: 64, frame: '#2c343d', panel: '#485463', trim: '#46c6d9', lightClosed: '#ffb020', lightOpen: '#56f0d8' },
+  archive_seal:    { w: 64, h: 64, frame: '#2c2f3b', panel: '#4a5063', trim: '#b8964e', lightClosed: '#ff5238', lightOpen: '#72f0e0' },
+  cathedral_gate:  { w: 64, h: 64, frame: '#232836', panel: '#3a455e', trim: '#58d4eb', lightClosed: '#ff7038', lightOpen: '#72f5ff' },
+  roof_hatch:      { w: 32, h: 64, frame: '#363b42', panel: '#545b66', trim: '#d6a44e', lightClosed: '#ff4e3a', lightOpen: '#7dffb0' },
+  water_lock:      { w: 64, h: 64, frame: '#28383d', panel: '#3d565e', trim: '#4ac8d8', lightClosed: '#ff9632', lightOpen: '#68f2c8' },
+  sluice_gate:     { w: 64, h: 64, frame: '#263a3b', panel: '#375456', trim: '#70c492', lightClosed: '#e87838', lightOpen: '#5cf0d8' },
+  quarantine_lock: { w: 64, h: 64, frame: '#2c3238', panel: '#444e57', trim: '#e6a632', lightClosed: '#ff3b30', lightOpen: '#7dffb0' },
 };
 
 function makeDoorPair(spec) {
@@ -687,11 +814,13 @@ function makeDoorPair(spec) {
     box(cv, ix, iy, iw, ih, '#070a0d');
     const col = open ? spec.lightOpen : spec.lightClosed;
     if (open) {
-      radialGlow(cv, spec.w / 2, spec.h / 2, 26, col, 0.42);
+      radialGlow(cv, spec.w / 2, spec.h / 2, 28, col, 0.46);
       box(cv, ix + 1, iy + 1, 5, ih - 2, spec.panel);
       box(cv, ix + iw - 6, iy + 1, 5, ih - 2, spec.panel);
-      box(cv, ix + 6, iy + 2, iw - 12, ih - 4, col, 0.14);
-      box(cv, ix + 6, iy + 1, iw - 12, 3, col, 0.65);
+      box(cv, ix + 6, iy + 2, iw - 12, ih - 4, col, 0.16);
+      box(cv, ix + 6, iy + 1, iw - 12, 3, col, 0.72);
+      // Interior threshold step light
+      box(cv, ix + 8, iy + ih - 5, iw - 16, 3, col, 0.45);
     } else {
       const half = Math.floor(iw / 2);
       bevelBox(cv, ix, iy, half, ih, spec.panel, '#0b0e12');
@@ -699,10 +828,14 @@ function makeDoorPair(spec) {
       box(cv, ix + 4, iy + 14, iw - 8, 4, spec.trim, 0.9);
       box(cv, ix + 4, iy + ih - 18, iw - 8, 4, spec.trim, 0.9);
       box(cv, ix + half - 1, iy + 4, 2, ih - 8, '#0c1014');
+      // Center locking wheel / seal ring
+      disc(cv, spec.w / 2, spec.h / 2 + 2, 6, '#141920');
+      disc(cv, spec.w / 2, spec.h / 2 + 2, 4, spec.trim);
+      disc(cv, spec.w / 2, spec.h / 2 + 2, 2, '#0c1014');
     }
-    box(cv, spec.w / 2 - 5, 2, 10, 4, '#101419');
-    box(cv, spec.w / 2 - 4, 3, 8, 2, col);
-    radialGlow(cv, spec.w / 2, 4, 10, col, 0.48);
+    box(cv, spec.w / 2 - 6, 2, 12, 4, '#101419');
+    box(cv, spec.w / 2 - 5, 3, 10, 2, col);
+    radialGlow(cv, spec.w / 2, 4, 12, col, 0.52);
     return cv;
   };
   return { closed: mk(false), open: mk(true) };
@@ -715,23 +848,22 @@ function paintSpriteOn(cv, ox, oy, w, h, fn) {
 }
 
 function buildAtlases() {
-  // 1. atlas_ruins_flora (512x512)
+  // 1. atlas_ruins_flora (512x512) — Row 0 preserved + Row 96 expanded ruins, collapsed arches, stairways & flora
   const ruins = new PixelCanvas(512, 512);
-  // (0,0) 64x96 Stasis Cryo-Pod (detailed armored chamber + condensation glass)
+  // (0,0) 64x96 Stasis Cryo-Pod
   paintSpriteOn(ruins, 0, 0, 64, 96, s => {
     bevelBox(s, 6, 8, 52, 84, '#2a3940', '#0a0f13');
     bevelBox(s, 10, 4, 44, 10, '#3e525c', '#0b1014');
     bevelBox(s, 13, 18, 38, 56, '#10242c', '#080f14');
     radialGlow(s, 32, 45, 26, '#5ae6f2', 0.62);
-    // Faint sleeper silhouette inside frosty glass
     box(s, 27, 26, 10, 12, '#7ce8f5', 0.28);
     box(s, 24, 39, 16, 22, '#6cd5e8', 0.24);
     for (let y = 20; y < 72; y += 3) box(s, 16, y, 32, 1, '#9cf7ff', 0.36);
-    box(s, 16, 20, 4, 48, '#e8ffff', 0.25); // glass specular streak
+    box(s, 16, 20, 4, 48, '#e8ffff', 0.25);
     bevelBox(s, 11, 74, 42, 16, '#394850', '#0a0e12');
     box(s, 18, 80, 10, 4, '#6cf2b8'); box(s, 36, 80, 10, 4, '#f2b857');
   });
-  // (64,0) 64x64 Broken Stasis Pod / Browned Circuitry + moss
+  // (64,0) 64x64 Broken Stasis Pod
   paintSpriteOn(ruins, 64, 0, 64, 64, s => {
     bevelBox(s, 6, 6, 52, 54, '#2a2e32', '#0a0c0e');
     box(s, 12, 12, 40, 32, '#090c0e');
@@ -751,7 +883,7 @@ function buildAtlases() {
     box(s, 12, 12, 8, 8, '#a6ffd0');
     box(s, 14, 14, 4, 4, '#ffffff');
   });
-  // (160,0) 96x64 Gnarled Root Mass with bark highlights & leaf tufts
+  // (160,0) 96x64 Gnarled Root Mass
   paintSpriteOn(ruins, 160, 0, 96, 64, s => {
     for (let i = 0; i < 6; i++) {
       const rx = 10 + i * 14;
@@ -773,7 +905,7 @@ function buildAtlases() {
     box(s, 12, 44, 8, 12, '#4e7a3c');
     box(s, 28, 30, 6, 10, '#46b5c7', 0.55);
   });
-  // (320,0) 32x32 Bioluminescent Moss / Ferns (ground layer!)
+  // (320,0) 32x32 Bioluminescent Moss / Ferns (ground)
   paintSpriteOn(ruins, 320, 0, 32, 32, s => {
     for (let i = 0; i < 9; i++) {
       const fx = 4 + (i * 5) % 24, fy = 5 + ((i * 7) % 20);
@@ -782,7 +914,7 @@ function buildAtlases() {
       if (i % 3 === 0) { pxSet(s, fx + 2, fy, '#a4ffd8'); radialGlow(s, fx + 2, fy, 6, '#54e6b8', 0.5); }
     }
   });
-  // (352,0) 64x32 Rainwater / Coolant Puddle (ground layer!)
+  // (352,0) 64x32 Rainwater / Coolant Puddle (ground)
   paintSpriteOn(ruins, 352, 0, 64, 32, s => {
     for (let dy = -10; dy <= 10; dy++) for (let dx = -24; dx <= 24; dx++) {
       const q = (dx * dx) / 576 + (dy * dy) / 100;
@@ -801,8 +933,51 @@ function buildAtlases() {
       if (x % 9 === 0) pxSet(s, x + 1, len - 2, '#96edb8', 0.8);
     }
   });
+  // Row 96: New Ruins Architecture & Overgrowth
+  // (0,96) 64x64 Collapsed Stone Archway with Vines
+  paintSpriteOn(ruins, 0, 96, 64, 64, s => {
+    bevelBox(s, 4, 8, 18, 52, '#3a4a42', '#101613');
+    bevelBox(s, 42, 16, 18, 44, '#36453e', '#101613');
+    bevelBox(s, 6, 4, 40, 12, '#485c51', '#101613');
+    box(s, 22, 18, 10, 6, '#26322c');
+    for (let x = 8; x < 44; x += 5) { box(s, x, 12, 3, 12 + (x % 9), '#3b6e34'); box(s, x + 1, 13, 1, 9 + (x % 7), '#72b850'); }
+    box(s, 24, 48, 14, 8, '#415249'); box(s, 30, 52, 10, 6, '#2e3c35');
+  });
+  // (64,96) 64x64 Glowing Spore Tree Trunk
+  paintSpriteOn(ruins, 64, 96, 64, 64, s => {
+    bevelBox(s, 18, 16, 28, 44, '#4e3927', '#1a110a');
+    box(s, 22, 20, 6, 38, '#6e5238');
+    disc(s, 22, 18, 14, '#2a592d'); disc(s, 42, 20, 13, '#346e36'); disc(s, 32, 12, 14, '#4a8c44');
+    radialGlow(s, 32, 24, 16, '#7dffb0', 0.45);
+    for (const [gx, gy] of [[24, 16], [38, 18], [31, 10], [20, 26], [42, 28]]) box(s, gx, gy, 3, 3, '#a6ffd8');
+  });
+  // (128,96) 64x32 Cracked Mossy Flagstone Path (ground)
+  paintSpriteOn(ruins, 128, 96, 64, 32, s => {
+    for (let x = 2; x < 58; x += 14) {
+      bevelBox(s, x, 4 + (x % 3), 12, 10, '#3a4a42', '#17201b');
+      bevelBox(s, x + 4, 17, 11, 11, '#33423b', '#17201b');
+    }
+    for (let x = 4; x < 60; x += 7) { box(s, x, 14, 4, 3, '#4c803b', 0.85); pxSet(s, x + 1, 14, '#80c95b'); }
+  });
+  // (192,96) 64x32 Ancient Root Bridge / Plank Crossing (ground)
+  paintSpriteOn(ruins, 192, 96, 64, 32, s => {
+    box(s, 0, 2, 64, 28, '#2b1e14', 0.85);
+    for (let x = 2; x < 62; x += 8) {
+      bevelBox(s, x, 4, 7, 24, '#63462e', '#1a110a');
+      box(s, x + 1, 5, 5, 2, '#856243');
+    }
+    box(s, 0, 2, 64, 3, '#4c7a36', 0.8); box(s, 0, 27, 64, 3, '#4c7a36', 0.8);
+  });
+  // (256,96) 64x64 Overgrown Cryo-Conduit Pylon
+  paintSpriteOn(ruins, 256, 96, 64, 64, s => {
+    bevelBox(s, 14, 6, 36, 54, '#2a3b42', '#0b1014');
+    box(s, 22, 12, 20, 38, '#10222b');
+    radialGlow(s, 32, 31, 18, '#66e8f2', 0.52);
+    box(s, 28, 14, 8, 34, '#66e8f2', 0.85);
+    box(s, 12, 38, 14, 18, '#3f6e33'); box(s, 40, 24, 12, 20, '#4d823e');
+  });
 
-  // 2. atlas_bunker_machinery (512x512)
+  // 2. atlas_bunker_machinery (512x512) — Row 0 preserved + Row 96 heavy generators, ducts, conduits & catwalk grates
   const mach = new PixelCanvas(512, 512);
   paintSpriteOn(mach, 0, 0, 32, 64, s => {
     bevelBox(s, 4, 6, 24, 52, '#3d454d', '#0b0e12');
@@ -844,8 +1019,37 @@ function buildAtlases() {
       box(s, x + 3, 10, 3, 12, '#181a1e', 0.88);
     }
   });
+  // Row 96: New Bunker Machinery
+  // (0,96) 64x64 Cooling Coil Radiator Bank
+  paintSpriteOn(mach, 0, 96, 64, 64, s => {
+    bevelBox(s, 4, 6, 56, 54, '#303a44', '#0b0f14');
+    for (let y = 12; y < 52; y += 6) {
+      box(s, 10, y, 44, 3, '#526575');
+      box(s, 10, y + 3, 44, 2, '#141a21');
+    }
+    radialGlow(s, 32, 32, 18, '#53e6f2', 0.35);
+    box(s, 26, 10, 12, 46, '#232c36'); box(s, 30, 14, 4, 38, '#53e6f2', 0.8);
+  });
+  // (64,96) 64x64 Pressure Tank & Valve Stack
+  paintSpriteOn(mach, 64, 96, 64, 64, s => {
+    bevelBox(s, 8, 10, 24, 48, '#4c5963', '#0d1114');
+    bevelBox(s, 34, 14, 22, 44, '#3d4c54', '#0d1114');
+    box(s, 12, 20, 16, 4, '#d99a3a'); box(s, 38, 24, 14, 4, '#56dce8');
+    disc(s, 20, 38, 6, '#9c362c'); disc(s, 20, 38, 3, '#14191f');
+  });
+  // (128,96) 64x32 Floor Grate Vent (ground)
+  paintSpriteOn(mach, 128, 96, 64, 32, s => {
+    bevelBox(s, 4, 4, 56, 24, '#2a333c', '#0b0e12');
+    for (let x = 8; x < 54; x += 6) { box(s, x, 7, 3, 18, '#0c1116'); box(s, x + 3, 7, 1, 18, '#4c5c6b'); }
+  });
+  // (192,96) 64x64 Overhead Industrial Pipe Beam (foreground)
+  paintSpriteOn(mach, 192, 96, 64, 64, s => {
+    bevelBox(s, 0, 8, 64, 14, '#2f3a44', '#090c10');
+    box(s, 0, 11, 64, 3, '#526575');
+    for (let x = 8; x < 60; x += 18) { box(s, x, 6, 6, 18, '#6e522e'); box(s, x + 1, 7, 2, 16, '#c29848'); }
+  });
 
-  // 3. atlas_shelter_warmth (512x512)
+  // 3. atlas_shelter_warmth (512x512) — Row 0 preserved + Row 96 settlement hearths, awnings, beds & herb tables
   const shelter = new PixelCanvas(512, 512);
   paintSpriteOn(shelter, 0, 0, 32, 64, s => {
     box(s, 12, 18, 8, 42, '#2d2824'); box(s, 14, 18, 3, 42, '#5e5348');
@@ -875,8 +1079,36 @@ function buildAtlases() {
     bevelBox(s, 16, 10, 22, 20, '#a38964', '#1c150e');
     box(s, 20, 18, 12, 3, '#cf5e3a');
   });
+  // Row 96: Warm Hearth Stove, Market Stall Awning, Hanging Lanterns (fg)
+  paintSpriteOn(shelter, 0, 96, 64, 64, s => {
+    bevelBox(s, 12, 6, 40, 54, '#3d332c', '#14100d');
+    box(s, 18, 26, 28, 22, '#140c08');
+    radialGlow(s, 32, 38, 18, '#ff9c38', 0.72);
+    box(s, 22, 34, 20, 12, '#ff8a2a'); box(s, 26, 38, 12, 6, '#ffe694');
+    box(s, 24, 4, 16, 10, '#2a2420');
+  });
+  paintSpriteOn(shelter, 64, 96, 64, 64, s => {
+    for (let x = 2; x < 60; x += 10) {
+      box(s, x, 6, 5, 24, '#a64836'); box(s, x + 5, 6, 5, 24, '#d9b884');
+    }
+    box(s, 2, 30, 60, 4, '#593622');
+    box(s, 6, 34, 4, 26, '#4d3826'); box(s, 54, 34, 4, 26, '#4d3826');
+    bevelBox(s, 12, 42, 40, 16, '#6e4e34', '#1c140e');
+  });
+  paintSpriteOn(shelter, 128, 96, 64, 64, s => {
+    // Hanging festoon lantern strand (foreground)
+    for (let x = 0; x < 64; x++) {
+      const y = 10 + Math.round(Math.sin((x / 64) * Math.PI) * 14);
+      pxSet(s, x, y, '#2a2018');
+    }
+    for (const [lx, ly] of [[12, 18], [32, 24], [52, 18]]) {
+      radialGlow(s, lx, ly + 4, 11, '#ffd46e', 0.65);
+      bevelBox(s, lx - 3, ly, 6, 9, '#f0b84a', '#24180c');
+      box(s, lx - 2, ly + 2, 4, 5, '#fff0b2');
+    }
+  });
 
-  // 4. atlas_archive_cathedral (512x512)
+  // 4. atlas_archive_cathedral (512x512) — Row 0 preserved + Row 96 ceremonial banners, mosaic runner, holographic lectern
   const arch = new PixelCanvas(512, 512);
   paintSpriteOn(arch, 0, 0, 64, 96, s => {
     bevelBox(s, 4, 6, 56, 84, '#2a2e38', '#0a0b10');
@@ -905,8 +1137,37 @@ function buildAtlases() {
     box(s, 9, 15, 14, 18, '#a68b4c');
     radialGlow(s, 16, 24, 11, '#ffd066', 0.58);
   });
+  // Row 96: Ceremonial Banner Tapestry, Inlaid Floor Runner (ground), Stained Relay Window
+  paintSpriteOn(arch, 0, 96, 64, 64, s => {
+    bevelBox(s, 6, 4, 52, 56, '#232a3a', '#090c14');
+    box(s, 14, 8, 36, 46, '#392852');
+    box(s, 18, 12, 28, 38, '#4e3770');
+    box(s, 29, 14, 6, 32, '#e2b65c');
+    box(s, 22, 24, 20, 4, '#5ce4ff');
+  });
+  paintSpriteOn(arch, 64, 96, 96, 32, s => {
+    box(s, 2, 2, 92, 28, '#262038', 0.9);
+    box(s, 4, 4, 88, 24, '#3c2e54', 0.9);
+    box(s, 4, 6, 88, 2, '#d4aa54', 0.85);
+    box(s, 4, 24, 88, 2, '#d4aa54', 0.85);
+    for (let x = 14; x < 82; x += 16) box(s, x, 13, 6, 6, '#5ce4ff', 0.45);
+  });
+  paintSpriteOn(arch, 160, 0, 64, 32, s => {
+    // Ground brass inlaid seal plate (preserved for existing references at 160,0)
+    bevelBox(s, 4, 4, 56, 24, '#2a3040', '#0e121c');
+    box(s, 8, 8, 48, 16, '#1c2434');
+    box(s, 10, 10, 44, 1, '#cca452', 0.8);
+    box(s, 10, 21, 44, 1, '#cca452', 0.8);
+    disc(s, 32, 16, 5, '#5ce4ff');
+  });
+  paintSpriteOn(arch, 160, 96, 64, 64, s => {
+    // Vaulted Archive Arch Rib (foreground)
+    bevelBox(s, 0, 0, 64, 14, '#252c3e', '#090b12');
+    box(s, 0, 12, 64, 2, '#cca452', 0.75);
+    box(s, 4, 14, 8, 24, '#252c3e'); box(s, 52, 14, 8, 24, '#252c3e');
+  });
 
-  // 5. atlas_sky_rail (512x512)
+  // 5. atlas_sky_rail (512x512) — Row 0 preserved + Row 96 signal gantry, rail tracks (ground), clouds/overlook
   const sky = new PixelCanvas(512, 512);
   paintSpriteOn(sky, 0, 0, 128, 64, s => {
     bevelBox(s, 6, 10, 116, 42, '#4a3d35', '#100c0a');
@@ -936,18 +1197,323 @@ function buildAtlases() {
     box(s, 12, 8, 8, 10, '#3fe3d4');
     radialGlow(s, 16, 13, 12, '#3fe3d4', 0.72);
   });
+  // Row 96: Steel Rail Track Segment (ground), Wind-Turbine Mast, Overhead Truss Gantry (fg)
+  paintSpriteOn(sky, 0, 96, 64, 32, s => {
+    for (let x = 3; x < 62; x += 10) box(s, x, 4, 5, 24, '#3d2d22');
+    box(s, 0, 7, 64, 4, '#6d7a85'); box(s, 0, 7, 64, 1, '#a9b8c4');
+    box(s, 0, 21, 64, 4, '#6d7a85'); box(s, 0, 21, 64, 1, '#a9b8c4');
+  });
+  paintSpriteOn(sky, 64, 96, 64, 64, s => {
+    bevelBox(s, 26, 14, 12, 46, '#586470', '#14181e');
+    disc(s, 32, 16, 8, '#303842'); disc(s, 32, 16, 4, '#ffe28a');
+    box(s, 8, 14, 48, 4, '#8896a3'); box(s, 30, 2, 4, 28, '#8896a3');
+  });
+  paintSpriteOn(sky, 128, 96, 64, 64, s => {
+    bevelBox(s, 0, 4, 64, 12, '#444e59', '#101419');
+    for (let x = 4; x < 60; x += 12) { box(s, x, 16, 3, 14, '#343c45'); box(s, x + 5, 16, 2, 10, '#5a6673'); }
+  });
+
+  // 6. NEW atlas_wetland_water (512x512) — Aqueducts, sluice intakes, reed beds, piers, lily pads & foam rocks
+  const wet = new PixelCanvas(512, 512);
+  // (0,0) 64x64 Mossy Aqueduct Arch & Sluice Wheel
+  paintSpriteOn(wet, 0, 0, 64, 64, s => {
+    bevelBox(s, 4, 6, 56, 54, '#2d4447', '#0e1718');
+    box(s, 14, 22, 36, 38, '#102429');
+    for (let x = 18; x < 46; x += 4) box(s, x, 24, 2, 34, '#4fd6e3', 0.65);
+    disc(s, 32, 16, 8, '#7a5232'); disc(s, 32, 16, 4, '#1b2b2e');
+    for (let x = 6; x < 58; x += 5) box(s, x, 6, 4, 8 + (x % 7), '#4d8a42');
+  });
+  // (64,0) 64x64 Wetland Pump Turbine & Bio-Filter
+  paintSpriteOn(wet, 64, 0, 64, 64, s => {
+    bevelBox(s, 6, 10, 52, 48, '#32484d', '#0d1517');
+    disc(s, 24, 34, 14, '#132429'); disc(s, 24, 34, 10, '#45a8b8');
+    box(s, 42, 18, 12, 30, '#223338'); box(s, 45, 22, 6, 14, '#7dffb0');
+    radialGlow(s, 48, 28, 10, '#7dffb0', 0.45);
+  });
+  // (128,0) 64x64 Reed Marsh Cluster & Cattails
+  paintSpriteOn(wet, 128, 0, 64, 64, s => {
+    for (let x = 6; x < 58; x += 5) {
+      const h = 24 + ((x * 7) % 28);
+      box(s, x, 60 - h, 2, h, '#3a6e38');
+      box(s, x + 1, 60 - h + 2, 1, h - 4, '#6eb554');
+      if (x % 10 === 6) box(s, x - 1, 60 - h - 4, 4, 8, '#6e4526');
+    }
+  });
+  // (192,0) 64x32 Lily Pads & Stepping Stones (ground)
+  paintSpriteOn(wet, 192, 0, 64, 32, s => {
+    disc(s, 14, 16, 9, '#2e6b3d'); disc(s, 14, 15, 7, '#4c9e52'); box(s, 14, 15, 8, 2, '#17282c');
+    bevelBox(s, 28, 8, 16, 16, '#485e61', '#141f21');
+    disc(s, 52, 18, 7, '#2e6b3d'); disc(s, 52, 17, 5, '#59b35d'); pxSet(s, 52, 15, '#ffe08a');
+  });
+  // (256,0) 64x32 Weathered Boardwalk Planks (ground)
+  paintSpriteOn(wet, 256, 0, 64, 32, s => {
+    for (let x = 2; x < 62; x += 8) {
+      bevelBox(s, x, 3, 7, 26, '#594635', '#18130e');
+      box(s, x + 1, 4, 5, 2, '#786049');
+    }
+    box(s, 0, 2, 64, 2, '#42703a', 0.75);
+  });
+  // (320,0) 64x64 Hanging Willow & Reed Canopy (foreground)
+  paintSpriteOn(wet, 320, 0, 64, 64, s => {
+    for (let x = 2; x < 62; x += 4) {
+      const len = 18 + ((hsh(x, 9, 5) * 38) | 0);
+      box(s, x, 0, 2, len, '#295734', 0.9);
+      box(s, x + 1, 2, 1, len - 4, '#62b368', 0.85);
+    }
+  });
+
+  // 7. NEW atlas_quarantine_void (512x512) — Containment cells, hazard pylons, server spines & scanner arches
+  const quar = new PixelCanvas(512, 512);
+  // (0,0) 64x64 Bio-Containment Cryo-Cell
+  paintSpriteOn(quar, 0, 0, 64, 64, s => {
+    bevelBox(s, 6, 4, 52, 56, '#2e3842', '#0a0e12');
+    box(s, 14, 12, 36, 36, '#132126');
+    radialGlow(s, 32, 30, 18, '#f09238', 0.55);
+    box(s, 20, 18, 24, 24, '#f09238', 0.32);
+    box(s, 14, 50, 36, 6, '#e6a632');
+    for (let x = 16; x < 48; x += 8) box(s, x, 50, 4, 6, '#14171c');
+  });
+  // (64,0) 64x64 Quarantine Server Spine Monolith
+  paintSpriteOn(quar, 64, 0, 64, 64, s => {
+    bevelBox(s, 10, 4, 44, 56, '#263038', '#090c10');
+    for (let y = 10; y < 52; y += 7) {
+      box(s, 16, y, 32, 4, '#11181f');
+      box(s, 18, y + 1, 14, 2, y % 14 ? '#5ce4ff' : '#ff6a45');
+    }
+  });
+  // (128,0) 64x64 Decontamination Scrubber Tower
+  paintSpriteOn(quar, 128, 0, 64, 64, s => {
+    bevelBox(s, 12, 6, 40, 54, '#36434d', '#0b0e12');
+    box(s, 18, 12, 28, 18, '#121b22');
+    box(s, 22, 16, 20, 4, '#7dffb0'); box(s, 22, 22, 14, 4, '#5ce4ff');
+    bevelBox(s, 16, 36, 32, 18, '#263038', '#0a0d10');
+  });
+  // (192,0) 64x32 Quarantine Floor Perimeter Tape (ground)
+  paintSpriteOn(quar, 192, 0, 64, 32, s => {
+    for (let x = 0; x < 64; x += 8) {
+      box(s, x, 10, 4, 12, '#d99c2b', 0.85);
+      box(s, x + 4, 10, 4, 12, '#161a1f', 0.85);
+    }
+  });
+  // (256,0) 64x64 Overhead Decon Spray Gantry (foreground)
+  paintSpriteOn(quar, 256, 0, 64, 64, s => {
+    bevelBox(s, 0, 4, 64, 14, '#2f3b45', '#0a0d12');
+    for (let x = 10; x < 56; x += 14) {
+      box(s, x, 18, 6, 6, '#526575');
+      radialGlow(s, x + 3, 26, 7, '#f09238', 0.5);
+    }
+  });
+
+  // 8. NEW atlas_wasteland_exterior (512x512) — Cracked concrete ribs, monolith boulders, solar arrays & desert scrub
+  const waste = new PixelCanvas(512, 512);
+  // (0,0) 64x64 Wind-Carved Ochre Boulder & Cairn
+  paintSpriteOn(waste, 0, 0, 64, 64, s => {
+    disc(s, 32, 42, 20, '#4f3e30'); disc(s, 28, 36, 16, '#6b5440'); disc(s, 24, 30, 10, '#876b52');
+    box(s, 14, 46, 36, 8, '#36291f');
+    box(s, 42, 26, 8, 8, '#5a7838'); box(s, 44, 24, 4, 4, '#88b04d');
+  });
+  // (64,0) 64x64 Cracked Solar Collector Dish
+  paintSpriteOn(waste, 64, 0, 64, 64, s => {
+    bevelBox(s, 26, 32, 12, 28, '#465059', '#12161a');
+    bevelBox(s, 8, 8, 48, 28, '#28455c', '#0e161d');
+    for (let x = 14; x < 54; x += 10) box(s, x, 10, 1, 24, '#70b8de', 0.65);
+    for (let y = 14; y < 34; y += 8) box(s, 10, y, 44, 1, '#70b8de', 0.65);
+    box(s, 36, 12, 12, 8, '#1a2229'); // shattered corner
+  });
+  // (128,0) 64x64 Collapsed Concrete Overpass Rib
+  paintSpriteOn(waste, 128, 0, 64, 64, s => {
+    bevelBox(s, 6, 12, 52, 46, '#5c5348', '#1a1714');
+    box(s, 12, 18, 40, 22, '#73685a');
+    box(s, 24, 8, 4, 12, '#8c4c26'); box(s, 38, 6, 4, 14, '#8c4c26'); // exposed rebar
+    box(s, 10, 42, 44, 10, '#3d362e');
+  });
+  // (192,0) 64x32 Dry Scrub & Highland Wildflowers (ground)
+  paintSpriteOn(waste, 192, 0, 64, 32, s => {
+    for (let i = 0; i < 10; i++) {
+      const fx = 6 + (i * 6) % 52, fy = 6 + ((i * 7) % 18);
+      box(s, fx, fy + 2, 4, 3, '#5c7338');
+      box(s, fx + 1, fy, 3, 2, i % 2 ? '#f0c45a' : '#85a649');
+    }
+  });
+  // (256,0) 64x64 Weathered Signal Beacon Post
+  paintSpriteOn(waste, 256, 0, 64, 64, s => {
+    bevelBox(s, 26, 16, 12, 44, '#594e43', '#17130f');
+    box(s, 16, 20, 32, 6, '#756656');
+    disc(s, 32, 12, 6, '#f5be58'); radialGlow(s, 32, 12, 14, '#ffda75', 0.65);
+  });
+
+  // 9. NEW atlas_settlement_interiors (512x512) — Mail cubbies, sleeping bunks, tea bar, notice board & woven carpets
+  const settle = new PixelCanvas(512, 512);
+  // (0,0) 64x64 Courier Mail Sorting Cubbies
+  paintSpriteOn(settle, 0, 0, 64, 64, s => {
+    bevelBox(s, 4, 6, 56, 54, '#5e432c', '#1a120b');
+    for (let y = 12; y < 52; y += 10) for (let x = 8; x < 54; x += 12) {
+      box(s, x, y, 10, 8, '#2b1e14');
+      if (hsh(x, y, 7) > 0.35) box(s, x + 2, y + 3, 6, 4, '#d9c8a2'); // envelopes
+    }
+  });
+  // (64,0) 64x64 Settler Tea Counter & Herb Pots
+  paintSpriteOn(settle, 64, 0, 64, 64, s => {
+    bevelBox(s, 4, 22, 56, 38, '#593d28', '#170f09');
+    box(s, 6, 24, 52, 8, '#805a3d');
+    bevelBox(s, 12, 12, 12, 12, '#7a4a2a', '#1c120a'); box(s, 14, 6, 8, 8, '#589942');
+    bevelBox(s, 34, 14, 16, 10, '#3a595c', '#0f181a'); box(s, 38, 16, 8, 4, '#f5be58');
+  });
+  // (128,0) 64x64 Community Notice Board & Lantern
+  paintSpriteOn(settle, 128, 0, 64, 64, s => {
+    bevelBox(s, 6, 8, 52, 42, '#694a30', '#1a110a');
+    box(s, 10, 12, 44, 34, '#3d2c1e');
+    box(s, 14, 16, 12, 14, '#e0d1ad'); box(s, 30, 15, 18, 10, '#c7b085');
+    box(s, 20, 32, 14, 10, '#d9c598'); box(s, 38, 28, 12, 14, '#88c4b8');
+    radialGlow(s, 32, 10, 12, '#ffd46e', 0.55);
+  });
+  // (192,0) 64x32 Woven Patchwork Floor Rug (ground)
+  paintSpriteOn(settle, 192, 0, 64, 32, s => {
+    bevelBox(s, 2, 3, 60, 26, '#7a3b2e', '#24110c');
+    box(s, 6, 7, 52, 18, '#a65c3a');
+    box(s, 10, 11, 44, 10, '#d9a452', 0.8);
+    box(s, 24, 13, 16, 6, '#3c6e68');
+  });
+  // (256,0) 64x64 Bunk Frame & Quilted Bedding
+  paintSpriteOn(settle, 256, 0, 64, 64, s => {
+    bevelBox(s, 6, 12, 52, 46, '#4d3726', '#160f0a');
+    box(s, 10, 16, 44, 14, '#d9cdb4'); // pillow
+    box(s, 10, 30, 44, 24, '#3d635c'); // blanket
+    box(s, 10, 30, 44, 4, '#c77a3e'); // trim fold
+  });
 
   return {
     atlas_ruins_flora: ruins,
     atlas_bunker_machinery: mach,
     atlas_shelter_warmth: shelter,
     atlas_archive_cathedral: arch,
-    atlas_sky_rail: sky
+    atlas_sky_rail: sky,
+    atlas_wetland_water: wet,
+    atlas_quarantine_void: quar,
+    atlas_wasteland_exterior: waste,
+    atlas_settlement_interiors: settle
   };
 }
 
+// ---------------- 16x16 Pixel UI & Equipment Icon Sheet (160x32, 20 icons) ----------------
+const UI_ICON_NAMES = [
+  'status', 'party', 'inventory', 'equipment', 'skills', 'quests', 'worldmap', 'dialogue', 'saveload', 'settings',
+  'help', 'exit', 'weapon', 'armor', 'accessory', 'consumable', 'keyitem', 'proof', 'alert', 'menu'
+];
+
+function buildUiIconSheet() {
+  const cv = new PixelCanvas(160, 32);
+  const drawIcon = (idx, fn) => {
+    const ox = (idx % 10) * 16;
+    const oy = Math.floor(idx / 10) * 16;
+    paintSpriteOn(cv, ox, oy, 16, 16, fn);
+  };
+  // 0: status (heart/pulse monitor)
+  drawIcon(0, s => {
+    bevelBox(s, 1, 2, 14, 12, '#1d323e', '#091116');
+    box(s, 3, 7, 3, 2, '#72dce8'); box(s, 6, 5, 2, 6, '#7dffb0'); box(s, 8, 4, 2, 8, '#7dffb0'); box(s, 10, 7, 3, 2, '#72dce8');
+  });
+  // 1: party (twin silhouettes)
+  drawIcon(1, s => {
+    box(s, 3, 3, 4, 4, '#72dce8'); box(s, 2, 8, 6, 5, '#4aa8bd');
+    box(s, 9, 4, 4, 4, '#f2bd75'); box(s, 8, 9, 6, 4, '#c48d46');
+  });
+  // 2: inventory (supply satchel/crate)
+  drawIcon(2, s => {
+    bevelBox(s, 2, 4, 12, 10, '#8a623a', '#1a1109');
+    box(s, 5, 2, 6, 2, '#c29258'); box(s, 6, 8, 4, 3, '#f2bd75');
+  });
+  // 3: equipment (shield & wrench)
+  drawIcon(3, s => {
+    bevelBox(s, 3, 2, 10, 11, '#58788c', '#0d151c');
+    box(s, 5, 4, 6, 7, '#8ec3de'); box(s, 7, 5, 2, 5, '#f2bd75');
+  });
+  // 4: skills (circuit bolt/star)
+  drawIcon(4, s => {
+    box(s, 7, 1, 3, 5, '#72dce8'); box(s, 4, 6, 8, 3, '#9cf5ff'); box(s, 6, 9, 3, 6, '#72dce8');
+    pxSet(s, 8, 7, '#ffffff');
+  });
+  // 5: quests (field dossier)
+  drawIcon(5, s => {
+    bevelBox(s, 3, 2, 10, 12, '#c9b382', '#241c12');
+    box(s, 5, 5, 6, 1, '#3b2e1e'); box(s, 5, 8, 6, 1, '#3b2e1e'); box(s, 5, 11, 4, 1, '#b83b2c');
+  });
+  // 6: worldmap (compass / sector grid)
+  drawIcon(6, s => {
+    bevelBox(s, 1, 2, 14, 12, '#223836', '#0a1414');
+    box(s, 3, 7, 10, 1, '#58a89a'); box(s, 7, 4, 1, 8, '#58a89a');
+    box(s, 6, 6, 3, 3, '#f2bd75'); pxSet(s, 11, 5, '#7dffb0'); pxSet(s, 4, 10, '#72dce8');
+  });
+  // 7: dialogue (speech log)
+  drawIcon(7, s => {
+    bevelBox(s, 2, 2, 12, 9, '#314957', '#0a1217');
+    box(s, 4, 5, 8, 1, '#e6f6fa'); box(s, 4, 7, 6, 1, '#98cad9');
+    box(s, 4, 11, 3, 3, '#314957');
+  });
+  // 8: saveload (data cassette/disk)
+  drawIcon(8, s => {
+    bevelBox(s, 2, 2, 12, 12, '#3d586e', '#0c141c');
+    box(s, 4, 2, 8, 5, '#d8e6ef'); box(s, 9, 3, 2, 3, '#1e2c38');
+    box(s, 4, 9, 8, 4, '#7dffb0');
+  });
+  // 9: settings (gear cog)
+  drawIcon(9, s => {
+    box(s, 6, 1, 4, 14, '#92a8b8'); box(s, 1, 6, 14, 4, '#92a8b8');
+    box(s, 3, 3, 10, 10, '#758c9c'); box(s, 6, 6, 4, 4, '#141c24');
+  });
+  // 10: help (question terminal)
+  drawIcon(10, s => {
+    bevelBox(s, 2, 2, 12, 12, '#384654', '#0b1016');
+    box(s, 6, 4, 4, 2, '#f2bd75'); box(s, 8, 6, 2, 2, '#f2bd75'); box(s, 7, 8, 2, 2, '#f2bd75'); box(s, 7, 11, 2, 2, '#f2bd75');
+  });
+  // 11: exit (doorway arrow)
+  drawIcon(11, s => {
+    box(s, 2, 2, 7, 12, '#4a2826'); box(s, 4, 4, 4, 8, '#140c0c');
+    box(s, 7, 7, 6, 2, '#ff5b4d'); box(s, 11, 5, 2, 6, '#ff5b4d');
+  });
+  // 12: weapon (plasma wrench/blade)
+  drawIcon(12, s => {
+    box(s, 3, 11, 3, 3, '#8a5d3b'); box(s, 5, 9, 3, 3, '#c4905a');
+    box(s, 7, 6, 4, 4, '#72dce8'); box(s, 10, 3, 4, 4, '#c8f8ff');
+  });
+  // 13: armor (armored chestplate)
+  drawIcon(13, s => {
+    bevelBox(s, 3, 3, 10, 10, '#4f6d7a', '#0f181c');
+    box(s, 6, 3, 4, 3, '#141d24'); box(s, 5, 7, 6, 4, '#7aa4b8');
+  });
+  // 14: accessory (lantern charm/module)
+  drawIcon(14, s => {
+    disc(s, 8, 8, 5, '#b87d32'); disc(s, 8, 8, 3, '#ffe48a'); box(s, 7, 1, 2, 3, '#92a8b8');
+  });
+  // 15: consumable (med/coolant vial)
+  drawIcon(15, s => {
+    box(s, 6, 2, 4, 2, '#c8d6e0'); bevelBox(s, 4, 4, 8, 10, '#2a4a3c', '#0c1812');
+    box(s, 5, 7, 6, 6, '#7dffb0'); box(s, 6, 8, 2, 3, '#d8ffea');
+  });
+  // 16: keyitem (circuit keycard)
+  drawIcon(16, s => {
+    bevelBox(s, 2, 4, 12, 8, '#c7963e', '#241a0a');
+    box(s, 4, 6, 3, 4, '#5ce4ff'); box(s, 9, 7, 3, 2, '#fff0b2');
+  });
+  // 17: proof (archive seal)
+  drawIcon(17, s => {
+    disc(s, 8, 7, 5, '#a83c32'); disc(s, 8, 7, 3, '#f2bd75');
+    box(s, 6, 11, 2, 4, '#a83c32'); box(s, 9, 11, 2, 4, '#a83c32');
+  });
+  // 18: alert (warning triangle)
+  drawIcon(18, s => {
+    box(s, 7, 2, 2, 2, '#ff5b4d'); box(s, 5, 4, 6, 4, '#ff5b4d'); box(s, 3, 8, 10, 5, '#ff5b4d');
+    box(s, 7, 6, 2, 4, '#140c0c'); box(s, 7, 11, 2, 1, '#140c0c');
+  });
+  // 19: menu (triple industrial bars)
+  drawIcon(19, s => {
+    box(s, 2, 3, 12, 2, '#72dce8'); box(s, 2, 7, 12, 2, '#e6f6fa'); box(s, 2, 11, 12, 2, '#f2bd75');
+  });
+  return cv;
+}
+
 // ---------------- Execute Full Asset Generation ----------------
-console.log('Generating Aeon Circuit sprites, portraits, tiles, doors & atlases into:', ROOT);
+console.log('Generating Aeon Circuit sprites, portraits, tiles, doors, atlases & UI icons into:', ROOT);
 
 const manifestChars = [];
 for (const ch of CHARACTERS) {
@@ -1027,4 +1593,17 @@ for (const [id, cv] of Object.entries(atlases)) {
 
 await mkdir(resolve(ROOT, 'environment'), { recursive: true });
 await writeFile(resolve(ROOT, 'environment/environment-art.json'), JSON.stringify(envManifest, null, 2));
-console.log(`Done! Generated ${manifestChars.length} character world+battle pairs, ${PORTRAIT_SPECS.length} portraits, ${Object.keys(DOOR_DEFS).length} door sets, ${Object.keys(PALETTE_DEFS).length} biome palettes, and ${Object.keys(atlases).length} scenery atlases.`);
+
+const iconSheet = buildUiIconSheet();
+await mkdir(resolve(ROOT, 'icons'), { recursive: true });
+await writePng('icons/ui-icons.png', iconSheet);
+await writeFile(resolve(ROOT, 'icons/icon-manifest.json'), JSON.stringify({
+  schema: 'aeon.ui-icons.v1',
+  sheet: 'assets/aeon/icons/ui-icons.png',
+  size: 16,
+  columns: 10,
+  rows: 2,
+  icons: Object.fromEntries(UI_ICON_NAMES.map((name, idx) => [name, { x: (idx % 10) * 16, y: Math.floor(idx / 10) * 16 }]))
+}, null, 2));
+
+console.log(`Done! Generated ${manifestChars.length} character world+battle pairs, ${PORTRAIT_SPECS.length} portraits, ${Object.keys(DOOR_DEFS).length} door sets, ${Object.keys(PALETTE_DEFS).length} biome palettes, ${Object.keys(atlases).length} scenery atlases, and ${UI_ICON_NAMES.length} UI icons.`);

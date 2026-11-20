@@ -157,34 +157,431 @@ body.aeon-campaign #dialog-speaker {
   outline: none;
 }
 
-/* HUD Area Banner & Campaign Actions */
+/* 16x16 Pixel-Art UI & Equipment Icon Sprite Sheet (160x32, 10x2) */
+.aeon-ico {
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  flex: 0 0 16px;
+  background-image: url('../assets/aeon/icons/ui-icons.png');
+  background-repeat: no-repeat;
+  background-size: 160px 32px;
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+  vertical-align: middle;
+}
+.ico-status     { background-position: 0px 0px; }
+.ico-party      { background-position: -16px 0px; }
+.ico-inventory  { background-position: -32px 0px; }
+.ico-equipment  { background-position: -48px 0px; }
+.ico-skills     { background-position: -64px 0px; }
+.ico-quests     { background-position: -80px 0px; }
+.ico-worldmap   { background-position: -96px 0px; }
+.ico-dialogue   { background-position: -112px 0px; }
+.ico-saveload   { background-position: -128px 0px; }
+.ico-settings   { background-position: -144px 0px; }
+.ico-help       { background-position: 0px -16px; }
+.ico-exit       { background-position: -16px -16px; }
+.ico-weapon     { background-position: -32px -16px; }
+.ico-armor      { background-position: -48px -16px; }
+.ico-accessory  { background-position: -64px -16px; }
+.ico-consumable { background-position: -80px -16px; }
+.ico-keyitem    { background-position: -96px -16px; }
+.ico-proof      { background-position: -112px -16px; }
+.ico-alert      { background-position: -128px -16px; }
+.ico-menu       { background-position: -144px -16px; }
+
+/* HUD Area Banner & Consolidated Dropdown Navigation Bar */
 #campaign-area-tag {
   position: absolute;
   left: 50%;
   top: calc(var(--u) * 7);
   transform: translateX(-50%);
   padding: calc(var(--u) * 2) calc(var(--u) * 6);
-  background: rgba(10, 15, 22, 0.84);
-  border: calc(var(--u) * 1) solid var(--aeon-border);
+  background: rgba(10, 15, 22, 0.86);
+  border: 1px solid var(--aeon-border);
   font-family: 'Silkscreen', monospace;
-  font-size: calc(var(--u) * 5.5);
+  font-size: max(9px, calc(var(--u) * 5.2));
   color: var(--aeon-amber);
-  letter-spacing: calc(var(--u) * 0.4);
+  letter-spacing: 0.04em;
   pointer-events: none;
   white-space: nowrap;
+  max-width: 34%;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
-#campaign-log-btn {
-  right: calc(var(--u) * 96);
-  width: calc(var(--u) * 31);
-  font-size: calc(var(--u) * 6);
+
+/* Hide legacy scattered corner buttons once consolidated dropdown nav bar is active */
+body.aeon-campaign.aeon-nav-consolidated #campaign-log-btn,
+body.aeon-campaign.aeon-nav-consolidated #btn-pause,
+body.aeon-campaign.aeon-nav-consolidated #btn-case {
+  display: none !important;
 }
-body.aeon-campaign .hud-obj {
-  right: calc(var(--u) * 132);
-  width: calc(var(--u) * 130);
+
+body.aeon-campaign.aeon-nav-consolidated .hud-obj {
+  right: max(108px, calc(var(--u) * 66));
+  width: min(26%, calc(var(--u) * 110));
 }
-body.aeon-campaign #campaign-field-menu {
+
+.campaign-nav-bar {
+  position: absolute;
+  top: max(6px, calc(var(--u) * 6));
+  right: max(6px, calc(var(--u) * 6));
+  z-index: 20;
+  pointer-events: auto;
+}
+
+.campaign-nav-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 32px;
+  padding: 5px 10px;
+  background: rgba(10, 16, 24, 0.94);
+  border: 2px solid var(--aeon-cyan);
+  box-shadow: inset 0 0 0 1px #060b11, 0 2px 10px rgba(0, 0, 0, 0.55);
+  color: #e6f3f8;
+  font-family: 'Silkscreen', monospace;
+  font-size: max(10px, calc(var(--u) * 5.2));
+  letter-spacing: 0.05em;
+  cursor: pointer;
+  white-space: nowrap;
+  border-radius: 0;
+  transition: background-color 140ms ease, color 140ms ease, border-color 140ms ease;
+}
+
+.campaign-nav-toggle:hover,
+.campaign-nav-toggle:focus-visible,
+.campaign-nav-toggle.open {
+  background: #142838;
+  border-color: var(--aeon-amber);
+  color: #ffffff;
+  outline: none;
+}
+
+.campaign-nav-caret {
+  color: var(--aeon-amber);
+  font-size: 0.9em;
+}
+
+.campaign-nav-backdrop {
+  position: absolute;
+  inset: 0;
+  z-index: 16;
+  background: rgba(4, 8, 13, 0.45);
+}
+
+.campaign-nav-drawer {
+  position: absolute;
+  top: max(42px, calc(var(--u) * 24));
+  right: max(6px, calc(var(--u) * 6));
+  z-index: 17;
+  width: min(560px, calc(100% - 12px));
+  max-height: calc(100% - max(50px, calc(var(--u) * 30)));
+  overflow-y: auto;
+  background: rgba(11, 17, 25, 0.97);
+  border: 2px solid var(--aeon-cyan);
+  box-shadow: inset 0 0 0 2px #070c12, 0 10px 28px rgba(0, 0, 0, 0.78);
+  padding: 10px;
+  color: #e4eff5;
+  animation: navDropIn 130ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes navDropIn {
+  from { opacity: 0; transform: translateY(-6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.campaign-nav-drawer-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding-bottom: 7px;
+  margin-bottom: 8px;
+  border-bottom: 1px solid var(--aeon-border);
+}
+
+.campaign-nav-sector {
+  font-family: 'Silkscreen', monospace;
+  font-size: 11px;
+  color: var(--aeon-amber);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.campaign-nav-close {
+  background: #162130;
+  border: 1px solid var(--aeon-border);
+  color: #d6e4ec;
+  font-family: 'Silkscreen', monospace;
+  font-size: 11px;
+  min-width: 28px;
+  min-height: 28px;
+  cursor: pointer;
+}
+
+.campaign-nav-close:hover,
+.campaign-nav-close:focus-visible {
+  background: var(--aeon-cyan);
+  color: #061018;
   border-color: var(--aeon-cyan);
+  outline: none;
+}
+
+.campaign-nav-groups {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.campaign-nav-group {
+  background: rgba(16, 24, 35, 0.85);
+  border: 1px solid #27374a;
+  padding: 6px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.campaign-nav-group-title {
+  font-family: 'Silkscreen', monospace;
+  font-size: 9px;
   color: var(--aeon-cyan);
+  letter-spacing: 0.06em;
+  padding: 2px 4px 4px;
+  border-bottom: 1px solid rgba(114, 220, 232, 0.22);
+  margin-bottom: 2px;
+}
+
+.campaign-nav-group-list {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.campaign-nav-item {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  width: 100%;
+  min-height: 30px;
+  padding: 5px 6px;
+  background: #0b1119;
+  border: 1px solid #253344;
+  color: #dce9f0;
+  font-family: 'VT323', monospace;
+  font-size: 16px;
+  line-height: 1.05;
+  text-align: left;
+  cursor: pointer;
+  white-space: nowrap;
+  overflow: hidden;
+  border-radius: 0;
+  transition: background-color 120ms ease, border-color 120ms ease, color 120ms ease;
+}
+
+.campaign-nav-item-text {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.campaign-nav-item:hover,
+.campaign-nav-item:focus-visible,
+.campaign-nav-item.active {
+  background: #173042;
+  border-color: var(--aeon-cyan);
+  color: #ffffff;
+  outline: none;
+}
+
+/* Unified RPG Field Record Panel */
+#rpg-lab-menu .campaign-record-panel {
+  width: min(94%, calc(var(--u) * 432));
+  max-height: 92%;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  background: rgba(12, 18, 26, 0.97);
+  border: 2px solid var(--aeon-cyan);
+  overflow: hidden;
+}
+
+.campaign-panel-title {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: max(11px, calc(var(--u) * 7.2));
+}
+
+.campaign-tab-strip {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  padding-bottom: 2px;
+}
+
+.campaign-tab-strip .menu-btn.sm {
+  white-space: nowrap;
+  flex: 0 0 auto;
+  font-size: max(9px, calc(var(--u) * 4.6));
+  padding: 4px 7px;
+  min-width: 0;
+}
+
+.campaign-record-panel .case-body {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  gap: 8px;
+  overflow: hidden;
+}
+
+.campaign-record-list {
+  list-style: none;
+  width: 40%;
+  overflow-y: auto;
+  margin: 0;
+  padding: 0;
+}
+
+.campaign-record-list .case-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: max(14px, calc(var(--u) * 8.5));
+}
+
+.campaign-record-right {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-width: 0;
+  overflow-y: auto;
+  gap: 6px;
+}
+
+.campaign-record-detail {
+  white-space: pre-wrap;
+  font-size: max(14px, calc(var(--u) * 9));
+  line-height: 1.2;
+  margin: 0;
+}
+
+.campaign-action-row {
+  flex-wrap: wrap;
+  gap: 5px;
+}
+
+.campaign-ico-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
+/* Interactive 29-Sector Bearframe World Map */
+.campaign-worldmap-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  flex: 1;
+  min-height: 0;
+}
+
+.campaign-worldmap-svg {
+  width: 100%;
+  height: auto;
+  max-height: 310px;
+  background: radial-gradient(circle at 48% 45%, #122130 0%, #091018 75%);
+  border: 1px solid var(--aeon-border);
+  display: block;
+}
+
+.campaign-worldmap-detail {
+  background: #0b1119;
+  border: 1px solid var(--aeon-border);
+  padding: 6px 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.campaign-wm-title {
+  font-family: 'Silkscreen', monospace;
+  font-size: max(10px, calc(var(--u) * 5.8));
+  color: var(--aeon-amber);
+}
+
+/* Inline Settings, Help & Return to Title Views */
+.campaign-settings-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  overflow-y: auto;
+}
+
+.campaign-setting-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  background: #0b1119;
+  border: 1px solid #28384a;
+  padding: 7px 10px;
+}
+
+.campaign-setting-label {
+  font-family: 'Silkscreen', monospace;
+  font-size: max(10px, calc(var(--u) * 5.4));
+  color: #dce9f0;
+}
+
+.campaign-range {
+  width: 150px;
+  accent-color: var(--aeon-cyan);
+}
+
+.campaign-help-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+  overflow-y: auto;
+}
+
+.campaign-help-card {
+  background: #0b1119;
+  border: 1px solid #28384a;
+  padding: 7px 8px;
+}
+
+.campaign-help-title {
+  font-family: 'Silkscreen', monospace;
+  font-size: max(10px, calc(var(--u) * 5.2));
+  color: var(--aeon-amber);
+  margin-bottom: 5px;
+  padding-bottom: 3px;
+  border-bottom: 1px solid rgba(242, 189, 117, 0.25);
+}
+
+.campaign-help-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-family: 'VT323', monospace;
+  font-size: max(14px, calc(var(--u) * 8));
+  color: #cfe0ea;
+  line-height: 1.1;
+}
+
+.campaign-title-exit {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 10px 4px;
 }
 
 /* Campaign Modals (Callsign, Puzzles, Dialogue Log, Save Terminal, Credits) */
@@ -192,7 +589,7 @@ body.aeon-campaign #campaign-field-menu {
   z-index: 45;
 }
 #campaign-modal .panel.campaign-wide {
-  width: calc(var(--u) * 420);
+  width: min(94%, calc(var(--u) * 420));
   max-height: 90%;
   background: var(--aeon-panel);
   border-color: var(--aeon-cyan);
@@ -200,33 +597,34 @@ body.aeon-campaign #campaign-field-menu {
 .campaign-log-list {
   list-style: none;
   overflow-y: auto;
-  max-height: calc(var(--u) * 145);
+  max-height: min(52vh, calc(var(--u) * 145));
   display: flex;
   flex-direction: column;
-  gap: calc(var(--u) * 3);
-  padding-right: calc(var(--u) * 3);
+  gap: 6px;
+  padding: 0 4px 0 0;
+  margin: 0;
 }
 .campaign-log-row {
   background: #0b1119;
-  border: calc(var(--u) * 1) solid var(--aeon-border);
-  padding: calc(var(--u) * 4) calc(var(--u) * 5);
-  font-size: calc(var(--u) * 9.5);
+  border: 1px solid var(--aeon-border);
+  padding: 6px 8px;
+  font-size: max(14px, calc(var(--u) * 9));
   line-height: 1.15;
 }
 .campaign-log-speaker {
   font-family: 'Silkscreen', monospace;
-  font-size: calc(var(--u) * 5.5);
+  font-size: max(9px, calc(var(--u) * 5.2));
   color: var(--aeon-amber);
-  margin-bottom: calc(var(--u) * 1.5);
+  margin-bottom: 2px;
 }
 .campaign-input {
   width: 100%;
   padding: calc(var(--u) * 4) calc(var(--u) * 6);
   background: #080d14;
-  border: calc(var(--u) * 1) solid var(--aeon-cyan);
+  border: 1px solid var(--aeon-cyan);
   color: #edf5f8;
   font-family: 'Silkscreen', monospace;
-  font-size: calc(var(--u) * 8);
+  font-size: max(12px, calc(var(--u) * 8));
 }
 .campaign-pronouns {
   display: grid;
@@ -243,38 +641,138 @@ body.aeon-campaign #campaign-field-menu {
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: calc(var(--u) * 3);
   font-family: 'Silkscreen', monospace;
-  font-size: calc(var(--u) * 5.5);
+  font-size: max(9px, calc(var(--u) * 5.5));
 }
 .campaign-party-chip {
   background: #0b1118;
-  border: calc(var(--u) * 1) solid var(--aeon-border);
+  border: 1px solid var(--aeon-border);
   padding: calc(var(--u) * 3);
   color: #dbe7ee;
 }
 
 /* Reduced motion mode */
-body.reduced-motion *,
+body.reduced-motion #fade,
+body.reduced-motion #card.play,
+body.reduced-motion #dialog:not(.hidden),
+body.reduced-motion .campaign-nav-drawer,
+body.reduced-motion .overlay:not(.hidden) > .panel {
+  animation: none !important;
+  transition: none !important;
+}
 @media (prefers-reduced-motion: reduce) {
-  body.reduced-motion #fade,
-  body.reduced-motion #card.play,
-  body.reduced-motion #dialog:not(.hidden),
-  body.reduced-motion .overlay:not(.hidden) > .panel {
+  body.aeon-campaign .campaign-nav-drawer,
+  body.aeon-campaign #fade,
+  body.aeon-campaign #dialog:not(.hidden),
+  body.aeon-campaign .overlay:not(.hidden) > .panel {
     animation: none !important;
     transition: none !important;
   }
 }
 
-/* Android / Touch Landscape ergonomics (min 44px targets) */
+/* Allow Mobile Portrait & Android Landscape play without blocking #rotate wall */
+body.aeon-campaign #rotate {
+  display: none !important;
+}
+
+/* Android / Touch Landscape ergonomics (min 44px touch targets & safe areas) */
 @media (pointer: coarse), (max-height: 520px) {
   .pix-btn,
   .dialog-tool-btn,
   .menu-btn.sm,
+  .campaign-nav-toggle,
+  .campaign-nav-item,
+  .campaign-nav-close,
   #rpg-lab-battle button {
+    min-height: 40px;
+  }
+  .campaign-nav-toggle {
     min-height: 44px;
-    min-width: 44px;
+    padding: 6px 12px;
+  }
+  .campaign-nav-drawer {
+    position: fixed;
+    top: calc(env(safe-area-inset-top, 0px) + 52px);
+    right: calc(env(safe-area-inset-right, 0px) + 8px);
+    left: auto;
+    width: min(560px, calc(100vw - env(safe-area-inset-left, 0px) - env(safe-area-inset-right, 0px) - 16px));
+    max-height: calc(100dvh - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px) - 62px);
+  }
+  .campaign-nav-backdrop {
+    position: fixed;
+  }
+  #rpg-lab-menu {
+    position: fixed;
+    padding: calc(env(safe-area-inset-top, 0px) + 6px) calc(env(safe-area-inset-right, 0px) + 8px) calc(env(safe-area-inset-bottom, 0px) + 6px) calc(env(safe-area-inset-left, 0px) + 8px);
+  }
+  #rpg-lab-menu .campaign-record-panel {
+    width: 100%;
+    max-width: 780px;
+    max-height: 100%;
   }
   body.aeon-campaign #dialog {
     left: calc(var(--u) * 18);
     right: calc(var(--u) * 18);
   }
 }
+
+/* Mobile Portrait adaptation (e.g. 390x844) */
+@media (orientation: portrait), (max-width: 640px) {
+  .campaign-nav-bar {
+    position: fixed;
+    top: calc(env(safe-area-inset-top, 0px) + 8px);
+    right: calc(env(safe-area-inset-right, 0px) + 8px);
+  }
+  .campaign-nav-toggle {
+    min-height: 44px;
+    padding: 8px 12px;
+    font-size: 11px;
+  }
+  .campaign-nav-backdrop {
+    position: fixed;
+  }
+  .campaign-nav-drawer {
+    position: fixed;
+    top: calc(env(safe-area-inset-top, 0px) + 58px);
+    right: calc(env(safe-area-inset-right, 0px) + 8px);
+    left: calc(env(safe-area-inset-left, 0px) + 8px);
+    width: auto;
+    max-height: calc(100dvh - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px) - 68px);
+    padding: 10px;
+  }
+  .campaign-nav-groups {
+    grid-template-columns: 1fr;
+  }
+  .campaign-nav-item {
+    min-height: 44px;
+    font-size: 18px;
+    padding: 8px 10px;
+  }
+  #rpg-lab-menu {
+    position: fixed;
+    padding: calc(env(safe-area-inset-top, 0px) + 8px) calc(env(safe-area-inset-right, 0px) + 8px) calc(env(safe-area-inset-bottom, 0px) + 8px) calc(env(safe-area-inset-left, 0px) + 8px);
+  }
+  #rpg-lab-menu .campaign-record-panel {
+    width: 100%;
+    max-height: 100%;
+    padding: 10px;
+  }
+  .campaign-record-panel .case-body {
+    flex-direction: column;
+  }
+  .campaign-record-list {
+    width: 100%;
+    max-height: 140px;
+  }
+  .campaign-help-grid {
+    grid-template-columns: 1fr;
+  }
+  body.aeon-campaign.aeon-nav-consolidated .hud-obj {
+    display: none;
+  }
+  body.aeon-campaign #campaign-area-tag {
+    left: 50%;
+    max-width: 56%;
+    font-size: 9px;
+  }
+}
+

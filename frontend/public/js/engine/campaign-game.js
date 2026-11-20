@@ -130,7 +130,7 @@ function confirmReplacement(id){
   });
 }
 
-export async function mountCampaignGame({game,ui,sfx,touchMode,refreshTouch}){
+export async function mountCampaignGame({game,ui,sfx,touchMode,refreshTouch,settings=null,store=null,syncSettings=null}){
   const title=$('title');document.title='AEON CIRCUIT: THE SILENT WAKE';
   const h1=title.querySelector('h1');h1.replaceChildren(document.createTextNode('AEON CIRCUIT'),document.createElement('br'));
   const subtitle=document.createElement('span');subtitle.textContent='THE SILENT WAKE';h1.append(subtitle);
@@ -153,7 +153,7 @@ export async function mountCampaignGame({game,ui,sfx,touchMode,refreshTouch}){
   if(!content||!worldSpec){
     mountPrivateCampaignInstaller({
       title,manifest,ui,sfx,
-      onInstalled:async()=>{await mountCampaignGame({game,ui,sfx,touchMode,refreshTouch});}
+      onInstalled:async()=>{await mountCampaignGame({game,ui,sfx,touchMode,refreshTouch,settings,store,syncSettings});}
     });
     return {get active(){return false;},get needsInstall(){return true;}};
   }
@@ -619,13 +619,38 @@ export async function mountCampaignGame({game,ui,sfx,touchMode,refreshTouch}){
           status:'authored-blockout-review-candidate'}),
         save:()=>journal.saveField(game.m.id,game.snapshot()),
         world:()=>journal.readWorld(),
-        skipScene:()=>narrative.skipActiveLines()
+        skipScene:()=>narrative.skipActiveLines(),
+        previewArea:areaId=>{
+          if(!factory.graph.ids.includes(areaId))return false;
+          game.start(factory.missionForSync(areaId),null);
+          syncFollowers();
+          updateHudArea(areaId);
+          return true;
+        }
       });
       $('btn-save').onclick=()=>{$('pause-note').textContent=window.__campaign.save()?'CAMPAIGN RECORD SAVED':'CAMPAIGN SAVE FAILED — REMAIN HERE';};
       $('btn-quit').onclick=()=>{
         if(window.__campaign.save())location.assign(new URL('campaign.html',location.href).href);
         else $('pause-note').textContent='CAMPAIGN SAVE FAILED — REMAIN HERE';};
-      active.fieldMenu=mountCampaignFieldMenu({game,ui,journal,touchMode,questJournal,onOpenLog:cinematics.openLogModal,audio});
+      active.fieldMenu=mountCampaignFieldMenu({
+        game,ui,journal,touchMode,questJournal,
+        onOpenLog:cinematics.openLogModal,
+        audio,sfx,settings,store,syncSettings,refreshTouch,worldSpec,
+        getDialogueLog:cinematics.getBacklog,
+        getReducedMotion:cinematics.getReducedMotion,
+        toggleReducedMotion:cinematics.toggleReducedMotion,
+        onReloadCheckpoint:()=>{
+          if(!journal.load())return false;
+          const rec=journal.readJournal();
+          if(!rec?.mapId)return false;
+          const snap=rec.maps?.[rec.mapId]||rec.field;
+          game.start(factory.missionForSync(rec.mapId),snap?.mission===rec.mapId?snap:null);
+          syncFollowers();
+          updateHudArea(rec.mapId);
+          return true;
+        },
+        onReturnTitle:()=>location.assign(new URL('campaign.html',location.href).href)
+      });
     }catch(error){
       console.error('Private campaign preview failed',error);
       game.mode='title';ui.show('title',true);

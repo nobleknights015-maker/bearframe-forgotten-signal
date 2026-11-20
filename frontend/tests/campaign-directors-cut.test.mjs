@@ -26,11 +26,13 @@ import {
   createCampaignMissionFactory
 } from '../public/js/engine/campaign-world.js';
 import { compileCampaignEnvironmentArt } from '../public/js/engine/campaign-environment-art.js';
-import { compileFullCampaignBundle, AREA_META } from '../public/js/engine/campaign-world-builder.js';
+import { compileFullCampaignBundle, AREA_META, WORLD_EDGES } from '../public/js/engine/campaign-world-builder.js';
+import { NAV_GROUPS } from '../public/js/engine/campaign-field-menu.js';
 
 const STORY_PATH = new URL('../public/assets/aeon/story/campaign.json', import.meta.url);
 const WORLD_PATH = new URL('../public/assets/aeon/story/opening-world-review-candidate.json', import.meta.url);
 const ENV_PATH = new URL('../public/assets/aeon/environment/environment-art.json', import.meta.url);
+const ICON_PATH = new URL('../public/assets/aeon/icons/icon-manifest.json', import.meta.url);
 const MANIFEST_PATH = new URL('../public/assets/aeon/asset-manifest.json', import.meta.url);
 const AEON_PUBLIC_ROOT = new URL('../public/', import.meta.url);
 
@@ -101,6 +103,26 @@ test('cinematics formatter binds callsign, pronouns, and portrait mappings', () 
   assert.equal(portraitIdForSpeaker('SYSTEM', 'sleeper_A'), null);
 });
 
+test('expanded environment asset library and UI icon sheet meet Sea-of-Stars breadth requirements', () => {
+  const envManifest = JSON.parse(fs.readFileSync(ENV_PATH, 'utf8'));
+  const iconManifest = JSON.parse(fs.readFileSync(ICON_PATH, 'utf8'));
+  assert.equal(Object.keys(envManifest.palettes).length, 14);
+  assert.equal(Object.keys(envManifest.doorways).length, 9);
+  assert.equal(Object.keys(envManifest.objects).length, 9);
+  assert.equal(Object.keys(iconManifest.icons).length, 20);
+
+  const iconPng = fs.readFileSync(new URL(iconManifest.sheet, AEON_PUBLIC_ROOT));
+  assert.equal(iconPng.readUInt32BE(16), 160);
+  assert.equal(iconPng.readUInt32BE(20), 32);
+
+  const navIds = NAV_GROUPS.flatMap(g => g.items.map(i => i.id));
+  assert.equal(navIds.length, 12);
+  for (const req of ['status', 'party', 'items', 'equipment', 'skills', 'quests', 'worldmap', 'dialogue', 'save', 'settings', 'help', 'title']) {
+    assert.ok(navIds.includes(req), `Missing consolidated nav item: ${req}`);
+  }
+  assert.ok(WORLD_EDGES.length >= 28, 'World map graph must link all 29 sectors');
+});
+
 test('private Director Cut v2 story skips optional SC-060/SC-061 and routes CHOICE-07', () => {
   if (!fs.existsSync(STORY_PATH)) return;
   const content = JSON.parse(fs.readFileSync(STORY_PATH, 'utf8'));
@@ -163,11 +185,31 @@ test('full 29-area world compiles cleanly with environment art and 0 blocked rea
 
   const factory = createCampaignMissionFactory(world, { environmentArt });
   assert.equal(factory.graph.ids.length, 29);
+  const usedAtlases = new Set();
+  const usedPalettes = new Set();
+  let mapsWithWaterfalls = 0;
+  let mapsWithSky = 0;
+  let mapsWithLightShafts = 0;
   for (const id of factory.graph.ids) {
+    const mapSpec = world.maps.find(m => m.id === id);
     const mission = factory.missionForSync(id);
     assert.ok(mission, `Expected compiled mission for ${id}`);
     assert.ok(mission.environmentDetails, `Expected layered environmentDetails for ${id}`);
+    assert.ok(Array.isArray(mission.terrainLayer), `Expected terrainLayer for ${id}`);
+    assert.ok(mapSpec?.environmentPalette, `Expected environmentPalette for ${id}`);
+    usedPalettes.add(mapSpec.environmentPalette);
+    if (mission.waterfalls?.length) mapsWithWaterfalls++;
+    if (mission.skyBackdrop) mapsWithSky++;
+    if (mission.lightShafts?.length) mapsWithLightShafts++;
+    for (const item of mapSpec?.environmentDetails || []) {
+      if (item.atlas) usedAtlases.add(item.atlas);
+    }
   }
+  assert.equal(usedAtlases.size, 9, `All 9 scenery atlases must be actively used, got: ${[...usedAtlases].join(', ')}`);
+  assert.ok(usedPalettes.size >= 13, `Expected rich regional palette diversity, got ${usedPalettes.size}`);
+  assert.ok(mapsWithWaterfalls >= 4, `Expected animated waterfalls in wetland/waterworks/cathedral maps, got ${mapsWithWaterfalls}`);
+  assert.ok(mapsWithSky >= 10, `Expected parallax sky backdrops across exterior/ruin areas, got ${mapsWithSky}`);
+  assert.ok(mapsWithLightShafts >= 15, `Expected volumetric light shafts across sectors, got ${mapsWithLightShafts}`);
 });
 
 test('shared campaign-world-builder compiles all 29 areas with public environment art and 0 blocked reachability', () => {
@@ -228,8 +270,29 @@ test('shared campaign-world-builder compiles all 29 areas with public environmen
 
   const factory = createCampaignMissionFactory(world, { environmentArt });
   assert.equal(factory.graph.ids.length, 29);
+  const usedAtlases = new Set();
+  const usedPalettes = new Set();
+  let mapsWithWaterfalls = 0;
+  let mapsWithSky = 0;
+  let mapsWithLightShafts = 0;
   for (const id of factory.graph.ids) {
+    const mapSpec = world.maps.find(m => m.id === id);
     const mission = factory.missionForSync(id);
+    assert.ok(mission, `Expected compiled mission for ${id}`);
     assert.ok(mission.environmentDetails, `Expected layered environmentDetails for ${id}`);
+    assert.ok(Array.isArray(mission.terrainLayer), `Expected terrainLayer for ${id}`);
+    assert.ok(mapSpec?.environmentPalette, `Expected environmentPalette for ${id}`);
+    usedPalettes.add(mapSpec.environmentPalette);
+    if (mission.waterfalls?.length) mapsWithWaterfalls++;
+    if (mission.skyBackdrop) mapsWithSky++;
+    if (mission.lightShafts?.length) mapsWithLightShafts++;
+    for (const item of mapSpec?.environmentDetails || []) {
+      if (item.atlas) usedAtlases.add(item.atlas);
+    }
   }
+  assert.equal(usedAtlases.size, 9, `All 9 scenery atlases must be actively used, got: ${[...usedAtlases].join(', ')}`);
+  assert.ok(usedPalettes.size >= 13, `Expected rich regional palette diversity, got ${usedPalettes.size}`);
+  assert.ok(mapsWithWaterfalls >= 4, `Expected waterfalls, got ${mapsWithWaterfalls}`);
+  assert.ok(mapsWithSky >= 10, `Expected sky backdrops, got ${mapsWithSky}`);
+  assert.ok(mapsWithLightShafts >= 15, `Expected light shafts, got ${mapsWithLightShafts}`);
 });

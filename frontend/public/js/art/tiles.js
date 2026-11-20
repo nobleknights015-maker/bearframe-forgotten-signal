@@ -92,29 +92,141 @@ function rack(c, p) {
   }
 }
 
+function paintCampaignTerrainCell(c, code, x, y, atT, theme) {
+  const X = x * T, Y = y * T;
+  if (code === 1) {
+    // Architectural stone/metal walkway or ceremonial path with beveled curbs
+    const warm = theme === 'lantern' || theme === 'mail' || theme === 'wasteland';
+    const base = warm ? 'rgba(138,108,74,0.34)' : theme === 'cathedral' || theme === 'archive' ? 'rgba(92,118,162,0.30)' : 'rgba(116,144,158,0.28)';
+    const rim = warm ? 'rgba(245,204,132,0.38)' : 'rgba(176,226,242,0.34)';
+    R(c, base, X + 1, Y + 1, T - 2, T - 2);
+    if (atT(x, y - 1) !== 1) { R(c, rim, X, Y, T, 2); R(c, 'rgba(0,0,0,0.28)', X, Y + 2, T, 1); }
+    if (atT(x, y + 1) !== 1) { R(c, 'rgba(0,0,0,0.42)', X, Y + T - 2, T, 2); }
+    if (atT(x - 1, y) !== 1) { R(c, rim, X, Y, 2, T); }
+    if (atT(x + 1, y) !== 1) { R(c, 'rgba(0,0,0,0.36)', X + T - 2, Y, 2, T); }
+    R(c, 'rgba(255,255,255,0.06)', X + 6, Y + 6, 8, 1);
+    R(c, 'rgba(0,0,0,0.14)', X + 18, Y + 22, 9, 1);
+  } else if (code === 2) {
+    // Deep water / coolant canal basin with stone embankment edges & foam lip
+    const deep = theme === 'stasis' || theme === 'cathedral' ? '#0d2536' : theme === 'wetland' || theme === 'quay' ? '#103038' : '#0f2c36';
+    const mid = theme === 'wetland' || theme === 'quay' ? '#184b52' : '#164558';
+    const foam = theme === 'wetland' ? 'rgba(154,238,224,0.45)' : 'rgba(148,232,250,0.42)';
+    R(c, deep, X, Y, T, T);
+    R(c, mid, X + 2, Y + 3, T - 4, T - 5);
+    if (atT(x, y - 1) !== 2) {
+      R(c, '#1c2a30', X, Y, T, 4); R(c, '#49636b', X, Y, T, 1);
+      R(c, 'rgba(0,0,0,0.48)', X, Y + 4, T, 4); R(c, foam, X + 2, Y + 8, T - 4, 1);
+    }
+    if (atT(x, y + 1) !== 2) { R(c, '#2d4047', X, Y + T - 3, T, 3); R(c, foam, X + 3, Y + T - 4, T - 6, 1); }
+    if (atT(x - 1, y) !== 2) { R(c, '#1c2a30', X, Y, 3, T); R(c, foam, X + 3, Y + 2, 1, T - 4); }
+    if (atT(x + 1, y) !== 2) { R(c, '#1c2a30', X + T - 3, Y, 3, T); R(c, foam, X + T - 4, Y + 2, 1, T - 4); }
+  } else if (code === 3) {
+    // Multi-step elevation stairway / ramp with treads, riser shadows & side handrails
+    const stone = theme === 'lantern' || theme === 'wetland' ? '#634a35' : theme === 'wasteland' ? '#6b5642' : '#3d4c59';
+    const hi = theme === 'lantern' || theme === 'wetland' ? '#8c6b4d' : theme === 'wasteland' ? '#94785e' : '#657c8f';
+    R(c, '#12181e', X, Y, T, T);
+    for (let s = 0; s < 5; s++) {
+      const sy = Y + 2 + s * 6;
+      R(c, stone, X + 3, sy, T - 6, 5);
+      R(c, hi, X + 3, sy, T - 6, 1);
+      R(c, 'rgba(0,0,0,0.45)', X + 3, sy + 4, T - 6, 2);
+    }
+    R(c, '#202930', X, Y, 3, T); R(c, '#8ea4b5', X + 1, Y, 1, T);
+    R(c, '#202930', X + T - 3, Y, 3, T); R(c, '#8ea4b5', X + T - 2, Y, 1, T);
+  } else if (code === 4) {
+    // Elevated viaduct / cliff drop-off edge with safety rail posts & abyssal shadow
+    R(c, '#0b1016', X, Y, T, T);
+    R(c, 'rgba(38,54,68,0.65)', X, Y, T, 8);
+    R(c, '#6a7f90', X, Y, T, 2);
+    R(c, '#25323d', X, Y + 8, T, 4);
+    for (let px = 4; px < T; px += 10) {
+      R(c, '#141c24', X + px, Y - 2, 4, 12);
+      R(c, '#8da4b8', X + px + 1, Y - 2, 2, 10);
+    }
+    R(c, '#d9a44a', X, Y + 2, T, 1);
+  } else if (code === 5) {
+    // Organic moss / grass / wildflower ground transition patch
+    const g1 = theme === 'wasteland' ? '#667338' : '#346331';
+    const g2 = theme === 'wasteland' ? '#8fa349' : '#589c46';
+    const fl = theme === 'wasteland' ? '#f5cc66' : '#8ef0c2';
+    for (let i = 0; i < 18; i++) {
+      const ox = 2 + Math.floor(hsh(x, y, 20 + i) * 24);
+      const oy = 2 + Math.floor(hsh(x, y, 50 + i) * 24);
+      const w = 3 + (i % 4), h = 2 + (i % 3);
+      R(c, i % 2 ? g1 : g2, X + ox, Y + oy, w, h);
+      if (i % 6 === 0) R(c, fl, X + ox + 1, Y + oy, 2, 1);
+    }
+  } else if (code === 6) {
+    // Recessed energy / relay conduit trench
+    const glow = theme === 'cathedral' ? '#c88cff' : theme === 'lantern' || theme === 'quarantine' ? '#f5b858' : '#5ce4ff';
+    R(c, 'rgba(8,14,20,0.72)', X + 10, Y, 12, T);
+    R(c, 'rgba(72,96,114,0.55)', X + 10, Y, 1, T);
+    R(c, 'rgba(72,96,114,0.55)', X + 21, Y, 1, T);
+    R(c, glow, X + 14, Y, 4, T);
+    R(c, 'rgba(255,255,255,0.45)', X + 15, Y, 2, T);
+    R(c, '#2d3b47', X + 9, Y + 6, 14, 3);
+    R(c, '#2d3b47', X + 9, Y + 22, 14, 3);
+  }
+}
+
 export function bakeMap(map, mission) {
   const cv = document.createElement('canvas'); cv.width = map.w * T; cv.height = map.h * T;
   const c = cv.getContext('2d');
   c.imageSmoothingEnabled=false;
   const palette=mission.environmentArt||null;
   const at = (x, y) => (x < 0 || y < 0 || x >= map.w || y >= map.h) ? 0 : map.grid[y * map.w + x];
+  const tLayer = Array.isArray(mission.terrainLayer) && mission.terrainLayer.length === map.w * map.h ? mission.terrainLayer : null;
+  const atT = (x, y) => (!tLayer || x < 0 || y < 0 || x >= map.w || y >= map.h) ? 0 : tLayer[y * map.w + x];
   for (let y = 0; y < map.h; y++) for (let x = 0; x < map.w; x++) {
     const g = at(x, y);
     // ONLY an owner-private selected 32x32 map palette replaces a default
     // schematic tile. Original Ghost Signal missions retain their renderer.
     if (g === 2) {
-      if(palette?.floor)c.drawImage(palette.floor,x*T,y*T);
+      if(palette?.floor){
+        c.drawImage(palette.floor,x*T,y*T);
+        // Subtle deterministic multi-tile patina breaks up tile grid repetition
+        const macro = (hsh(x >> 1, y >> 1, 17) + hsh((x + 1) >> 1, y >> 1, 31)) * 0.5;
+        if (macro > 0.62) R(c, `rgba(255,245,220,${((macro - 0.62) * 0.14).toFixed(3)})`, x * T, y * T, T, T);
+        else if (macro < 0.36) R(c, `rgba(0,0,0,${((0.36 - macro) * 0.28).toFixed(3)})`, x * T, y * T, T, T);
+        if (hsh(x, y, 47) > 0.86) {
+          const cx0 = x * T + 5 + Math.floor(hsh(x, y, 48) * 18), cy0 = y * T + 5 + Math.floor(hsh(x, y, 49) * 18);
+          R(c, 'rgba(0,0,0,0.32)', cx0, cy0, 5, 1); R(c, 'rgba(0,0,0,0.24)', cx0 + 4, cy0 + 1, 3, 1);
+        }
+      }
       else floor(c, x, y, at(x, y - 1) === 1);
     }else if (g === 1) {
-      if(palette?.wall)c.drawImage(palette.wall,x*T,y*T);
+      if(palette?.wall){
+        c.drawImage(palette.wall,x*T,y*T);
+        const X = x * T, Y = y * T;
+        if (at(x, y + 1) !== 2) {
+          // Wall roof / upper cap tile: darker top mass with crisp Sea-of-Stars edge lips
+          R(c, 'rgba(4,8,14,0.48)', X, Y, T, T);
+          if (at(x, y - 1) === 2) { R(c, 'rgba(215,235,245,0.24)', X, Y, T, 2); R(c, 'rgba(0,0,0,0.32)', X, Y + 2, T, 2); }
+          if (at(x - 1, y) === 2) { R(c, 'rgba(215,235,245,0.22)', X, Y, 2, T); }
+          if (at(x + 1, y) === 2) { R(c, 'rgba(0,0,0,0.35)', X + T - 2, Y, 2, T); }
+        } else {
+          // Exposed south-facing vertical wall face: luminous top lip + grounded floor contact seam
+          R(c, 'rgba(240,248,255,0.16)', X, Y, T, 2);
+          R(c, 'rgba(0,0,0,0.34)', X, Y + T - 3, T, 3);
+        }
+      }
       else if (at(x, y + 1) === 2) wallFace(c, x, y);
       else wallTop(c, x, y, at);
     }
+    if (tLayer) {
+      const tc = atT(x, y);
+      if (tc > 0) paintCampaignTerrainCell(c, tc, x, y, atT, mission.campaignTheme);
+    }
   }
   paintCampaignEnvironmentDetails(c,mission.environmentDetails,'ground');
-  // soft ambient occlusion where floor meets side / lower walls
+  // Soft directional ambient occlusion & top-left wall cast shadows onto adjacent floors
   for (let y = 0; y < map.h; y++) for (let x = 0; x < map.w; x++) if (at(x, y) === 2) {
     const X = x * T, Y = y * T;
+    if (palette && at(x, y - 1) === 1) {
+      R(c, 'rgba(0,0,0,0.46)', X, Y, T, 4);
+      R(c, 'rgba(0,0,0,0.24)', X, Y + 4, T, 5);
+      R(c, 'rgba(0,0,0,0.10)', X, Y + 9, T, 5);
+    }
     if (at(x - 1, y) !== 2) { R(c, 'rgba(0,0,0,.32)', X, Y, 3, T); R(c, 'rgba(0,0,0,.15)', X + 3, Y, 4, T); }
     if (at(x + 1, y) !== 2) { R(c, 'rgba(0,0,0,.32)', X + T - 3, Y, 3, T); R(c, 'rgba(0,0,0,.15)', X + T - 7, Y, 4, T); }
     if (at(x, y + 1) !== 2) { R(c, 'rgba(0,0,0,.3)', X, Y + T - 3, T, 3); R(c, 'rgba(0,0,0,.14)', X, Y + T - 7, T, 4); }

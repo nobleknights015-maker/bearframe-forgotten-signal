@@ -89,7 +89,7 @@ document.addEventListener('visibilitychange', () => { if (document.hidden && gam
 // Controller focus follows the existing Ghost Signal overlay buttons and styling.
 let lastPadMenuDir = null;
 function navigateControllerOverlay(pad) {
-  const roots = ['aeon-v5-choose', 'aeon-confirm', 'rpg-lab-battle', 'rpg-lab-menu', 'settings', 'casefile', 'pause', 'terminal', 'ending', 'title', 'dialog'];
+  const roots = ['aeon-v5-choose', 'aeon-confirm', 'rpg-lab-battle', 'campaign-nav-drawer', 'rpg-lab-menu', 'settings', 'casefile', 'pause', 'terminal', 'ending', 'title', 'dialog'];
   const root = roots.map($).find(node => node && !node.classList.contains('hidden'));
   if (!root) { lastPadMenuDir = null; return; }
   const buttons = [...root.querySelectorAll('button')].filter(b => !b.disabled && b.getClientRects().length);
@@ -115,7 +115,7 @@ function navigateControllerOverlay(pad) {
     else if (root.id === 'casefile') ui.closeCase();
     else if (root.id === 'terminal') ui.closeTerminal();
     else if (root.id === 'pause') game.onResume();
-    else if (root.id === 'rpg-lab-menu') game.onResume(); // gamepad B backs out of RPG menu, matching keyboard Escape
+    else if (root.id === 'campaign-nav-drawer' || root.id === 'rpg-lab-menu') game.onResume(); // gamepad B backs out of RPG menu/dropdown, matching keyboard Escape
     else if (root.id === 'rpg-lab-battle') root.querySelector('[data-campaign-battle-back]')?.click(); // cancel target only
   }
 }
@@ -139,7 +139,7 @@ function loop(now) {
 showTitle();
 if (location.pathname.endsWith('/campaign.html')) {
   import('./engine/campaign-game.js').then(({mountCampaignGame})=>
-    mountCampaignGame({game,ui,sfx,touchMode,refreshTouch}))
+    mountCampaignGame({game,ui,sfx,touchMode,refreshTouch,settings,store,syncSettings}))
     .catch(error=>{console.error('Private campaign initialization failed',error);
       ui.toast('CAMPAIGN INSTALLATION MISSING — SEE CONSOLE',5);});
 } else if (location.pathname.endsWith('/aeon.html')) {
