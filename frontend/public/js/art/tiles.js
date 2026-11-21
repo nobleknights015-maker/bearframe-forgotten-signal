@@ -1000,6 +1000,14 @@ export function drawEntity(c, e, g) {
       break;
     }
   }
+  if (e.isNextObjective && !e.gone && !e.hidden) {
+    const bob = Math.round(Math.sin(t * 4.5) * 2);
+    const ox = X + 13, oy = Y - (e.type === 'npc' ? 24 : 12) + bob;
+    R(c, '#0a0d12', ox - 1, oy - 1, 8, 8);
+    R(c, '#f8cb7c', ox, oy, 6, 6);
+    R(c, '#fff6d6', ox + 1, oy + 1, 2, 2);
+    R(c, '#f8cb7c', ox + 2, oy + 7, 2, 2);
+  }
 }
 
 export function drawDrone(c, d, t) {

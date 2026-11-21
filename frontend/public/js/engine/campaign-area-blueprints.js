@@ -1196,7 +1196,7 @@ export function buildAreaArchitecture(id, meta) {
       b.anchors.sidequests = [[6, 16], [14, 17]];
       b.anchors.battles = [[25, 16], [33, 15]];
       b.anchors.scenes = [[14, 6], [25, 6], [33, 9], [31, 13], [35, 13], [14, 13], [33, 7], [22, 13]];
-      b.anchors.puzzles = [[17, 16], [22, 16], [8, 15], [31, 7]];
+      b.anchors.puzzles = [[17, 16], [22, 16], [8, 15], [31, 7], [36, 16]];
       b.anchors.drone = { start: [18, 13], zone: [12, 5, 27, 17], waypoints: [[18, 13], [26, 13], [26, 6], [13, 6]] };
       b.lightShafts.push({ x: 18, y: 1, w: 4, h: 10, color: '#ffad52', alpha: 0.11 });
       b.lamps.push(

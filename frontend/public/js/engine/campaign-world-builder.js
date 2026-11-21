@@ -44,28 +44,28 @@ export const WORLD_EDGES = Object.freeze([
   ['A01', 'A02', 'right', null],
   ['A02', 'A03', 'right', null],
   ['A02', 'A04', 'up', null],
-  ['A03', 'A05', 'right', 'boss_b01_defeated'],
+  ['A03', 'A05', 'right', 'quiet_cycle_phase_1'],
   ['A05', 'A06', 'right', null],
   ['A05', 'A07', 'down', null],
   ['A06', 'A08', 'right', null],
-  ['A07', 'A09', 'right', null],
-  ['A08', 'A09', 'right', 'boss_b02_defeated'],
+  ['A07', 'A09', 'right', 'act2_complete'],
+  ['A08', 'A09', 'right', 'act2_complete'],
   ['A09', 'A10', 'right', null],
   ['A09', 'A11', 'up', null],
-  ['A09', 'A14', 'down', null],
-  ['A10', 'A12', 'right', 'boss_b03_defeated'],
+  ['A09', 'A14', 'down', 'first_priority_visible'],
+  ['A10', 'A12', 'right', 'first_priority_visible'],
   ['A12', 'A13', 'right', null],
   ['A12', 'A14', 'down', null],
   ['A13', 'A15', 'right', 'boss_b04_resolved'],
   ['A15', 'A16', 'right', null],
   ['A15', 'A17', 'up', null],
-  ['A16', 'A18', 'right', 'boss_b05_resolved'],
+  ['A16', 'A18', 'right', 'local_receiver_pinged'],
   ['A18', 'A19', 'up', null],
-  ['A18', 'A20', 'right', 'boss_b06_defeated'],
+  ['A18', 'A20', 'right', 'privacy_proof_agreed'],
   ['A20', 'A21', 'right', null],
   ['A21', 'A22', 'up', null],
   ['A21', 'A23', 'right', null],
-  ['A23', 'A24', 'right', 'boss_b07_defeated'],
+  ['A23', 'A24', 'right', 'act7_complete'],
   ['A24', 'A25', 'up', null],
   ['A24', 'A26', 'right', null],
   ['A26', 'A27', 'right', 'final_resolution_selected'],
@@ -200,7 +200,7 @@ const SCENE_AREA = {
   'SC-007': 'A03', 'SC-008': 'A03', 'SC-009': 'A03',
   'SC-010': 'A05', 'SC-011': 'A05',
   'SC-012': 'A06', 'SC-049': 'A06',
-  'SC-013': 'A08', 'SC-014': 'A05',
+  'SC-013': 'A08', 'SC-014': 'A08',
   'SC-015': 'A09', 'SC-016': 'A09', 'SC-050': 'A09',
   'SC-017': 'A10',
   'SC-018': 'A09', 'SC-051': 'A09', 'SC-060': 'A09',
@@ -459,6 +459,10 @@ export function compileFullCampaignBundle(raw, manifest) {
       sc.sets = sc.sets ? `${sc.sets};act2_complete` : 'act2_complete';
       addFlag('act2_complete');
     }
+    if (sc.id === 'SC-057' && !String(sc.sets || '').includes('act7_complete')) {
+      sc.sets = sc.sets ? `${sc.sets};act7_complete` : 'act7_complete';
+      addFlag('act7_complete');
+    }
   }
   for (const en of content.encounters || []) addFlag(en.set_flag);
   for (const q of content.quests || []) {
@@ -466,7 +470,7 @@ export function compileFullCampaignBundle(raw, manifest) {
     if (q.start_trigger && /^[a-z]/.test(q.start_trigger)) addFlag(q.start_trigger);
   }
   for (const extra of [
-    'act2_complete', 'after_pica_repaired', 'callsign_customized',
+    'act2_complete', 'act7_complete', 'after_pica_repaired', 'callsign_customized',
     'crate_a00_kit', 'crate_a02_wrench', 'crate_a04_coolant', 'crate_a06_blade',
     'crate_a09_charm', 'crate_a12_weave', 'crate_a15_emitter', 'crate_a18_stamp',
     'crate_a20_shroud', 'crate_a21_pike', 'crate_a24_carapace', 'crate_a26_cell'

@@ -16,6 +16,8 @@ import {createCampaignAudio} from './campaign-audio.js';
 import {createCampaignCinematics,formatCampaignDialogue,formatCampaignSpeaker} from './campaign-cinematics.js';
 import {compileFullCampaignBundle} from './campaign-world-builder.js';
 import {loadLocalPrivateCampaign,saveLocalPrivateCampaign,clearLocalPrivateCampaign} from './campaign-private-store.js';
+import {nextNarrativeScene} from './narrative-runtime.js';
+import {applyCampaignLevelProgression} from './campaign-gear.js';
 import {drawEntity} from '../art/tiles.js';
 
 const ROOT=new URL('../../assets/aeon/',import.meta.url);
@@ -281,6 +283,63 @@ export async function mountCampaignGame({game,ui,sfx,touchMode,refreshTouch,sett
         game.partyFollowers=followers;
       };
 
+      const sceneAreaMap=new Map();
+      for(const m of worldSpec.maps||[]){
+        if(m.entryTrigger){
+          const s=(content.scenes||[]).find(sc=>sc.trigger===m.entryTrigger);
+          if(s)sceneAreaMap.set(s.id,m.id);
+        }
+        for(const ent of m.entities||[]){
+          if(ent.sceneId)sceneAreaMap.set(ent.sceneId,m.id);
+        }
+      }
+
+      const firstPortalStep=(fromId,toId,flags)=>{
+        if(!fromId||!toId||fromId===toId)return null;
+        const visited=new Set([fromId]);
+        const q=[[fromId,null]];
+        while(q.length){
+          const [cur,first]=q.shift();
+          const m=worldSpec.maps.find(x=>x.id===cur);
+          if(!m)continue;
+          for(const p of m.layers?.find(l=>l.name==='portals')?.objects||[]){
+            const req=p.properties?.requiresFlag;
+            if(req&&!flags?.[req])continue;
+            const nxt=p.properties?.toMap;
+            const step=first||p.name;
+            if(nxt===toId)return step;
+            if(nxt&&!visited.has(nxt)){visited.add(nxt);q.push([nxt,step]);}
+          }
+        }
+        return null;
+      };
+
+      const syncObjectiveUi=()=>{
+        const world=journal.readWorld();
+        if(!world||!game.m)return;
+        const st=world.narrative||{completed:{},skipped:{}};
+        const nextSc=nextNarrativeScene(content,st);
+        const curArea=game.m.id;
+        const targetArea=nextSc?(sceneAreaMap.get(nextSc.id)||curArea):null;
+        const nextStepPortal=(targetArea&&targetArea!==curArea)
+          ? firstPortalStep(curArea,targetArea,world.flags)
+          : null;
+        for(const ent of game.ents||[]){
+          const isSceneHit=!!nextSc&&(
+            ent.sceneId===nextSc.id||
+            (nextSc.id==='SC-042'&&ent.sceneId==='SC-043')
+          );
+          const isPortalHit=!!nextStepPortal&&ent.portalId===nextStepPortal;
+          ent.isNextObjective=isSceneHit||isPortalHit;
+        }
+        const objText=nextSc
+          ? (targetArea===curArea
+            ? `${String(nextSc.title||nextSc.id).replace(/\s*\(Act \d+\)/,'').toUpperCase()}`
+            : `PROCEED TO ${targetArea} · ${String(worldSpec.maps.find(m=>m.id===targetArea)?.name||targetArea).toUpperCase()}`)
+          : 'FIRST MORNING RECORDED · FREE EXPLORATION';
+        game.m.objective=()=>objText;
+      };
+
       const updateHudArea=(areaId)=>{
         const area=worldSpec.maps.find(m=>m.id===areaId);
         const tag=$('campaign-area-tag');
@@ -292,6 +351,7 @@ export async function mountCampaignGame({game,ui,sfx,touchMode,refreshTouch,sett
           }else tag.classList.add('hidden');
         }
         if(areaId)audio.setAreaTheme(areaId);
+        syncObjectiveUi();
       };
 
       const recruitCompanion=(companionId,flagRequired,announce)=>{
@@ -370,7 +430,15 @@ export async function mountCampaignGame({game,ui,sfx,touchMode,refreshTouch,sett
               commitWorld(w2);
             }
           }
+          if(sceneId==='SC-057'){
+            const w2=journal.readWorld();
+            if(w2&&!w2.flags?.act7_complete){
+              w2.flags={...(w2.flags||{}),act7_complete:true};
+              commitWorld(w2);
+            }
+          }
           syncFollowers();
+          syncObjectiveUi();
           if(sceneId==='SC-047'){
             cinematics.openEpilogueCredits(journal.readWorld(),game.stats);
           }else{
@@ -414,7 +482,7 @@ export async function mountCampaignGame({game,ui,sfx,touchMode,refreshTouch,sett
         return true;
       };
 
-      const playSideDialogue=(dialogueRows,flagToSet,toastMsg)=>{
+      const playSideDialogue=(dialogueRows,flagToSet,toastMsg,xpReward=0)=>{
         if(!dialogueRows.length)return false;
         const lines=dialogueRows.map(d=>({
           s:formatCampaignSpeaker(d.speaker,journal.readWorld(),starterId),
@@ -429,8 +497,18 @@ export async function mountCampaignGame({game,ui,sfx,touchMode,refreshTouch,sett
             if(flagToSet){
               const w=journal.readWorld();
               if(w&&!w.flags?.[flagToSet]){
-                w.flags={...(w.flags||{}),[flagToSet]:true};
-                commitWorld(w);
+                const next=structuredClone(w);
+                next.flags={...(next.flags||{}),[flagToSet]:true};
+                if(xpReward>0){
+                  next.progression=next.progression||{xp:0};
+                  next.progression.xp=(next.progression.xp||0)+xpReward;
+                  const prog=applyCampaignLevelProgression(next);
+                  commitWorld(prog.world);
+                  if(prog.leveledUp?.length)audio.levelUp();
+                }else{
+                  commitWorld(next);
+                }
+                syncObjectiveUi();
               }
             }
             if(toastMsg)ui.toast(toastMsg,2.5);
@@ -511,9 +589,17 @@ export async function mountCampaignGame({game,ui,sfx,touchMode,refreshTouch,sett
             return;
           }
           if(e.sidequestId){
-            const rows=(content.dialogue||[]).filter(d=>d.scene_id===e.sidequestId);
             const sq=content.quests?.find(q=>q.id===e.sidequestId);
-            if(playSideDialogue(rows,sq?.completion_flags,sq?`QUEST COMPLETE: ${sq.title.toUpperCase()}`:null))return;
+            const w=journal.readWorld();
+            if(sq&&sq.completion_flags&&w?.flags?.[sq.completion_flags]){
+              ui.toast(`QUEST COMPLETE: ${sq.title.toUpperCase()}`,2.2);return;
+            }
+            if(sq&&sq.start_trigger&&/^[a-z]/.test(sq.start_trigger)&&!w?.flags?.[sq.start_trigger]){
+              ui.toast(`FIELD REQUEST LOCKED — ADVANCE STORY TO UNLOCK ${sq.title.toUpperCase()}`,2.8);return;
+            }
+            const rows=(content.dialogue||[]).filter(d=>d.scene_id===e.sidequestId);
+            const fallbackRows=sq?[{speaker:'SYSTEM',text:`${sq.title}: ${sq.player_objective}`},{speaker:'SYSTEM',text:'Field adjustment verified and logged in the expedition record.'}]:[];
+            if(playSideDialogue(rows.length?rows:fallbackRows,sq?.completion_flags,sq?`QUEST COMPLETE: ${sq.title.toUpperCase()} (+25 XP)`:null,25))return;
           }
           if(e.ambientArea){
             const rows=(content.dialogue||[]).filter(d=>d.area===e.ambientArea&&d.scene_id==='ambient');
@@ -537,8 +623,11 @@ export async function mountCampaignGame({game,ui,sfx,touchMode,refreshTouch,sett
                 if(resolved.set_flag)next.flags[resolved.set_flag]=true;
                 next.progression=next.progression||{xp:0};
                 next.progression.xp=(next.progression.xp||0)+15;
-                if(commitWorld(next)){
-                  audio.puzzleSolve();
+                const prog=applyCampaignLevelProgression(next);
+                if(commitWorld(prog.world)){
+                  if(prog.leveledUp?.length)audio.levelUp();
+                  else audio.puzzleSolve();
+                  syncObjectiveUi();
                   ui.toast(`${resolved.id} RESOLVED (+15 XP)`,2.5);
                 }
                 if(e.trigger)invoke(e.trigger,e.sceneId);
@@ -557,8 +646,20 @@ export async function mountCampaignGame({game,ui,sfx,touchMode,refreshTouch,sett
             }
             return;
           }
-          if(!e.trigger){ui.toast('OBJECT AWAITS AUTHOR REVIEW',2);return;}
-          invoke(e.trigger,e.sceneId);
+          if(!e.trigger){ui.toast(`${e.label||'FIELD OBJECT'} — NO ACTIVE SIGNAL`,2);return;}
+          if(!invoke(e.trigger,e.sceneId)){
+            const w=journal.readWorld();
+            const st=w?.narrative||{completed:{},skipped:{}};
+            if(e.sceneId&&(st.completed?.[e.sceneId]||st.skipped?.[e.sceneId])){
+              const amb=(content.dialogue||[]).filter(d=>d.area===game.m?.id&&d.scene_id==='ambient').slice(0,1);
+              if(e.type==='npc'&&amb.length){playSideDialogue(amb,null,null);return;}
+              ui.toast(`${e.label||'RECORD'} — ALREADY LOGGED`,2);
+            }else{
+              const nextSc=nextNarrativeScene(content,st);
+              const nextArea=nextSc?(sceneAreaMap.get(nextSc.id)||''):'';
+              ui.toast(nextSc?`NEXT OBJECTIVE: ${String(nextSc.title||nextSc.id).toUpperCase()}${nextArea?' ('+nextArea+')':''}`:'ALL MAIN OBJECTIVES LOGGED',2.6);
+            }
+          }
         },
         onTrigger(t){invoke(t.trigger,t.sceneId);},
         onUpdate(g){security.tick(g);},

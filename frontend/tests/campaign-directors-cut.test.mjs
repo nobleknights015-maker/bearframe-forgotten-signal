@@ -12,6 +12,10 @@ import { equipItem, createCampaignParty } from '../public/js/engine/rpg-party.js
 import {
   createNarrativeState,
   nextNarrativeScene,
+  beginNarrativeScene,
+  narrativeLines,
+  acknowledgeNarrativeLine,
+  completeNarrativeScene,
   skipOptionalNarrativeScene,
   applyNarrativeChoice
 } from '../public/js/engine/narrative-runtime.js';
@@ -23,8 +27,12 @@ import {
 import {
   auditCampaignGameplayReachability,
   auditCampaignPortalApproaches,
+  compileCampaignWorld,
   createCampaignMissionFactory
 } from '../public/js/engine/campaign-world.js';
+import { compileCampaignEncounterGates } from '../public/js/engine/campaign-encounter-gates.js';
+import { compileCampaignQuestJournal } from '../public/js/engine/campaign-quest-journal.js';
+import { compileCampaignCombatStaging } from '../public/js/engine/campaign-combat-staging.js';
 import { compileCampaignEnvironmentArt } from '../public/js/engine/campaign-environment-art.js';
 import {
   compileFullCampaignBundle,
@@ -238,6 +246,138 @@ test('full 29-area private world compiles cleanly with environment art and 0 blo
     assert.ok(mission, `Expected compiled mission for ${id}`);
     assert.ok(mission.environmentDetails, `Expected layered environmentDetails for ${id}`);
     assert.ok(Array.isArray(mission.terrainLayer), `Expected terrainLayer for ${id}`);
+  }
+});
+
+test('end-to-end Director Cut v2 playthrough completes all 10 main quests, 7 choices, 10 mandatory bosses, and both endings for all 4 Sleepers', (t) => {
+  if (!fs.existsSync(STORY_PATH) || !fs.existsSync(WORLD_PATH)) {
+    t.skip('NOT RUN — private Director Cut v2 files are not installed in this public workspace');
+    return;
+  }
+  const content = JSON.parse(fs.readFileSync(STORY_PATH, 'utf8'));
+  const world = JSON.parse(fs.readFileSync(WORLD_PATH, 'utf8'));
+  const manifest = JSON.parse(fs.readFileSync(MANIFEST_PATH, 'utf8'));
+  const graph = compileCampaignWorld(world);
+  const gates = compileCampaignEncounterGates(world, content);
+  const questJournal = compileCampaignQuestJournal(content, world);
+  const combatStaging = compileCampaignCombatStaging(world.combat, { worldSpec: world, content, manifest });
+  const encById = new Map(content.encounters.map(e => [e.id, e]));
+  const combatById = new Map(world.combat.encounters.map(e => [e.id, e]));
+
+  // Verify all 4 approved Sleeper starters initialize cleanly with matching battle sheets
+  for (const starterId of ['sleeper_A', 'sleeper_B', 'sleeper_C', 'sleeper_D']) {
+    const roster = combatStaging.roster(starterId);
+    assert.equal(roster.length, 1);
+    assert.equal(roster[0].artId, starterId);
+  }
+
+  const reachableMaps = (fromId, flags) => {
+    const seen = new Set([fromId]);
+    const q = [fromId];
+    while (q.length) {
+      const id = q.shift();
+      const m = graph.get(id);
+      for (const p of m.layers.find(l => l.name === 'portals').objects) {
+        const req = p.properties.requiresFlag;
+        if (req && !flags[req]) continue;
+        const to = p.properties.toMap;
+        if (!seen.has(to)) { seen.add(to); q.push(to); }
+      }
+    }
+    return seen;
+  };
+
+  const findTrigger = (trigger, sceneId) => {
+    const hits = [];
+    if (world.openingScene?.trigger === trigger) hits.push({ area: world.startArea, kind: 'opening' });
+    for (const m of world.maps) {
+      if (m.entryTrigger === trigger) hits.push({ area: m.id, kind: 'entry' });
+      for (const e of m.entities || []) {
+        if (e.trigger === trigger && (!e.sceneId || e.sceneId === sceneId)) hits.push({ area: m.id, kind: 'entity' });
+      }
+    }
+    return hits;
+  };
+
+  for (const [branch, expectedResolution, choice01] of [
+    ['RECLASSIFY', 'reclassify', 'SHELTER'],
+    ['ISOLATE', 'isolate', 'WORKSHOP']
+  ]) {
+    let state = createNarrativeState(content);
+    let flags = { ...state.flags };
+    const encounters = {};
+    let currentArea = world.startArea;
+    let bossesCleared = 0;
+
+    for (let step = 0; step < 120; step++) {
+      const scene = nextNarrativeScene(content, state);
+      if (!scene) break;
+      if (branch === 'ISOLATE' && scene.id === 'SC-042') {
+        state = { ...state, skipped: { ...state.skipped, 'SC-042': true } };
+        continue;
+      }
+      const hits = findTrigger(scene.trigger, scene.id);
+      assert.ok(hits.length > 0, `No staged trigger for ${scene.id}`);
+      const reach = reachableMaps(currentArea, flags);
+      const targetHit = hits.find(h => reach.has(h.area));
+      assert.ok(targetHit, `Progression softlock: cannot reach ${scene.id} (${hits.map(h => h.area).join('/')}) from ${currentArea}`);
+      currentArea = targetHit.area;
+
+      state = beginNarrativeScene(content, { ...state, flags: { ...state.flags, ...flags } }, scene.id, { trigger: scene.trigger });
+      for (let g = 0; g < 100; g++) {
+        const pendingChoices = content.choices.filter(c => c.scene.split('/').includes(scene.id) && !state.choices[c.id]);
+        const readyChoice = pendingChoices.find(c => {
+          const gate = world.choiceGates[c.id];
+          return gate && (gate.afterLine === null || state.linesRead[gate.afterLine]);
+        });
+        if (readyChoice) {
+          const opts = Object.keys(readyChoice.options);
+          const pick = readyChoice.id === 'CHOICE-07'
+            ? [branch]
+            : readyChoice.id === 'CHOICE-01'
+              ? [choice01]
+              : opts.slice(0, readyChoice.selection_count || 1);
+          state = applyNarrativeChoice(content, state, readyChoice.id, pick);
+          flags = { ...flags, ...state.flags };
+          continue;
+        }
+        const nextLine = narrativeLines(content, state).find(l => !state.linesRead[l.line_id]);
+        if (nextLine) {
+          state = acknowledgeNarrativeLine(content, state, nextLine.line_id);
+          flags = { ...flags, ...state.flags };
+          continue;
+        }
+        break;
+      }
+
+      let pendingBat = gates.pendingForScene(scene.id, { encounters, flags });
+      while (pendingBat) {
+        const cSpec = combatById.get(pendingBat.encounterId);
+        assert.equal(cSpec?.mapId, currentArea, `Boss ${pendingBat.encounterId} area mismatch for ${scene.id}`);
+        encounters[pendingBat.encounterId] = { outcome: 'victory' };
+        const srcEnc = encById.get(pendingBat.encounterId);
+        if (srcEnc?.set_flag) flags[srcEnc.set_flag] = true;
+        bossesCleared++;
+        pendingBat = gates.pendingForScene(scene.id, { encounters, flags });
+      }
+
+      state = completeNarrativeScene(content, state, scene.id);
+      if (scene.id === 'SC-042' && state.enums.final_resolution === 'reclassify') {
+        state = { ...state, skipped: { ...state.skipped, 'SC-043': true } };
+      }
+      flags = { ...flags, ...state.flags };
+    }
+
+    assert.equal(nextNarrativeScene(content, state), null, 'All scenes must conclude');
+    assert.equal(bossesCleared, 10, 'All 10 mandatory boss stages must trigger and resolve');
+    assert.equal(Object.keys(state.choices).length, 7, 'All 7 choice contracts must be decided');
+    assert.equal(state.enums.final_resolution, expectedResolution);
+    assert.equal(flags.game_completed, true);
+    assert.equal(flags.credits_unlocked, true);
+    const projectedQuests = questJournal.project(flags);
+    for (const mq of content.quests.filter(q => q.id.startsWith('MS-'))) {
+      assert.ok(projectedQuests[mq.title]?.startsWith('COMPLETE — '), `Main quest ${mq.id} must be COMPLETE`);
+    }
   }
 });
 

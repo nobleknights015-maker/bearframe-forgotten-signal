@@ -34,7 +34,10 @@ export function mountCampaignNarrative({
   let stopped=false,token=0,owned=false,priorMode=null;
   const snapshot=()=>{
     const world=copy(readWorld());
-    return {world,state:createNarrativeState(content,world.narrative||{})};
+    const prior=world.narrative||{};
+    const mergedFlags={...(prior.flags||{})};
+    for(const [k,v] of Object.entries(world.flags||{}))if(v===true)mergedFlags[k]=true;
+    return {world,state:createNarrativeState(content,{...prior,flags:mergedFlags})};
   };
   const blocked=reason=>{onBlocked(reason);return false;};
   const takeMode=mode=>{
@@ -119,9 +122,11 @@ export function mountCampaignNarrative({
             if(ready.id==='CHOICE-07'){
               if(next.enums?.final_resolution==='isolate'&&id==='SC-042'){
                 next.skipped={...(next.skipped||{}),'SC-042':true};
+                delete next.skipped['SC-043'];
                 next.activeScene='SC-043';
               }else if(next.enums?.final_resolution==='reclassify'&&id==='SC-043'){
                 next.skipped={...(next.skipped||{}),'SC-043':true};
+                delete next.skipped['SC-042'];
                 next.activeScene='SC-042';
               }
             }
