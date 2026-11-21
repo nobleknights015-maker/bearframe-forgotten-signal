@@ -37,6 +37,38 @@
     "quarantine_lock": {
       "closed": "assets/aeon/environment/doors/quarantine_lock_closed.png",
       "open": "assets/aeon/environment/doors/quarantine_lock_open.png"
+    },
+    "airlock_east": {
+      "closed": "assets/aeon/environment/doors/airlock_east_closed.png",
+      "open": "assets/aeon/environment/doors/airlock_east_open.png"
+    },
+    "airlock_west": {
+      "closed": "assets/aeon/environment/doors/airlock_west_closed.png",
+      "open": "assets/aeon/environment/doors/airlock_west_open.png"
+    },
+    "arch_east": {
+      "closed": "assets/aeon/environment/doors/arch_east_closed.png",
+      "open": "assets/aeon/environment/doors/arch_east_open.png"
+    },
+    "arch_west": {
+      "closed": "assets/aeon/environment/doors/arch_west_closed.png",
+      "open": "assets/aeon/environment/doors/arch_west_open.png"
+    },
+    "south_threshold": {
+      "closed": "assets/aeon/environment/doors/south_threshold_closed.png",
+      "open": "assets/aeon/environment/doors/south_threshold_open.png"
+    },
+    "trail_passage": {
+      "closed": "assets/aeon/environment/doors/trail_passage_closed.png",
+      "open": "assets/aeon/environment/doors/trail_passage_open.png"
+    },
+    "bridge_passage": {
+      "closed": "assets/aeon/environment/doors/bridge_passage_closed.png",
+      "open": "assets/aeon/environment/doors/bridge_passage_open.png"
+    },
+    "rail_gantry": {
+      "closed": "assets/aeon/environment/doors/rail_gantry_closed.png",
+      "open": "assets/aeon/environment/doors/rail_gantry_open.png"
     }
   },
   "palettes": {

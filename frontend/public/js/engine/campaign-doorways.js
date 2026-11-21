@@ -24,11 +24,12 @@ export function compileCampaignDoorways(graph){
         id:'campaign_door_'+portal.name,
         // Runtime sprite art uses the same original 32x32 field entity path.
         type:style,portalId:portal.name,portalArt:p.portalArt??null,
+        portalDir:p.facing??null,
         tx:portal.x/32,ty:portal.y/32,
         w:1,h:1,interact:true,solid:false,
         requiresFlag:p.requiresFlag??null,
         requiresNotFlag:p.requiresNotFlag??null,
-        prompt:prompts[style]
+        prompt:typeof p.portalLabel==='string'&&p.portalLabel.trim()?p.portalLabel.trim().toUpperCase():prompts[style]
       });
     });
     const originalIds=new Set((area.entities||[]).map(e=>e.id));

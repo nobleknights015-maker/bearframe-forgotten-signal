@@ -16,6 +16,7 @@ import {createCampaignAudio} from './campaign-audio.js';
 import {createCampaignCinematics,formatCampaignDialogue,formatCampaignSpeaker} from './campaign-cinematics.js';
 import {compileFullCampaignBundle} from './campaign-world-builder.js';
 import {loadLocalPrivateCampaign,saveLocalPrivateCampaign,clearLocalPrivateCampaign} from './campaign-private-store.js';
+import {drawEntity} from '../art/tiles.js';
 
 const ROOT=new URL('../../assets/aeon/',import.meta.url);
 const STARTERS=Object.freeze(['sleeper_A','sleeper_B','sleeper_C','sleeper_D']);
@@ -626,6 +627,43 @@ export async function mountCampaignGame({game,ui,sfx,touchMode,refreshTouch,sett
           syncFollowers();
           updateHudArea(areaId);
           return true;
+        },
+        renderOverviewDataUrl:()=>{
+          if(!game.base||!game.map)return null;
+          const W=game.map.w*32,H=game.map.h*32;
+          const cv=document.createElement('canvas');
+          cv.width=W;cv.height=H;
+          const c=cv.getContext('2d');
+          c.imageSmoothingEnabled=false;
+          const kind=game.m?.skyBackdrop;
+          const gr=c.createLinearGradient(0,0,0,H);
+          if(kind==='dawn_sky'){gr.addColorStop(0,'#1e324a');gr.addColorStop(0.5,'#3d5870');gr.addColorStop(0.82,'#c88c5a');gr.addColorStop(1,'#f0c478');}
+          else if(kind==='wetland_mist'){gr.addColorStop(0,'#0f242c');gr.addColorStop(0.6,'#1f484e');gr.addColorStop(1,'#3a6e6a');}
+          else if(kind==='wasteland_canyon'){gr.addColorStop(0,'#1d2432');gr.addColorStop(0.55,'#4e3e36');gr.addColorStop(1,'#96664a');}
+          else if(kind==='canopy_ruins'){gr.addColorStop(0,'#0c1e1c');gr.addColorStop(0.6,'#1c3d30');gr.addColorStop(1,'#325b40');}
+          else{gr.addColorStop(0,'#080c12');gr.addColorStop(1,'#141e2a');}
+          c.fillStyle=gr;c.fillRect(0,0,W,H);
+          c.drawImage(game.base,0,0);
+          for(const wf of game.m?.waterfalls||[]){
+            const wx=wf.x*32,wy=wf.y*32,ww=(wf.w||1)*32,wh=(wf.h||2)*32;
+            c.fillStyle=wf.color||'rgba(72,208,224,0.75)';c.fillRect(wx+4,wy,ww-8,wh);
+            c.fillStyle='rgba(230,252,255,0.82)';c.fillRect(wx+2,wy+wh-4,ww-4,4);
+          }
+          for(const e of game.ents||[])if(!e.hidden&&!e.gone)drawEntity(c,e,game);
+          if(game.over)c.drawImage(game.over,0,0);
+          for(const sh of game.m?.lightShafts||[]){
+            const sx=sh.x*32,sy=sh.y*32,sw=(sh.w||2)*32,shH=(sh.h||6)*32;
+            c.save();c.fillStyle=sh.color||'#ffe6a8';c.globalAlpha=sh.alpha||0.12;
+            c.beginPath();c.moveTo(sx,sy);c.lineTo(sx+sw,sy);c.lineTo(sx+sw+24,sy+shH);c.lineTo(sx+24,sy+shH);c.closePath();c.fill();c.restore();
+          }
+          return cv.toDataURL('image/png');
+        },
+        travelToPortal:(portalName)=>{
+          const door=(game.ents||[]).find(e=>e.portalId===portalName);
+          if(!door)return false;
+          game.player.x=door.tx*32+16;game.player.y=door.ty*32+16;
+          game.use(door);
+          return game.m?.id||false;
         }
       });
       $('btn-save').onclick=()=>{$('pause-note').textContent=window.__campaign.save()?'CAMPAIGN RECORD SAVED':'CAMPAIGN SAVE FAILED — REMAIN HERE';};

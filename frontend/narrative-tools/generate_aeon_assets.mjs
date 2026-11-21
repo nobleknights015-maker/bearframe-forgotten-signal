@@ -793,33 +793,190 @@ function makeWallTile(def, seed = 0) {
   return cv;
 }
 
-// ---------------- 9 Animated Doorway Sets (64x64 / 32x64) ----------------
+// ---------------- 17 Architectural Doorway & Natural Passage Sets ----------------
 const DOOR_DEFS = {
-  service:         { w: 64, h: 64, frame: '#3d454d', panel: '#59636d', trim: '#c79a48', lightClosed: '#ff4e3a', lightOpen: '#6cf0a8' },
-  overgrown:       { w: 64, h: 64, frame: '#323f35', panel: '#495c4e', trim: '#5d8c42', lightClosed: '#e88b3a', lightOpen: '#7dffb0' },
-  elevator:        { w: 64, h: 64, frame: '#2c343d', panel: '#485463', trim: '#46c6d9', lightClosed: '#ffb020', lightOpen: '#56f0d8' },
-  archive_seal:    { w: 64, h: 64, frame: '#2c2f3b', panel: '#4a5063', trim: '#b8964e', lightClosed: '#ff5238', lightOpen: '#72f0e0' },
-  cathedral_gate:  { w: 64, h: 64, frame: '#232836', panel: '#3a455e', trim: '#58d4eb', lightClosed: '#ff7038', lightOpen: '#72f5ff' },
-  roof_hatch:      { w: 32, h: 64, frame: '#363b42', panel: '#545b66', trim: '#d6a44e', lightClosed: '#ff4e3a', lightOpen: '#7dffb0' },
-  water_lock:      { w: 64, h: 64, frame: '#28383d', panel: '#3d565e', trim: '#4ac8d8', lightClosed: '#ff9632', lightOpen: '#68f2c8' },
-  sluice_gate:     { w: 64, h: 64, frame: '#263a3b', panel: '#375456', trim: '#70c492', lightClosed: '#e87838', lightOpen: '#5cf0d8' },
-  quarantine_lock: { w: 64, h: 64, frame: '#2c3238', panel: '#444e57', trim: '#e6a632', lightClosed: '#ff3b30', lightOpen: '#7dffb0' },
+  // Embedded north-wall / building-facade front-facing doors (64x64 / 32x64)
+  service:         { w: 64, h: 64, kind: 'door', frame: '#3d454d', panel: '#59636d', trim: '#c79a48', lightClosed: '#ff4e3a', lightOpen: '#6cf0a8' },
+  overgrown:       { w: 64, h: 64, kind: 'door', frame: '#323f35', panel: '#495c4e', trim: '#5d8c42', lightClosed: '#e88b3a', lightOpen: '#7dffb0' },
+  elevator:        { w: 64, h: 64, kind: 'door', frame: '#2c343d', panel: '#485463', trim: '#46c6d9', lightClosed: '#ffb020', lightOpen: '#56f0d8' },
+  archive_seal:    { w: 64, h: 64, kind: 'door', frame: '#2c2f3b', panel: '#4a5063', trim: '#b8964e', lightClosed: '#ff5238', lightOpen: '#72f0e0' },
+  cathedral_gate:  { w: 64, h: 64, kind: 'door', frame: '#232836', panel: '#3a455e', trim: '#58d4eb', lightClosed: '#ff7038', lightOpen: '#72f5ff' },
+  roof_hatch:      { w: 32, h: 64, kind: 'door', frame: '#363b42', panel: '#545b66', trim: '#d6a44e', lightClosed: '#ff4e3a', lightOpen: '#7dffb0' },
+  water_lock:      { w: 64, h: 64, kind: 'door', frame: '#28383d', panel: '#3d565e', trim: '#4ac8d8', lightClosed: '#ff9632', lightOpen: '#68f2c8' },
+  sluice_gate:     { w: 64, h: 64, kind: 'door', frame: '#263a3b', panel: '#375456', trim: '#70c492', lightClosed: '#e87838', lightOpen: '#5cf0d8' },
+  quarantine_lock: { w: 64, h: 64, kind: 'door', frame: '#2c3238', panel: '#444e57', trim: '#e6a632', lightClosed: '#ff3b30', lightOpen: '#7dffb0' },
+  // Side-profile recessed bulkhead & stone archway portals (flush against east/west walls)
+  airlock_east:    { w: 32, h: 64, kind: 'side_east', frame: '#36414c', panel: '#52606e', trim: '#c79a48', lightClosed: '#ff4e3a', lightOpen: '#6cf0a8' },
+  airlock_west:    { w: 32, h: 64, kind: 'side_west', frame: '#36414c', panel: '#52606e', trim: '#c79a48', lightClosed: '#ff4e3a', lightOpen: '#6cf0a8' },
+  arch_east:       { w: 32, h: 64, kind: 'arch_east', frame: '#3b4a42', panel: '#596b60', trim: '#7fa868', lightClosed: '#e88b3a', lightOpen: '#8ef5c0' },
+  arch_west:       { w: 32, h: 64, kind: 'arch_west', frame: '#3b4a42', panel: '#596b60', trim: '#7fa868', lightClosed: '#e88b3a', lightOpen: '#8ef5c0' },
+  // Floor-level south threshold strip & natural outdoor passage markers (zero floating vault doors!)
+  south_threshold: { w: 64, h: 32, kind: 'south_threshold', frame: '#34414e', panel: '#1e2730', trim: '#c79a48', lightClosed: '#ff5238', lightOpen: '#72f5d8' },
+  trail_passage:   { w: 64, h: 32, kind: 'trail_passage',   frame: '#5b4634', panel: '#7d6249', trim: '#6b9452', lightClosed: '#e07a3a', lightOpen: '#ffe28a' },
+  bridge_passage:  { w: 64, h: 32, kind: 'bridge_passage',  frame: '#4f3a28', panel: '#73543b', trim: '#56c2c8', lightClosed: '#e07a3a', lightOpen: '#84f5e0' },
+  rail_gantry:     { w: 64, h: 64, kind: 'rail_gantry',     frame: '#343d47', panel: '#525f6d', trim: '#d9a44a', lightClosed: '#ff4e3a', lightOpen: '#7dffb0' },
 };
 
 function makeDoorPair(spec) {
   const mk = (open) => {
     const cv = new PixelCanvas(spec.w, spec.h);
+    const col = open ? spec.lightOpen : spec.lightClosed;
+
+    if (spec.kind === 'side_east' || spec.kind === 'side_west') {
+      const east = spec.kind === 'side_east';
+      // Heavy recessed side-wall bulkhead jamb & depth passage
+      const xFrame = east ? 10 : 0;
+      const xOpen = east ? 16 : 2;
+      bevelBox(cv, xFrame, 4, 22, 58, spec.frame, '#090c10');
+      box(cv, xOpen, 10, 14, 48, '#070a0e');
+      if (open) {
+        radialGlow(cv, east ? 22 : 10, 34, 22, col, 0.42);
+        box(cv, east ? 18 : 4, 12, 10, 44, col, 0.16);
+        box(cv, east ? 16 : 12, 12, 3, 44, spec.panel);
+        // Illuminated floor guide strip
+        box(cv, east ? 6 : 14, 52, 12, 3, col, 0.65);
+      } else {
+        bevelBox(cv, east ? 14 : 4, 10, 14, 48, spec.panel, '#0b0e12');
+        box(cv, east ? 16 : 6, 20, 10, 3, spec.trim, 0.9);
+        box(cv, east ? 16 : 6, 44, 10, 3, spec.trim, 0.9);
+        box(cv, east ? 19 : 9, 30, 4, 8, '#141920');
+      }
+      // Status beacon on outer wall jamb
+      const bx = east ? 11 : 15;
+      box(cv, bx, 6, 6, 4, '#101419');
+      box(cv, bx + 1, 7, 4, 2, col);
+      radialGlow(cv, bx + 3, 8, 9, col, 0.48);
+      return cv;
+    }
+
+    if (spec.kind === 'arch_east' || spec.kind === 'arch_west') {
+      const east = spec.kind === 'arch_east';
+      // Carved ancient stone / ruined tunnel archway flush against east/west rock or masonry wall
+      const xWall = east ? 8 : 0;
+      bevelBox(cv, xWall, 4, 24, 58, spec.frame, '#0b0f0d');
+      box(cv, east ? 12 : 4, 6, 16, 4, spec.panel);
+      box(cv, east ? 14 : 2, 14, 16, 46, '#080c0b');
+      // Arch voussoir keystone highlight
+      box(cv, east ? 11 : 5, 10, 14, 5, spec.panel);
+      box(cv, east ? 13 : 7, 10, 10, 2, shade(spec.panel, 0.25));
+      if (open) {
+        radialGlow(cv, east ? 22 : 10, 36, 20, col, 0.32);
+        box(cv, east ? 16 : 4, 16, 12, 42, col, 0.14);
+        // Subtle glowing moss/beacon along arch rim
+        box(cv, east ? 12 : 16, 18, 2, 12, spec.trim, 0.85);
+      } else {
+        // Portcullis / rubble seal
+        for (let py = 16; py < 58; py += 7) box(cv, east ? 14 : 2, py, 16, 3, spec.panel);
+        box(cv, east ? 18 : 6, 16, 3, 42, spec.frame);
+      }
+      box(cv, east ? 12 : 14, 7, 5, 3, col);
+      return cv;
+    }
+
+    if (spec.kind === 'south_threshold') {
+      // Floor-level recessed south passage jambs & illuminated threshold strip (64x32)
+      bevelBox(cv, 2, 4, 12, 26, spec.frame, '#090c10');
+      bevelBox(cv, 50, 4, 12, 26, spec.frame, '#090c10');
+      box(cv, 14, 10, 36, 20, '#0a0f15', 0.72);
+      if (open) {
+        box(cv, 16, 14, 32, 12, spec.panel, 0.85);
+        box(cv, 18, 24, 28, 3, col, 0.78);
+        // Subtle downward chevron indicator etched in threshold light
+        box(cv, 28, 17, 8, 2, col, 0.72);
+        box(cv, 30, 19, 4, 2, col, 0.85);
+        box(cv, 31, 21, 2, 2, col, 0.95);
+        radialGlow(cv, 32, 22, 18, col, 0.26);
+      } else {
+        bevelBox(cv, 14, 14, 36, 12, spec.frame, '#090c10');
+        box(cv, 18, 18, 28, 3, spec.trim, 0.9);
+      }
+      box(cv, 5, 8, 5, 3, col);
+      box(cv, 54, 8, 5, 3, col);
+      return cv;
+    }
+
+    if (spec.kind === 'trail_passage') {
+      // Natural outdoor trail signpost / stone cairn + warm guide lantern (64x32)
+      // Left weathered stone cairn & moss tuft
+      bevelBox(cv, 4, 10, 12, 18, '#505954', '#161b18');
+      bevelBox(cv, 6, 6, 8, 6, '#65706a', '#161b18');
+      box(cv, 5, 11, 5, 3, spec.trim, 0.85);
+      // Right wooden trail post with hanging lantern
+      box(cv, 50, 4, 4, 24, spec.frame);
+      box(cv, 51, 4, 1, 24, spec.panel);
+      box(cv, 44, 6, 10, 3, spec.panel);
+      box(cv, 45, 9, 4, 6, '#1a2026');
+      box(cv, 46, 10, 2, 4, col);
+      radialGlow(cv, 47, 12, 12, col, open ? 0.5 : 0.3);
+      // Subtle stepped trail stones on ground
+      box(cv, 20, 18, 9, 5, '#6b6558', 0.65);
+      box(cv, 33, 21, 10, 5, '#5d584d', 0.65);
+      if (!open) {
+        // Wooden barricade rail when story-gated
+        box(cv, 14, 13, 38, 4, spec.frame);
+        box(cv, 15, 14, 36, 1, spec.panel);
+      }
+      return cv;
+    }
+
+    if (spec.kind === 'bridge_passage') {
+      // Weathered wooden pier entrance posts + hanging turquoise marsh lantern (64x32)
+      box(cv, 6, 4, 6, 25, spec.frame);
+      box(cv, 7, 4, 2, 24, spec.panel);
+      box(cv, 52, 4, 6, 25, spec.frame);
+      box(cv, 53, 4, 2, 24, spec.panel);
+      // Rope tie caps
+      box(cv, 5, 7, 8, 2, '#9a8460');
+      box(cv, 51, 7, 8, 2, '#9a8460');
+      // Hanging beacon lantern on right post
+      box(cv, 47, 9, 6, 2, spec.frame);
+      box(cv, 47, 11, 5, 7, '#142026');
+      box(cv, 48, 12, 3, 5, col);
+      radialGlow(cv, 49, 14, 13, col, open ? 0.52 : 0.3);
+      // Plank threshold slats
+      for (let px = 14; px < 50; px += 6) {
+        box(cv, px, 20, 5, 9, spec.panel, 0.7);
+        box(cv, px, 20, 5, 1, shade(spec.panel, 0.2), 0.7);
+      }
+      if (!open) {
+        box(cv, 10, 12, 44, 4, '#6b3b2c');
+        box(cv, 12, 13, 40, 2, '#d9a44a', 0.75);
+      }
+      return cv;
+    }
+
+    if (spec.kind === 'rail_gantry') {
+      // Industrial overhead sky-rail signal arch & side stanchions (64x64)
+      bevelBox(cv, 2, 8, 8, 54, spec.frame, '#0c1014');
+      bevelBox(cv, 54, 8, 8, 54, spec.frame, '#0c1014');
+      bevelBox(cv, 2, 4, 60, 10, spec.panel, '#0c1014');
+      box(cv, 6, 12, 52, 2, spec.trim, 0.85);
+      // Signal light housing on gantry header
+      box(cv, 24, 5, 16, 7, '#10151b');
+      box(cv, 26, 7, 4, 3, open ? '#1d2d28' : col);
+      box(cv, 34, 7, 4, 3, open ? col : '#2d1c1c');
+      radialGlow(cv, open ? 36 : 28, 8, 12, col, 0.55);
+      if (!open) {
+        // Lowered hazard crossing barrier across rails
+        box(cv, 10, 38, 44, 5, '#1d2228');
+        for (let bx = 12; bx < 52; bx += 8) box(cv, bx, 39, 4, 3, '#e6a632');
+      } else {
+        // Subtle open floor signal strip between stanchions
+        box(cv, 16, 56, 32, 2, col, 0.45);
+      }
+      return cv;
+    }
+
+    // Default: embedded north-wall front-facing door / bulkhead / gate (64x64 or 32x64)
     const pad = 6, ix = pad, iy = 8, iw = spec.w - pad * 2, ih = spec.h - 10;
     bevelBox(cv, 2, 4, spec.w - 4, spec.h - 4, spec.frame, '#090b0f');
     box(cv, ix, iy, iw, ih, '#070a0d');
-    const col = open ? spec.lightOpen : spec.lightClosed;
     if (open) {
       radialGlow(cv, spec.w / 2, spec.h / 2, 28, col, 0.46);
       box(cv, ix + 1, iy + 1, 5, ih - 2, spec.panel);
       box(cv, ix + iw - 6, iy + 1, 5, ih - 2, spec.panel);
       box(cv, ix + 6, iy + 2, iw - 12, ih - 4, col, 0.16);
       box(cv, ix + 6, iy + 1, iw - 12, 3, col, 0.72);
-      // Interior threshold step light
       box(cv, ix + 8, iy + ih - 5, iw - 16, 3, col, 0.45);
     } else {
       const half = Math.floor(iw / 2);
@@ -828,7 +985,6 @@ function makeDoorPair(spec) {
       box(cv, ix + 4, iy + 14, iw - 8, 4, spec.trim, 0.9);
       box(cv, ix + 4, iy + ih - 18, iw - 8, 4, spec.trim, 0.9);
       box(cv, ix + half - 1, iy + 4, 2, ih - 8, '#0c1014');
-      // Center locking wheel / seal ring
       disc(cv, spec.w / 2, spec.h / 2 + 2, 6, '#141920');
       disc(cv, spec.w / 2, spec.h / 2 + 2, 4, spec.trim);
       disc(cv, spec.w / 2, spec.h / 2 + 2, 2, '#0c1014');

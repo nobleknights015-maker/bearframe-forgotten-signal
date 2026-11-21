@@ -14,15 +14,20 @@ const TYPES = {
   '.svg': 'image/svg+xml', '.ico': 'image/x-icon', '.webmanifest': 'application/manifest+json',
 };
 
-http.createServer((req, res) => {
-  const [rawPath, rawQuery = ''] = req.url.split('?');
-  let rel = decodeURIComponent(rawPath);
-  if (rel === '/' && !/(?:^|&)(?:rpg-lab|connected-lab)=1(?:&|$)/.test(rawQuery)) {
-    const location = '/campaign.html' + (rawQuery ? '?' + rawQuery : '');
-    res.writeHead(302, { Location: location, 'Cache-Control': 'no-cache' });
-    return res.end();
+const server = http.createServer((req, res) => {
+  const [rawPath = '/', rawQuery = ''] = (req.url || '/').split('?');
+  let rel;
+  try {
+    rel = decodeURIComponent(rawPath);
+  } catch {
+    res.writeHead(400, { 'Content-Type': 'text/plain; charset=utf-8' });
+    return res.end('Bad Request');
   }
-  if (rel.endsWith('/')) rel += 'index.html';
+  if (rel === '/') {
+    rel = /(?:^|&)(?:rpg-lab|connected-lab)=1(?:&|$)/.test(rawQuery) ? '/index.html' : '/campaign.html';
+  } else if (rel.endsWith('/')) {
+    rel += 'index.html';
+  }
   let file = path.normalize(path.join(ROOT, rel));
   if (!file.startsWith(ROOT)) { res.writeHead(403); return res.end(); }
   if (fs.existsSync(file) && fs.statSync(file).isDirectory()) { res.writeHead(302, { Location: rel + '/' }); return res.end(); }
@@ -30,6 +35,17 @@ http.createServer((req, res) => {
     if (path.extname(rel) || rel.startsWith('/assets/')) { res.writeHead(404); return res.end('Not found'); }
     file = path.join(ROOT, 'index.html');
   }
-  res.writeHead(200, { 'Content-Type': TYPES[path.extname(file)] || 'application/octet-stream', 'Cache-Control': 'no-cache' });
-  fs.createReadStream(file).pipe(res);
-}).listen(PORT, HOST, () => console.log(`Ghost Signal serving on ${HOST}:${PORT}`));
+  const contentType = TYPES[path.extname(file)] || 'application/octet-stream';
+  res.writeHead(200, { 'Content-Type': contentType, 'Cache-Control': 'no-cache' });
+  if (req.method === 'HEAD') return res.end();
+  const stream = fs.createReadStream(file);
+  stream.on('error', () => {
+    if (!res.headersSent) res.writeHead(500);
+    res.end();
+  });
+  stream.pipe(res);
+});
+
+server.listen(PORT, HOST, () => {
+  console.log(`Aeon Circuit / Ghost Signal serving on http://${HOST}:${PORT}`);
+});

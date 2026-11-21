@@ -107,7 +107,7 @@ test('expanded environment asset library and UI icon sheet meet Sea-of-Stars bre
   const envManifest = JSON.parse(fs.readFileSync(ENV_PATH, 'utf8'));
   const iconManifest = JSON.parse(fs.readFileSync(ICON_PATH, 'utf8'));
   assert.equal(Object.keys(envManifest.palettes).length, 14);
-  assert.equal(Object.keys(envManifest.doorways).length, 9);
+  assert.equal(Object.keys(envManifest.doorways).length, 17);
   assert.equal(Object.keys(envManifest.objects).length, 9);
   assert.equal(Object.keys(iconManifest.icons).length, 20);
 
@@ -295,4 +295,71 @@ test('shared campaign-world-builder compiles all 29 areas with public environmen
   assert.ok(mapsWithWaterfalls >= 4, `Expected waterfalls, got ${mapsWithWaterfalls}`);
   assert.ok(mapsWithSky >= 10, `Expected sky backdrops, got ${mapsWithSky}`);
   assert.ok(mapsWithLightShafts >= 15, `Expected light shafts, got ${mapsWithLightShafts}`);
+
+  // Architectural & World Design Integrity Audit across ALL 29 sectors
+  const oppDir = { right: 'left', left: 'right', up: 'down', down: 'up' };
+  const wallMountedArt = new Set([
+    'service', 'overgrown', 'elevator', 'archive_seal', 'cathedral_gate',
+    'roof_hatch', 'water_lock', 'sluice_gate', 'quarantine_lock',
+    'airlock_east', 'airlock_west', 'arch_east', 'arch_west', 'south_threshold'
+  ]);
+  const naturalOutdoorArt = new Set(['trail_passage', 'bridge_passage', 'rail_gantry', 'arch_east', 'arch_west', 'south_threshold']);
+  const layoutFingerprints = new Set();
+  const mapById = new Map(world.maps.map(m => [m.id, m]));
+
+  for (const m of world.maps) {
+    const col = m.layers.find(l => l.name === 'collision').data;
+    const fp = `${m.width}x${m.height}:${col.join('')}:${m.terrainLayer.join(',')}`;
+    layoutFingerprints.add(fp);
+
+    const portals = m.layers.find(l => l.name === 'portals').objects;
+    for (const p of portals) {
+      const props = p.properties;
+      const tx = p.x / 32, ty = p.y / 32;
+      assert.ok(props.portalLabel && props.portalLabel.length > 0, `Portal ${m.id}:${p.name} missing bespoke architectural label`);
+
+      // Verify wall-mounted doors/airlocks/arches are embedded against a solid wall/structure (ZERO floating doors)
+      if (wallMountedArt.has(props.portalArt)) {
+        const dx = props.facing === 'right' ? 1 : props.facing === 'left' ? -1 : 0;
+        const dy = props.facing === 'down' ? 1 : props.facing === 'up' ? -1 : 0;
+        const wx = tx + dx, wy = ty + dy;
+        assert.ok(
+          wx >= 0 && wy >= 0 && wx < m.width && wy < m.height && col[wy * m.width + wx] === 1,
+          `Floating door detected at ${m.id}:${p.name} (${tx},${ty}) facing ${props.facing} art=${props.portalArt}`
+        );
+      }
+
+      // Verify geographic reciprocity with destination portal
+      const destMap = mapById.get(props.toMap);
+      assert.ok(destMap, `Missing destination map ${props.toMap} from ${m.id}`);
+      const backPortal = destMap.layers.find(l => l.name === 'portals').objects.find(o => o.name === props.toPortal);
+      assert.ok(backPortal, `Missing reciprocal portal ${props.toMap}:${props.toPortal}`);
+      assert.equal(
+        backPortal.properties.facing,
+        oppDir[props.facing],
+        `Geographic mismatch: ${m.id}->${props.toMap} faces ${props.facing}, return faces ${backPortal.properties.facing}`
+      );
+    }
+  }
+
+  // Every single one of the 29 sectors must have a unique bespoke floor plan
+  assert.equal(layoutFingerprints.size, 29, `Expected 29 unique area floor plans, got ${layoutFingerprints.size}`);
+
+  // Verify natural outdoor landscape exits on key exterior regions
+  for (const extId of ['A02', 'A04', 'A12', 'A13', 'A15', 'A17', 'A27', 'A28']) {
+    const m = mapById.get(extId);
+    const portals = m.layers.find(l => l.name === 'portals').objects;
+    for (const p of portals) {
+      const art = p.properties.portalArt;
+      // Allow real building/elevator doors ONLY if backed by a building facade (9) or interior masonry wall, otherwise natural passage
+      const tx = p.x / 32, ty = p.y / 32;
+      const dx = p.properties.facing === 'right' ? 1 : p.properties.facing === 'left' ? -1 : 0;
+      const dy = p.properties.facing === 'down' ? 1 : p.properties.facing === 'up' ? -1 : 0;
+      const backedByBuilding = m.terrainLayer[(ty + dy) * m.width + (tx + dx)] === 9;
+      assert.ok(
+        naturalOutdoorArt.has(art) || backedByBuilding || (extId === 'A27' && art === 'elevator'),
+        `Exterior area ${extId}:${p.name} uses non-natural door art '${art}' without building facade`
+      );
+    }
+  }
 });

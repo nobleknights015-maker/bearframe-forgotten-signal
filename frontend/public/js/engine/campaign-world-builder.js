@@ -3,38 +3,40 @@
 // and the client-side private campaign installer (campaign-game.js).
 // Contains NO screenplay dialogue, lore text, or private story copy.
 
+import { AREA_DIMENSIONS, buildAreaArchitecture } from './campaign-area-blueprints.js';
+
 const ID_RE = /^[A-Za-z][A-Za-z0-9_-]{0,95}$/;
 
 export const AREA_META = Object.freeze({
-  A00: { w: 24, h: 14, region: 'Stasis Wing',      arch: 'stasis_cryo_bay',   palette: 'stasis_hollow',     theme: 'stasis',     atlas: 'atlas_ruins_flora',          altAtlas: 'atlas_bunker_machinery',     doorStyle: 'bulkhead', doorArt: 'service',         lampColor: '#72dce8', sky: 'abyss_vault',      act: 0, mx: 6,  my: 54 },
-  A01: { w: 20, h: 12, region: 'Stasis Wing',      arch: 'stasis_cryo_bay',   palette: 'stasis_hollow',     theme: 'stasis',     atlas: 'atlas_bunker_machinery',     altAtlas: 'atlas_ruins_flora',          doorStyle: 'hatch',    doorArt: 'overgrown',       lampColor: '#72dce8', sky: 'abyss_vault',      act: 0, mx: 12, my: 54 },
-  A02: { w: 26, h: 15, region: 'Rootway',          arch: 'rootway_ravine',    palette: 'rootway_ruins',     theme: 'rootway',    atlas: 'atlas_ruins_flora',          altAtlas: 'atlas_wetland_water',        doorStyle: 'hatch',    doorArt: 'overgrown',       lampColor: '#82e896', sky: 'canopy_ruins',     act: 1, mx: 18, my: 54 },
-  A03: { w: 24, h: 14, region: 'Rootway',          arch: 'filter_basin',      palette: 'flooded_quay',      theme: 'quay',       atlas: 'atlas_bunker_machinery',     altAtlas: 'atlas_wetland_water',        doorStyle: 'bulkhead', doorArt: 'sluice_gate',     lampColor: '#72dce8', sky: 'wetland_mist',     act: 1, mx: 24, my: 54 },
-  A04: { w: 20, h: 13, region: 'Rootway',          arch: 'rootway_ravine',    palette: 'rootway_ruins',     theme: 'rootway',    atlas: 'atlas_ruins_flora',          altAtlas: 'atlas_wasteland_exterior',   doorStyle: 'hatch',    doorArt: 'overgrown',       lampColor: '#f2bd75', sky: 'canopy_ruins',     act: 1, mx: 18, my: 34 },
-  A05: { w: 24, h: 15, region: 'Relay Court',      arch: 'relay_colonnade',   palette: 'relay_court',       theme: 'relay',      atlas: 'atlas_bunker_machinery',     altAtlas: 'atlas_archive_cathedral',    doorStyle: 'bulkhead', doorArt: 'service',         lampColor: '#92d6ea', sky: 'abyss_vault',      act: 2, mx: 30, my: 54 },
-  A06: { w: 22, h: 14, region: 'Relay Court',      arch: 'relay_colonnade',   palette: 'mail_vault',        theme: 'mail',       atlas: 'atlas_settlement_interiors', altAtlas: 'atlas_archive_cathedral',    doorStyle: 'bulkhead', doorArt: 'service',         lampColor: '#f2bd75', sky: 'abyss_vault',      act: 2, mx: 36, my: 46 },
-  A07: { w: 20, h: 13, region: 'Relay Court',      arch: 'relay_colonnade',   palette: 'relay_court',       theme: 'relay',      atlas: 'atlas_bunker_machinery',     altAtlas: 'atlas_quarantine_void',      doorStyle: 'bulkhead', doorArt: 'service',         lampColor: '#92d6ea', sky: 'abyss_vault',      act: 2, mx: 30, my: 72 },
-  A08: { w: 22, h: 14, region: 'Relay Court',      arch: 'filter_basin',      palette: 'flooded_quay',      theme: 'quay',       atlas: 'atlas_wetland_water',        altAtlas: 'atlas_bunker_machinery',     doorStyle: 'bulkhead', doorArt: 'water_lock',      lampColor: '#72dce8', sky: 'wetland_mist',     act: 2, mx: 41, my: 54 },
-  A09: { w: 26, h: 16, region: 'Lantern Shelf',    arch: 'lantern_plaza',     palette: 'lantern_shelter',   theme: 'lantern',    atlas: 'atlas_shelter_warmth',       altAtlas: 'atlas_settlement_interiors', doorStyle: 'bulkhead', doorArt: 'service',         lampColor: '#f8cb7c', sky: 'wasteland_canyon', act: 3, mx: 46, my: 62 },
-  A10: { w: 22, h: 14, region: 'Lantern Shelf',    arch: 'relay_colonnade',   palette: 'lantern_shelter',   theme: 'lantern',    atlas: 'atlas_bunker_machinery',     altAtlas: 'atlas_shelter_warmth',       doorStyle: 'bulkhead', doorArt: 'service',         lampColor: '#f8cb7c', sky: 'abyss_vault',      act: 3, mx: 52, my: 62 },
-  A11: { w: 20, h: 13, region: 'Lantern Shelf',    arch: 'lantern_plaza',     palette: 'mail_vault',        theme: 'mail',       atlas: 'atlas_settlement_interiors', altAtlas: 'atlas_shelter_warmth',       doorStyle: 'bulkhead', doorArt: 'service',         lampColor: '#f2bd75', sky: 'abyss_vault',      act: 3, mx: 46, my: 38 },
-  A12: { w: 26, h: 14, region: 'Broken Sky-Rail',  arch: 'sky_viaduct',       palette: 'broken_rail',       theme: 'relay',      atlas: 'atlas_sky_rail',             altAtlas: 'atlas_wasteland_exterior',   doorStyle: 'exit',     doorArt: 'roof_hatch',      lampColor: '#92d6ea', sky: 'wasteland_canyon', act: 4, mx: 58, my: 54 },
-  A13: { w: 24, h: 14, region: 'Broken Sky-Rail',  arch: 'sky_viaduct',       palette: 'wasteland_ridge',   theme: 'wasteland',  atlas: 'atlas_wasteland_exterior',   altAtlas: 'atlas_sky_rail',             doorStyle: 'exit',     doorArt: 'roof_hatch',      lampColor: '#ffe2a8', sky: 'dawn_sky',         act: 4, mx: 63, my: 46 },
-  A14: { w: 20, h: 13, region: 'Broken Sky-Rail',  arch: 'sky_viaduct',       palette: 'broken_rail',       theme: 'wasteland',  atlas: 'atlas_wasteland_exterior',   altAtlas: 'atlas_sky_rail',             doorStyle: 'hatch',    doorArt: 'service',         lampColor: '#f2bd75', sky: 'wasteland_canyon', act: 4, mx: 55, my: 78 },
-  A15: { w: 26, h: 15, region: 'Survey Wetland',   arch: 'wetland_boardwalk', palette: 'survey_wetland',    theme: 'wetland',    atlas: 'atlas_wetland_water',        altAtlas: 'atlas_ruins_flora',          doorStyle: 'bulkhead', doorArt: 'sluice_gate',     lampColor: '#82e896', sky: 'wetland_mist',     act: 5, mx: 68, my: 54 },
-  A16: { w: 24, h: 14, region: 'Survey Wetland',   arch: 'filter_basin',      palette: 'wetland_pier',      theme: 'wetland',    atlas: 'atlas_wetland_water',        altAtlas: 'atlas_bunker_machinery',     doorStyle: 'bulkhead', doorArt: 'water_lock',      lampColor: '#72dce8', sky: 'wetland_mist',     act: 5, mx: 73, my: 54 },
-  A17: { w: 22, h: 13, region: 'Survey Wetland',   arch: 'dawn_overlook',     palette: 'wasteland_ridge',   theme: 'wasteland',  atlas: 'atlas_wasteland_exterior',   altAtlas: 'atlas_shelter_warmth',       doorStyle: 'hatch',    doorArt: 'overgrown',       lampColor: '#ffe2a8', sky: 'dawn_sky',         act: 5, mx: 68, my: 32 },
-  A18: { w: 26, h: 16, region: 'Census Archive',   arch: 'archive_nave',      palette: 'census_archive',    theme: 'archive',    atlas: 'atlas_archive_cathedral',    altAtlas: 'atlas_settlement_interiors', doorStyle: 'exit',     doorArt: 'archive_seal',    lampColor: '#98bfff', sky: 'abyss_vault',      act: 6, mx: 78, my: 54 },
-  A19: { w: 20, h: 13, region: 'Census Archive',   arch: 'archive_nave',      palette: 'mail_vault',        theme: 'mail',       atlas: 'atlas_archive_cathedral',    altAtlas: 'atlas_settlement_interiors', doorStyle: 'bulkhead', doorArt: 'archive_seal',    lampColor: '#f2bd75', sky: 'abyss_vault',      act: 6, mx: 78, my: 34 },
-  A20: { w: 22, h: 14, region: 'Return Haven',     arch: 'lantern_plaza',     palette: 'lantern_shelter',   theme: 'lantern',    atlas: 'atlas_settlement_interiors', altAtlas: 'atlas_shelter_warmth',       doorStyle: 'bulkhead', doorArt: 'service',         lampColor: '#f8cb7c', sky: 'wasteland_canyon', act: 7, mx: 83, my: 54 },
-  A21: { w: 26, h: 16, region: 'Quarantine Spine', arch: 'quarantine_spine',  palette: 'quarantine_spine',  theme: 'quarantine', atlas: 'atlas_quarantine_void',      altAtlas: 'atlas_bunker_machinery',     doorStyle: 'bulkhead', doorArt: 'quarantine_lock', lampColor: '#f09238', sky: 'abyss_vault',      act: 7, mx: 88, my: 54 },
-  A22: { w: 20, h: 13, region: 'Quarantine Spine', arch: 'quarantine_spine',  palette: 'quarantine_spine',  theme: 'quarantine', atlas: 'atlas_quarantine_void',      altAtlas: 'atlas_bunker_machinery',     doorStyle: 'bulkhead', doorArt: 'quarantine_lock', lampColor: '#72dce8', sky: 'abyss_vault',      act: 7, mx: 88, my: 34 },
-  A23: { w: 20, h: 13, region: 'Quarantine Spine', arch: 'quarantine_spine',  palette: 'quarantine_spine',  theme: 'quarantine', atlas: 'atlas_quarantine_void',      altAtlas: 'atlas_archive_cathedral',    doorStyle: 'bulkhead', doorArt: 'cathedral_gate',  lampColor: '#98bfff', sky: 'abyss_vault',      act: 7, mx: 92, my: 54 },
-  A24: { w: 26, h: 16, region: 'Control Cathedral',arch: 'cathedral_sanctum', palette: 'control_cathedral', theme: 'cathedral',  atlas: 'atlas_archive_cathedral',    altAtlas: 'atlas_quarantine_void',      doorStyle: 'bulkhead', doorArt: 'cathedral_gate',  lampColor: '#e2a8ff', sky: 'abyss_vault',      act: 8, mx: 95, my: 54 },
-  A25: { w: 24, h: 14, region: 'Control Cathedral',arch: 'cathedral_sanctum', palette: 'control_cathedral', theme: 'cathedral',  atlas: 'atlas_bunker_machinery',     altAtlas: 'atlas_quarantine_void',      doorStyle: 'bulkhead', doorArt: 'cathedral_gate',  lampColor: '#ff7070', sky: 'abyss_vault',      act: 8, mx: 95, my: 34 },
-  A26: { w: 22, h: 15, region: 'Control Cathedral',arch: 'cathedral_sanctum', palette: 'control_cathedral', theme: 'cathedral',  atlas: 'atlas_archive_cathedral',    altAtlas: 'atlas_bunker_machinery',     doorStyle: 'exit',     doorArt: 'elevator',        lampColor: '#5ce4ff', sky: 'abyss_vault',      act: 8, mx: 95, my: 72 },
-  A27: { w: 22, h: 13, region: 'Surface Morning',  arch: 'dawn_overlook',     palette: 'sky_morning',       theme: 'sky',        atlas: 'atlas_sky_rail',             altAtlas: 'atlas_wasteland_exterior',   doorStyle: 'exit',     doorArt: 'roof_hatch',      lampColor: '#ffe2a8', sky: 'dawn_sky',         act: 9, mx: 89, my: 82 },
-  A28: { w: 24, h: 14, region: 'Surface Morning',  arch: 'dawn_overlook',     palette: 'sky_morning',       theme: 'sky',        atlas: 'atlas_wasteland_exterior',   altAtlas: 'atlas_sky_rail',             doorStyle: 'exit',     doorArt: 'roof_hatch',      lampColor: '#ffe2a8', sky: 'dawn_sky',         act: 9, mx: 95, my: 86 }
+  A00: { ...AREA_DIMENSIONS.A00, region: 'Stasis Wing',      arch: 'stasis_cryo_bay',   palette: 'stasis_hollow',     theme: 'stasis',     atlas: 'atlas_bunker_machinery',     altAtlas: 'atlas_quarantine_void',      doorStyle: 'bulkhead', doorArt: 'service',         lampColor: '#72dce8', sky: 'abyss_vault',      act: 0, mx: 6,  my: 54 },
+  A01: { ...AREA_DIMENSIONS.A01, region: 'Stasis Wing',      arch: 'stasis_cryo_bay',   palette: 'stasis_hollow',     theme: 'stasis',     atlas: 'atlas_bunker_machinery',     altAtlas: 'atlas_ruins_flora',          doorStyle: 'hatch',    doorArt: 'overgrown',       lampColor: '#72dce8', sky: 'abyss_vault',      act: 0, mx: 12, my: 54 },
+  A02: { ...AREA_DIMENSIONS.A02, region: 'Rootway',          arch: 'rootway_ravine',    palette: 'rootway_ruins',     theme: 'rootway',    atlas: 'atlas_ruins_flora',          altAtlas: 'atlas_wetland_water',        doorStyle: 'hatch',    doorArt: 'overgrown',       lampColor: '#82e896', sky: 'canopy_ruins',     act: 1, mx: 18, my: 54 },
+  A03: { ...AREA_DIMENSIONS.A03, region: 'Rootway',          arch: 'filter_basin',      palette: 'flooded_quay',      theme: 'quay',       atlas: 'atlas_bunker_machinery',     altAtlas: 'atlas_wetland_water',        doorStyle: 'bulkhead', doorArt: 'sluice_gate',     lampColor: '#72dce8', sky: 'wetland_mist',     act: 1, mx: 24, my: 54 },
+  A04: { ...AREA_DIMENSIONS.A04, region: 'Rootway',          arch: 'rootway_ravine',    palette: 'rootway_ruins',     theme: 'rootway',    atlas: 'atlas_ruins_flora',          altAtlas: 'atlas_wasteland_exterior',   doorStyle: 'hatch',    doorArt: 'overgrown',       lampColor: '#f2bd75', sky: 'canopy_ruins',     act: 1, mx: 18, my: 34 },
+  A05: { ...AREA_DIMENSIONS.A05, region: 'Relay Court',      arch: 'relay_colonnade',   palette: 'relay_court',       theme: 'relay',      atlas: 'atlas_bunker_machinery',     altAtlas: 'atlas_archive_cathedral',    doorStyle: 'bulkhead', doorArt: 'service',         lampColor: '#92d6ea', sky: 'abyss_vault',      act: 2, mx: 30, my: 54 },
+  A06: { ...AREA_DIMENSIONS.A06, region: 'Relay Court',      arch: 'relay_colonnade',   palette: 'mail_vault',        theme: 'mail',       atlas: 'atlas_settlement_interiors', altAtlas: 'atlas_archive_cathedral',    doorStyle: 'bulkhead', doorArt: 'service',         lampColor: '#f2bd75', sky: 'abyss_vault',      act: 2, mx: 36, my: 46 },
+  A07: { ...AREA_DIMENSIONS.A07, region: 'Relay Court',      arch: 'relay_colonnade',   palette: 'relay_court',       theme: 'relay',      atlas: 'atlas_bunker_machinery',     altAtlas: 'atlas_quarantine_void',      doorStyle: 'bulkhead', doorArt: 'service',         lampColor: '#92d6ea', sky: 'abyss_vault',      act: 2, mx: 30, my: 72 },
+  A08: { ...AREA_DIMENSIONS.A08, region: 'Relay Court',      arch: 'filter_basin',      palette: 'flooded_quay',      theme: 'quay',       atlas: 'atlas_wetland_water',        altAtlas: 'atlas_bunker_machinery',     doorStyle: 'bulkhead', doorArt: 'water_lock',      lampColor: '#72dce8', sky: 'wetland_mist',     act: 2, mx: 41, my: 54 },
+  A09: { ...AREA_DIMENSIONS.A09, region: 'Lantern Shelf',    arch: 'lantern_plaza',     palette: 'lantern_shelter',   theme: 'lantern',    atlas: 'atlas_shelter_warmth',       altAtlas: 'atlas_settlement_interiors', doorStyle: 'bulkhead', doorArt: 'service',         lampColor: '#f8cb7c', sky: 'wasteland_canyon', act: 3, mx: 46, my: 62 },
+  A10: { ...AREA_DIMENSIONS.A10, region: 'Lantern Shelf',    arch: 'relay_colonnade',   palette: 'lantern_shelter',   theme: 'lantern',    atlas: 'atlas_bunker_machinery',     altAtlas: 'atlas_shelter_warmth',       doorStyle: 'bulkhead', doorArt: 'service',         lampColor: '#f8cb7c', sky: 'abyss_vault',      act: 3, mx: 52, my: 62 },
+  A11: { ...AREA_DIMENSIONS.A11, region: 'Lantern Shelf',    arch: 'lantern_plaza',     palette: 'mail_vault',        theme: 'mail',       atlas: 'atlas_settlement_interiors', altAtlas: 'atlas_shelter_warmth',       doorStyle: 'bulkhead', doorArt: 'service',         lampColor: '#f2bd75', sky: 'abyss_vault',      act: 3, mx: 46, my: 38 },
+  A12: { ...AREA_DIMENSIONS.A12, region: 'Broken Sky-Rail',  arch: 'sky_viaduct',       palette: 'broken_rail',       theme: 'relay',      atlas: 'atlas_sky_rail',             altAtlas: 'atlas_wasteland_exterior',   doorStyle: 'exit',     doorArt: 'roof_hatch',      lampColor: '#92d6ea', sky: 'wasteland_canyon', act: 4, mx: 58, my: 54 },
+  A13: { ...AREA_DIMENSIONS.A13, region: 'Broken Sky-Rail',  arch: 'sky_viaduct',       palette: 'wasteland_ridge',   theme: 'wasteland',  atlas: 'atlas_wasteland_exterior',   altAtlas: 'atlas_sky_rail',             doorStyle: 'exit',     doorArt: 'roof_hatch',      lampColor: '#ffe2a8', sky: 'dawn_sky',         act: 4, mx: 63, my: 46 },
+  A14: { ...AREA_DIMENSIONS.A14, region: 'Broken Sky-Rail',  arch: 'sky_viaduct',       palette: 'broken_rail',       theme: 'wasteland',  atlas: 'atlas_wasteland_exterior',   altAtlas: 'atlas_sky_rail',             doorStyle: 'hatch',    doorArt: 'service',         lampColor: '#f2bd75', sky: 'wasteland_canyon', act: 4, mx: 55, my: 78 },
+  A15: { ...AREA_DIMENSIONS.A15, region: 'Survey Wetland',   arch: 'wetland_boardwalk', palette: 'survey_wetland',    theme: 'wetland',    atlas: 'atlas_wetland_water',        altAtlas: 'atlas_ruins_flora',          doorStyle: 'bulkhead', doorArt: 'sluice_gate',     lampColor: '#82e896', sky: 'wetland_mist',     act: 5, mx: 68, my: 54 },
+  A16: { ...AREA_DIMENSIONS.A16, region: 'Survey Wetland',   arch: 'filter_basin',      palette: 'wetland_pier',      theme: 'wetland',    atlas: 'atlas_wetland_water',        altAtlas: 'atlas_bunker_machinery',     doorStyle: 'bulkhead', doorArt: 'water_lock',      lampColor: '#72dce8', sky: 'wetland_mist',     act: 5, mx: 73, my: 54 },
+  A17: { ...AREA_DIMENSIONS.A17, region: 'Survey Wetland',   arch: 'dawn_overlook',     palette: 'wasteland_ridge',   theme: 'wasteland',  atlas: 'atlas_wasteland_exterior',   altAtlas: 'atlas_shelter_warmth',       doorStyle: 'hatch',    doorArt: 'overgrown',       lampColor: '#ffe2a8', sky: 'dawn_sky',         act: 5, mx: 68, my: 32 },
+  A18: { ...AREA_DIMENSIONS.A18, region: 'Census Archive',   arch: 'archive_nave',      palette: 'census_archive',    theme: 'archive',    atlas: 'atlas_archive_cathedral',    altAtlas: 'atlas_settlement_interiors', doorStyle: 'exit',     doorArt: 'archive_seal',    lampColor: '#98bfff', sky: 'abyss_vault',      act: 6, mx: 78, my: 54 },
+  A19: { ...AREA_DIMENSIONS.A19, region: 'Census Archive',   arch: 'archive_nave',      palette: 'mail_vault',        theme: 'mail',       atlas: 'atlas_archive_cathedral',    altAtlas: 'atlas_settlement_interiors', doorStyle: 'bulkhead', doorArt: 'archive_seal',    lampColor: '#f2bd75', sky: 'abyss_vault',      act: 6, mx: 78, my: 34 },
+  A20: { ...AREA_DIMENSIONS.A20, region: 'Return Haven',     arch: 'lantern_plaza',     palette: 'lantern_shelter',   theme: 'lantern',    atlas: 'atlas_settlement_interiors', altAtlas: 'atlas_shelter_warmth',       doorStyle: 'bulkhead', doorArt: 'service',         lampColor: '#f8cb7c', sky: 'wasteland_canyon', act: 7, mx: 83, my: 54 },
+  A21: { ...AREA_DIMENSIONS.A21, region: 'Quarantine Spine', arch: 'quarantine_spine',  palette: 'quarantine_spine',  theme: 'quarantine', atlas: 'atlas_quarantine_void',      altAtlas: 'atlas_bunker_machinery',     doorStyle: 'bulkhead', doorArt: 'quarantine_lock', lampColor: '#f09238', sky: 'abyss_vault',      act: 7, mx: 88, my: 54 },
+  A22: { ...AREA_DIMENSIONS.A22, region: 'Quarantine Spine', arch: 'quarantine_spine',  palette: 'quarantine_spine',  theme: 'quarantine', atlas: 'atlas_quarantine_void',      altAtlas: 'atlas_bunker_machinery',     doorStyle: 'bulkhead', doorArt: 'quarantine_lock', lampColor: '#72dce8', sky: 'abyss_vault',      act: 7, mx: 88, my: 34 },
+  A23: { ...AREA_DIMENSIONS.A23, region: 'Quarantine Spine', arch: 'quarantine_spine',  palette: 'quarantine_spine',  theme: 'quarantine', atlas: 'atlas_quarantine_void',      altAtlas: 'atlas_archive_cathedral',    doorStyle: 'bulkhead', doorArt: 'cathedral_gate',  lampColor: '#98bfff', sky: 'abyss_vault',      act: 7, mx: 92, my: 54 },
+  A24: { ...AREA_DIMENSIONS.A24, region: 'Control Cathedral',arch: 'cathedral_sanctum', palette: 'control_cathedral', theme: 'cathedral',  atlas: 'atlas_archive_cathedral',    altAtlas: 'atlas_quarantine_void',      doorStyle: 'bulkhead', doorArt: 'cathedral_gate',  lampColor: '#e2a8ff', sky: 'abyss_vault',      act: 8, mx: 95, my: 54 },
+  A25: { ...AREA_DIMENSIONS.A25, region: 'Control Cathedral',arch: 'cathedral_sanctum', palette: 'control_cathedral', theme: 'cathedral',  atlas: 'atlas_bunker_machinery',     altAtlas: 'atlas_quarantine_void',      doorStyle: 'bulkhead', doorArt: 'cathedral_gate',  lampColor: '#ff7070', sky: 'abyss_vault',      act: 8, mx: 95, my: 34 },
+  A26: { ...AREA_DIMENSIONS.A26, region: 'Control Cathedral',arch: 'cathedral_sanctum', palette: 'control_cathedral', theme: 'cathedral',  atlas: 'atlas_archive_cathedral',    altAtlas: 'atlas_bunker_machinery',     doorStyle: 'exit',     doorArt: 'elevator',        lampColor: '#5ce4ff', sky: 'abyss_vault',      act: 8, mx: 95, my: 72 },
+  A27: { ...AREA_DIMENSIONS.A27, region: 'Surface Morning',  arch: 'dawn_overlook',     palette: 'sky_morning',       theme: 'sky',        atlas: 'atlas_sky_rail',             altAtlas: 'atlas_wasteland_exterior',   doorStyle: 'exit',     doorArt: 'roof_hatch',      lampColor: '#ffe2a8', sky: 'dawn_sky',         act: 9, mx: 89, my: 82 },
+  A28: { ...AREA_DIMENSIONS.A28, region: 'Surface Morning',  arch: 'dawn_overlook',     palette: 'sky_morning',       theme: 'sky',        atlas: 'atlas_wasteland_exterior',   altAtlas: 'atlas_ruins_flora',          doorStyle: 'exit',     doorArt: 'roof_hatch',      lampColor: '#ffe2a8', sky: 'dawn_sky',         act: 9, mx: 95, my: 86 }
 });
 
 export const WORLD_EDGES = Object.freeze([
@@ -349,176 +351,11 @@ const BATTLE_ROSTER = {
   ]}
 };
 
-function buildBespokeAreaBlueprint(id, meta) {
-  const { w, h, arch, theme } = meta;
-  const col = new Array(w * h).fill(0);
-  const terr = new Array(w * h).fill(0);
-  const waterfalls = [];
-  const lightShafts = [];
+const SOLID_TERRAIN_OVERRIDES = new Set([2, 8, 9, 12, 13]);
 
-  const setC = (x, y, v) => { if (x >= 0 && y >= 0 && x < w && y < h) col[y * w + x] = v; };
-  const setT = (x, y, v) => { if (x >= 0 && y >= 0 && x < w && y < h) terr[y * w + x] = v; };
-  const fillC = (x0, y0, x1, y1, v) => { for (let y = y0; y <= y1; y++) for (let x = x0; x <= x1; x++) setC(x, y, v); };
-  const fillT = (x0, y0, x1, y1, v) => { for (let y = y0; y <= y1; y++) for (let x = x0; x <= x1; x++) setT(x, y, v); };
-
-  // Outer perimeter masonry (2 rows north for tall facade/machinery, 2 rows south for framing)
-  for (let y = 0; y < h; y++) {
-    for (let x = 0; x < w; x++) {
-      if (y <= 1 || y >= h - 2 || x <= 0 || x >= w - 1) setC(x, y, 1);
-    }
-  }
-
-  const midX = Math.floor(w / 2);
-  const midY = Math.floor(h / 2);
-
-  if (arch === 'stasis_cryo_bay') {
-    // Stepped cryo-wing alcoves, glowing central power conduit, raised upper maintenance deck with twin stairs
-    fillC(2, 2, 3, 2, 1);
-    fillC(w - 4, 2, w - 3, 2, 1);
-    fillC(midX - 1, 2, midX, 2, 1);
-    fillT(midX, 3, midX, h - 3, 6);
-    fillT(2, midY, w - 3, midY, 1);
-    fillT(5, 4, 6, 4, 3);
-    fillT(w - 7, 4, w - 6, 4, 3);
-    fillT(2, 3, w - 3, 3, 1);
-    lightShafts.push({ x: 4, y: 1, w: 2, h: 6, color: '#88e8ff', alpha: 0.11 });
-    lightShafts.push({ x: w - 8, y: 1, w: 2, h: 6, color: '#88e8ff', alpha: 0.09 });
-  } else if (arch === 'rootway_ravine') {
-    // Organic overgrown ruins with protruding stone buttresses, subterranean rainwater canal, twin plank crossings & waterfall
-    fillC(1, 2, 2, 3, 1);
-    fillC(w - 3, 2, w - 2, 3, 1);
-    fillC(1, h - 3, 2, h - 3, 1);
-    fillC(w - 3, h - 3, w - 2, h - 3, 1);
-    // Recessed rainwater channel across lower-mid courtyard (impassable except across two wide timber bridges)
-    const canalY = h - 4;
-    fillT(3, canalY, w - 4, canalY, 2);
-    fillC(3, canalY, w - 4, canalY, 1);
-    // Two wide dry crossings
-    fillC(Math.max(4, midX - 5), canalY, Math.max(5, midX - 4), canalY, 0);
-    fillT(Math.max(4, midX - 5), canalY, Math.max(5, midX - 4), canalY, 1);
-    fillC(Math.min(w - 6, midX + 3), canalY, Math.min(w - 5, midX + 4), canalY, 0);
-    fillT(Math.min(w - 6, midX + 3), canalY, Math.min(w - 5, midX + 4), canalY, 1);
-    // Mossy stone transitions & stepped terrace stairs
-    fillT(3, 3, 6, 4, 5);
-    fillT(w - 7, 4, w - 4, 6, 5);
-    fillT(midX - 1, 5, midX, 5, 3);
-    fillT(2, midY, w - 3, midY, 1);
-    waterfalls.push({ x: midX - 3, y: 1, w: 2, h: 2, color: 'rgba(64,198,192,0.72)' });
-    lightShafts.push({ x: 6, y: 1, w: 3, h: 7, color: '#b4ffaa', alpha: 0.12 });
-    lightShafts.push({ x: w - 9, y: 1, w: 2, h: 6, color: '#ffe69a', alpha: 0.10 });
-  } else if (arch === 'filter_basin') {
-    // Flooded industrial sluice chamber: twin recessed water basins + central elevated catwalk with stairs + dual waterfalls
-    fillT(3, 4, midX - 3, 5, 2); fillC(3, 4, midX - 3, 5, 1);
-    fillT(midX + 3, 4, w - 4, 5, 2); fillC(midX + 3, 4, w - 4, 5, 1);
-    fillT(midX - 1, 3, midX + 1, h - 3, 1);
-    fillT(midX - 1, 6, midX + 1, 6, 3);
-    fillT(2, h - 4, w - 3, h - 4, 1);
-    waterfalls.push({ x: 5, y: 1, w: 2, h: 3, color: 'rgba(54,192,222,0.76)' });
-    waterfalls.push({ x: w - 7, y: 1, w: 2, h: 3, color: 'rgba(54,192,222,0.76)' });
-    lightShafts.push({ x: midX - 1, y: 1, w: 2, h: 5, color: '#72dce8', alpha: 0.10 });
-  } else if (arch === 'relay_colonnade') {
-    // Symmetrical industrial court with colonnade pillars, recessed relay conduits & stepped command terrace
-    const colL = Math.max(4, midX - 5);
-    const colR = Math.min(w - 5, midX + 5);
-    setC(colL, 4, 1); setC(colR, 4, 1);
-    if (h >= 14) { setC(colL, h - 5, 1); setC(colR, h - 5, 1); }
-    fillT(midX - 3, 3, midX + 3, 4, 1);
-    fillT(midX - 1, 5, midX + 1, 5, 3);
-    fillT(colL + 1, 3, colL + 1, h - 3, 6);
-    fillT(colR - 1, 3, colR - 1, h - 3, 6);
-    fillT(2, midY + 1, w - 3, midY + 1, 1);
-    lightShafts.push({ x: midX - 2, y: 1, w: 3, h: 6, color: '#a8d8ff', alpha: 0.09 });
-  } else if (arch === 'lantern_plaza') {
-    // Multi-wing warm settlement plaza: recessed stone lanes, stepped north market terrace, cozy timber corners
-    fillC(1, 2, 2, 2, 1); fillC(w - 3, 2, w - 2, 2, 1);
-    fillT(3, 3, w - 4, 4, 1);
-    fillT(midX - 2, 5, midX + 1, 5, 3);
-    fillT(3, midY + 1, w - 4, midY + 2, 1);
-    fillT(4, h - 4, 6, h - 4, 5);
-    fillT(w - 7, h - 4, w - 5, h - 4, 5);
-    lightShafts.push({ x: 5, y: 1, w: 2, h: 6, color: '#ffd988', alpha: 0.12 });
-    lightShafts.push({ x: w - 8, y: 1, w: 3, h: 6, color: '#ffd988', alpha: 0.12 });
-  } else if (arch === 'sky_viaduct') {
-    // Elevated open-air viaduct bridge cantilevered over clouds/canyon: south cliff guardrail edge + rail bed + stepped platform
-    fillC(1, 2, 3, 2, 1); fillC(w - 4, 2, w - 2, 2, 1);
-    fillT(2, h - 2, w - 3, h - 2, 4); // visible safety rail along south viaduct cliff edge
-    fillT(2, midY - 1, w - 3, midY, 1);
-    fillT(midX - 2, 4, midX + 1, 4, 3);
-    fillT(3, 3, 5, 3, 5);
-    fillT(w - 6, 3, w - 4, 3, 5);
-    lightShafts.push({ x: 4, y: 0, w: 3, h: 8, color: '#ffe5a8', alpha: 0.14 });
-    lightShafts.push({ x: midX + 2, y: 0, w: 3, h: 8, color: '#ffe5a8', alpha: 0.13 });
-  } else if (arch === 'wetland_boardwalk') {
-    // Expansive marsh boardwalk spanning deep turquoise water pools with twin aqueduct waterfalls & timber piers
-    fillT(2, 3, w - 3, h - 3, 2);
-    fillC(2, 3, w - 3, h - 3, 1);
-    // Main horizontal boardwalk + central marsh island + north/south pier branches
-    fillC(1, midY - 1, w - 2, midY + 1, 0); fillT(1, midY - 1, w - 2, midY + 1, 1);
-    fillC(midX - 4, 3, midX + 4, h - 3, 0); fillT(midX - 4, 3, midX + 4, h - 3, 1);
-    fillC(2, 2, 5, midY + 1, 0); fillT(2, 2, 5, midY + 1, 1);
-    fillC(w - 6, 2, w - 3, midY + 1, 0); fillT(w - 6, 2, w - 3, midY + 1, 1);
-    fillT(midX - 1, 4, midX + 1, 4, 3);
-    fillT(midX - 3, 5, midX - 2, 5, 5); fillT(midX + 2, 5, midX + 3, 5, 5);
-    waterfalls.push({ x: 7, y: 1, w: 2, h: 3, color: 'rgba(66,204,200,0.78)' });
-    waterfalls.push({ x: w - 9, y: 1, w: 2, h: 3, color: 'rgba(66,204,200,0.78)' });
-    lightShafts.push({ x: midX - 2, y: 1, w: 3, h: 7, color: '#9cf5c8', alpha: 0.11 });
-  } else if (arch === 'archive_nave') {
-    // Grand vaulted census library nave: side bookshelf alcoves, ceremonial center aisle, stepped reading gallery
-    fillC(3, 5, 4, 5, 1); fillC(w - 5, 5, w - 4, 5, 1);
-    if (h >= 14) { fillC(3, h - 5, 4, h - 5, 1); fillC(w - 5, h - 5, w - 4, h - 5, 1); }
-    fillT(midX - 2, 3, midX + 2, h - 3, 1);
-    fillT(midX - 2, 5, midX + 2, 5, 3);
-    fillT(midX - 3, 3, midX - 3, h - 3, 6);
-    fillT(midX + 3, 3, midX + 3, h - 3, 6);
-    lightShafts.push({ x: midX - 1, y: 1, w: 2, h: 8, color: '#a8c8ff', alpha: 0.12 });
-    lightShafts.push({ x: 5, y: 1, w: 2, h: 6, color: '#ffd994', alpha: 0.08 });
-  } else if (arch === 'quarantine_spine') {
-    // Segmented high-security containment spine with bulkhead baffles, glowing amber conduit track & decon stairs
-    fillC(Math.max(5, midX - 5), 2, Math.max(5, midX - 5), 4, 1);
-    fillC(Math.min(w - 6, midX + 5), 2, Math.min(w - 6, midX + 5), 4, 1);
-    fillC(Math.max(5, midX - 5), h - 4, Math.max(5, midX - 5), h - 3, 1);
-    fillC(Math.min(w - 6, midX + 5), h - 4, Math.min(w - 6, midX + 5), h - 3, 1);
-    fillT(2, midY, w - 3, midY, 1);
-    fillT(midX, 3, midX, h - 3, 6);
-    fillT(midX - 1, 5, midX + 1, 5, 3);
-    lightShafts.push({ x: midX - 1, y: 1, w: 2, h: 6, color: '#ffad52', alpha: 0.10 });
-  } else if (arch === 'cathedral_sanctum') {
-    // Monumental Control Cathedral: octagonal dais, twin monolith colonnade, dual coolant falls, violet/cyan conduits
-    fillC(4, 4, 4, 5, 1); fillC(w - 5, 4, w - 5, 5, 1);
-    fillC(4, h - 5, 4, h - 4, 1); fillC(w - 5, h - 5, w - 5, h - 4, 1);
-    fillT(midX - 3, 3, midX + 3, 6, 1);
-    fillT(midX - 2, 7, midX + 2, 7, 3);
-    fillT(midX - 1, 3, midX - 1, h - 3, 6);
-    fillT(midX + 1, 3, midX + 1, h - 3, 6);
-    fillT(2, 4, 3, h - 4, 2); fillC(2, 4, 3, h - 4, 1);
-    fillT(w - 4, 4, w - 3, h - 4, 2); fillC(w - 4, 4, w - 3, h - 4, 1);
-    // Keep east/west portal lanes wide open across water channels
-    fillC(1, midY - 1, 4, midY + 1, 0); fillT(1, midY - 1, 4, midY + 1, 1);
-    fillC(w - 5, midY - 1, w - 2, midY + 1, 0); fillT(w - 5, midY - 1, w - 2, midY + 1, 1);
-    waterfalls.push({ x: 2, y: 1, w: 2, h: 3, color: 'rgba(120,210,255,0.74)' });
-    waterfalls.push({ x: w - 4, y: 1, w: 2, h: 3, color: 'rgba(120,210,255,0.74)' });
-    lightShafts.push({ x: midX - 2, y: 0, w: 4, h: 9, color: '#d8b4ff', alpha: 0.14 });
-  } else {
-    // dawn_overlook: Open sunlit highland terrace with panoramic south guardrail cliff, stone stairs & wildflowers
-    fillC(1, 2, 2, 2, 1); fillC(w - 3, 2, w - 2, 2, 1);
-    fillT(2, h - 2, w - 3, h - 2, 4);
-    fillT(3, 3, w - 4, 4, 1);
-    fillT(midX - 2, 5, midX + 1, 5, 3);
-    fillT(3, 6, 6, h - 4, 5);
-    fillT(w - 7, 6, w - 4, h - 4, 5);
-    fillT(midX - 2, 6, midX + 1, h - 3, 1);
-    lightShafts.push({ x: 3, y: 0, w: 4, h: 8, color: '#ffe6a8', alpha: 0.16 });
-    lightShafts.push({ x: w - 9, y: 0, w: 4, h: 8, color: '#ffe6a8', alpha: 0.15 });
-  }
-
-  // Ensure central spawn & inner walkways are always clear
-  fillC(midX - 1, midY - 1, midX + 1, midY + 1, 0);
-
-  return { collision: col, terrainLayer: terr, waterfalls, lightShafts, skyBackdrop: meta.sky || null };
-}
-
-function ensureRoomConnectivity(collision, w, h, startTx, startTy) {
-  // BFS from start; if any walkable island is disconnected, carve a clean 1-tile link toward center
+function ensureRoomConnectivity(collision, terrainLayer, w, h, startTx, startTy) {
+  // BFS from start; if any walkable island is disconnected, carve a clean 1-tile bridge toward start
+  // without breaking building roofs or cliffs unless strictly required.
   const markReachable = () => {
     const seen = new Uint8Array(w * h);
     const q = [startTy * w + startTx];
@@ -538,10 +375,19 @@ function ensureRoomConnectivity(collision, w, h, startTx, startTy) {
   for (let y = 2; y < h - 2; y++) {
     for (let x = 1; x < w - 1; x++) {
       if (collision[y * w + x] === 0 && !seen[y * w + x]) {
-        // Carve orthogonal corridor toward start
         let cx = x, cy = y;
-        while (cx !== startTx) { collision[cy * w + cx] = 0; cx += cx < startTx ? 1 : -1; }
-        while (cy !== startTy) { collision[cy * w + cx] = 0; cy += cy < startTy ? 1 : -1; }
+        while (cx !== startTx) {
+          const idx = cy * w + cx;
+          collision[idx] = 0;
+          if (SOLID_TERRAIN_OVERRIDES.has(terrainLayer[idx])) terrainLayer[idx] = 7;
+          cx += cx < startTx ? 1 : -1;
+        }
+        while (cy !== startTy) {
+          const idx = cy * w + cx;
+          collision[idx] = 0;
+          if (SOLID_TERRAIN_OVERRIDES.has(terrainLayer[idx])) terrainLayer[idx] = 7;
+          cy += cy < startTy ? 1 : -1;
+        }
         seen = markReachable();
       }
     }
@@ -592,47 +438,81 @@ export function compileFullCampaignBundle(raw, manifest) {
   for (const area of content.areas) {
     const id = area.id;
     const meta = AREA_META[id] || AREA_META.A00;
-    const { w, h } = meta;
-    const bp = buildBespokeAreaBlueprint(id, meta);
-    const collision = bp.collision;
-    const startTx = Math.floor(w / 2), startTy = Math.floor(h / 2);
+    const bp = buildAreaArchitecture(id, meta);
+    const { w, h, collision, terrainLayer } = bp;
+    const startSpec = bp.anchors?.start || [Math.floor(w / 2), Math.floor(h / 2), 'right'];
+    const startTx = startSpec[0], startTy = startSpec[1], startDir = startSpec[2] || 'right';
     collision[startTy * w + startTx] = 0;
-    ensureRoomConnectivity(collision, w, h, startTx, startTy);
-    const start = { x: startTx * 32 + 16, y: startTy * 32 + 16, dir: 'right' };
+    ensureRoomConnectivity(collision, terrainLayer, w, h, startTx, startTy);
+    const start = { x: startTx * 32 + 16, y: startTy * 32 + 16, dir: startDir };
 
     const occupied = new Set([`${startTx},${startTy}`]);
-    const takeFreeTile = (tx, ty) => {
-      for (let rad = 0; rad < 10; rad++) {
+    const portalApproaches = new Set();
+
+    const takeFreeTile = (tx, ty, allowPortalApproach = false) => {
+      const maxRad = Math.max(w, h);
+      for (let rad = 0; rad < maxRad; rad++) {
         for (let dy = -rad; dy <= rad; dy++) {
           for (let dx = -rad; dx <= rad; dx++) {
-            const x = Math.max(2, Math.min(w - 3, tx + dx));
-            const y = Math.max(3, Math.min(h - 4, ty + dy));
+            const x = Math.max(1, Math.min(w - 2, tx + dx));
+            const y = Math.max(2, Math.min(h - 3, ty + dy));
             const k = `${x},${y}`;
-            if (collision[y * w + x] === 0 && !occupied.has(k)) {
-              occupied.add(k);
-              return [x, y];
-            }
+            if (collision[y * w + x] !== 0 || occupied.has(k)) continue;
+            if (!allowPortalApproach && portalApproaches.has(k)) continue;
+            occupied.add(k);
+            return [x, y];
           }
         }
       }
+      if (!allowPortalApproach) return takeFreeTile(tx, ty, true);
       throw new Error(`No free tile near (${tx},${ty}) in ${id}`);
     };
 
+    const takeAnchorTile = (anchor, fallbackX, fallbackY) => {
+      if (Array.isArray(anchor) && anchor.length >= 2) {
+        const [ax, ay] = anchor;
+        const k = `${ax},${ay}`;
+        if (ax >= 1 && ay >= 2 && ax <= w - 2 && ay <= h - 3 && collision[ay * w + ax] === 0 && !occupied.has(k)) {
+          occupied.add(k);
+          return [ax, ay];
+        }
+        return takeFreeTile(ax, ay);
+      }
+      return takeFreeTile(fallbackX, fallbackY);
+    };
+
+    // Place structurally embedded doorways/passages directly from each area's architectural blueprint
     const rawPortals = portalsByArea[id] || [];
     const portalObjects = rawPortals.map((p, idx) => {
-      let tx, ty;
-      if (p.dir === 'right') { tx = w - 2; ty = Math.min(h - 4, Math.max(3, Math.floor(h / 2) + (idx % 2 ? -2 : 0))); }
-      else if (p.dir === 'left') { tx = 1; ty = Math.min(h - 4, Math.max(3, Math.floor(h / 2) + (idx % 2 ? 2 : 0))); }
-      else if (p.dir === 'up') { tx = Math.min(w - 3, Math.max(3, Math.floor(w / 2) - 3 + idx * 2)); ty = 2; }
-      else { tx = Math.min(w - 3, Math.max(3, Math.floor(w / 2) + 2 + idx * 2)); ty = h - 3; }
-
-      const key = `${tx},${ty}`;
-      if (collision[ty * w + tx] !== 0 || occupied.has(key)) {
-        [tx, ty] = takeFreeTile(tx, ty);
-      } else {
-        occupied.add(key);
-      }
+      const slot = bp.portalSlots?.[p.name];
       const targetMeta = AREA_META[p.to] || AREA_META.A00;
+      let tx, ty, facing, portalStyle, portalArt, portalLabel;
+      if (slot) {
+        tx = slot.tx;
+        ty = slot.ty;
+        facing = slot.dir || p.dir;
+        portalStyle = slot.style || targetMeta.doorStyle;
+        portalArt = slot.art || targetMeta.doorArt;
+        portalLabel = slot.label || null;
+        collision[ty * w + tx] = 0;
+        occupied.add(`${tx},${ty}`);
+      } else {
+        facing = p.dir;
+        portalStyle = targetMeta.doorStyle;
+        portalArt = targetMeta.doorArt;
+        portalLabel = null;
+        if (p.dir === 'right') { tx = w - 2; ty = Math.min(h - 4, Math.max(3, Math.floor(h / 2) + (idx % 2 ? -2 : 0))); }
+        else if (p.dir === 'left') { tx = 1; ty = Math.min(h - 4, Math.max(3, Math.floor(h / 2) + (idx % 2 ? 2 : 0))); }
+        else if (p.dir === 'up') { tx = Math.min(w - 3, Math.max(3, Math.floor(w / 2) - 3 + idx * 2)); ty = 2; }
+        else { tx = Math.min(w - 3, Math.max(3, Math.floor(w / 2) + 2 + idx * 2)); ty = h - 3; }
+        if (collision[ty * w + tx] !== 0 || occupied.has(`${tx},${ty}`)) [tx, ty] = takeFreeTile(tx, ty, true);
+        else occupied.add(`${tx},${ty}`);
+      }
+      // Keep the tile directly in front of a doorway clear of solid entities
+      const inDx = facing === 'right' ? -1 : facing === 'left' ? 1 : 0;
+      const inDy = facing === 'down' ? -1 : facing === 'up' ? 1 : 0;
+      portalApproaches.add(`${tx + inDx},${ty + inDy}`);
+
       return {
         id: idx + 1,
         name: p.name,
@@ -643,9 +523,10 @@ export function compileFullCampaignBundle(raw, manifest) {
         properties: {
           toMap: p.to,
           toPortal: `to_${id}`,
-          facing: p.dir,
-          portalStyle: targetMeta.doorStyle,
-          portalArt: targetMeta.doorArt,
+          facing,
+          portalStyle,
+          portalArt,
+          ...(portalLabel ? { portalLabel } : {}),
           ...(p.reqFlag ? { requiresFlag: p.reqFlag } : {})
         }
       };
@@ -655,21 +536,21 @@ export function compileFullCampaignBundle(raw, manifest) {
     const triggers = [];
 
     if (area.save_point === 'yes') {
-      const [tx, ty] = takeFreeTile(3, 3);
+      const [tx, ty] = takeAnchorTile(bp.anchors?.save, startTx + 2, Math.max(3, startTy - 1));
       entities.push({ id: `save_${id.toLowerCase()}`, type: 'save', tx, ty, interact: true, solid: true, label: 'SAVE TERMINAL' });
     }
 
     if (AREA_CRATES[id]) {
       const cr = AREA_CRATES[id];
-      const [tx, ty] = takeFreeTile(w - 4, h - 4);
+      const [tx, ty] = takeAnchorTile(bp.anchors?.crate, w - 4, h - 4);
       entities.push({
         id: cr.id, type: 'crate', tx, ty, interact: true, solid: true,
         hideAfterFlag: cr.flag, grantItems: cr.grant, label: 'SUPPLY CACHE'
       });
     }
 
-    for (const npc of AREA_NPCS[id] || []) {
-      const [tx, ty] = takeFreeTile(Math.floor(w / 2) - 2, 4);
+    (AREA_NPCS[id] || []).forEach((npc, ni) => {
+      const [tx, ty] = takeAnchorTile(bp.anchors?.npcs?.[ni], Math.floor(w / 2) - 2, 4);
       entities.push({
         id: npc.id, type: 'npc', artId: npc.artId, dir: npc.dir || 'down',
         tx, ty, interact: true, solid: true, label: npc.label,
@@ -677,21 +558,22 @@ export function compileFullCampaignBundle(raw, manifest) {
         ...(npc.sceneId ? { sceneId: npc.sceneId } : {}),
         ...(npc.ambientArea ? { ambientArea: npc.ambientArea } : {})
       });
-    }
+    });
 
     const hasAmbient = (content.dialogue || []).some(d => d.area === id && d.scene_id === 'ambient');
     if (hasAmbient && !entities.some(e => e.ambientArea === id)) {
-      const [tx, ty] = takeFreeTile(4, h - 4);
+      const [tx, ty] = takeAnchorTile(bp.anchors?.ambient, 4, h - 4);
       entities.push({ id: `ambient_${id.toLowerCase()}`, type: 'note', tx, ty, interact: true, label: 'FIELD RECORD', ambientArea: id });
     }
 
     if (['A09', 'A13', 'A17', 'A20'].includes(id)) {
-      const [tx, ty] = takeFreeTile(Math.floor(w / 2) + 3, 4);
+      const [tx, ty] = takeAnchorTile(bp.anchors?.bench, Math.floor(w / 2) + 3, 4);
       entities.push({ id: `bench_${id.toLowerCase()}`, type: 'bench', tx, ty, interact: true, solid: true, label: 'REST BENCH' });
     }
 
     const usedTriggers = new Set(entities.map(e => e.trigger).filter(Boolean));
     const areaScenes = content.scenes.filter(s => SCENE_AREA[s.id] === id);
+    let sceneIdx = 0;
     for (const sc of areaScenes) {
       if (sc.trigger === 'NEW_GAME' || sc.trigger === AREA_ENTRY_TRIGGER[id]) continue;
       if (usedTriggers.has(sc.trigger)) continue;
@@ -701,7 +583,7 @@ export function compileFullCampaignBundle(raw, manifest) {
       const isPod = lowerTitle.includes('pod');
       const isTerminal = lowerTitle.includes('console') || lowerTitle.includes('case') || lowerTitle.includes('uplink') || lowerTitle.includes('cylinder') || lowerTitle.includes('ledger') || lowerTitle.includes('archive') || lowerTitle.includes('receiver');
       const isSwitch = lowerTitle.includes('switch') || lowerTitle.includes('breaker') || lowerTitle.includes('reclassify') || lowerTitle.includes('isolate') || lowerTitle.includes('repeater') || lowerTitle.includes('bridge') || lowerTitle.includes('exchanger');
-      const [tx, ty] = takeFreeTile(Math.floor(w / 2) + 1, Math.floor(h / 2) - 1);
+      const [tx, ty] = takeAnchorTile(bp.anchors?.scenes?.[sceneIdx++], Math.floor(w / 2) + 1, Math.floor(h / 2) - 1);
 
       entities.push({
         id: `${isPod || isTerminal || isSwitch ? 'obj' : 'evt'}_${sc.id.toLowerCase().replace('-', '_')}`,
@@ -712,11 +594,12 @@ export function compileFullCampaignBundle(raw, manifest) {
       });
     }
 
+    let sqIdx = 0;
     for (const [sqId, sqArea] of Object.entries(SIDEQUEST_AREA)) {
       if (sqArea !== id) continue;
       const sq = (content.quests || []).find(q => q.id === sqId);
       if (!sq) continue;
-      const [tx, ty] = takeFreeTile(5, h - 4);
+      const [tx, ty] = takeAnchorTile(bp.anchors?.sidequests?.[sqIdx++], 5, h - 4);
       entities.push({
         id: `sq_node_${sqId.toLowerCase().replace('-', '_')}`,
         type: 'terminal', tx, ty, interact: true, solid: true,
@@ -726,37 +609,66 @@ export function compileFullCampaignBundle(raw, manifest) {
     }
 
     const noncombat = (content.encounters || []).filter(en => en.area === id && !['battle', 'boss'].includes(en.kind));
-    for (const en of noncombat) {
-      const [tx, ty] = takeFreeTile(w - 5, 4);
+    noncombat.forEach((en, pi) => {
+      const [tx, ty] = takeAnchorTile(bp.anchors?.puzzles?.[pi], w - 5, 4);
       entities.push({
         id: `enc_obj_${en.id.toLowerCase().replace('-', '_')}`,
         type: 'puzzle', tx, ty, interact: true, solid: true,
         encounterId: en.id, doneFlag: en.set_flag || undefined,
         label: `${en.id} ${String(en.kind || 'PUZZLE').toUpperCase()}`
       });
-    }
+    });
 
-    for (const en of (content.encounters || []).filter(e => e.area === id && NON_MANDATORY_BATTLES.has(e.id))) {
-      const [tx, ty] = takeFreeTile(w - 4, Math.floor(h / 2));
+    const optionalBattles = (content.encounters || []).filter(e => e.area === id && NON_MANDATORY_BATTLES.has(e.id));
+    optionalBattles.forEach((en, bi) => {
+      const [tx, ty] = takeAnchorTile(bp.anchors?.battles?.[bi], w - 4, Math.floor(h / 2));
       entities.push({
         id: `battle_${en.id.toLowerCase().replace('-', '_')}`,
         type: 'switch', tx, ty, interact: true, solid: true,
         trigger: `FIGHT_${en.id.replace('-', '_')}`,
         label: `ENGAGE ${String(en.units || en.id).toUpperCase().slice(0, 22)}`
       });
-    }
+    });
 
-    // Build reserved cell mask so background/foreground atlas art strictly respects collision === 1 & never overlaps gameplay objects
+    // Architecture-aware atlas dressing:
+    // - background/foreground props ONLY dress masonry walls (collision===1 && terrainLayer===0) adjacent to walkable interiors
+    //   and NEVER overwrite building roofs (8), lit facades (9), water (2), guardrails (4), cliffs (12), canopy (13), or waterfalls
+    // - ground details ONLY rest on clean walkable floor/path tiles (collision===0 && terrainLayer in {0, 1, 10})
     const reserved = new Set();
     reserved.add(`${startTx},${startTy}`);
     for (const p of portalObjects) reserved.add(`${p.x / 32},${p.y / 32}`);
     for (const e of entities) reserved.add(`${e.tx},${e.ty}`);
-    const canPlaceSolidDetail = (tx, ty, sw, sh) => {
+
+    const canPlaceWallDetail = (tx, ty, sw, sh, checkSouthWalkable) => {
       const tw = sw / 32, th = sh / 32;
       if (tx < 0 || ty < 0 || tx + tw > w || ty + th > h) return false;
+      let touchesWalkable = false;
       for (let dy = 0; dy < th; dy++) for (let dx = 0; dx < tw; dx++) {
         const cx = tx + dx, cy = ty + dy;
-        if (collision[cy * w + cx] !== 1 || reserved.has(`${cx},${cy}`)) return false;
+        if (collision[cy * w + cx] !== 1 || terrainLayer[cy * w + cx] !== 0 || reserved.has(`${cx},${cy}`)) return false;
+      }
+      if (checkSouthWalkable) {
+        const checkY = ty + th;
+        if (checkY < h) {
+          for (let dx = 0; dx < tw; dx++) if (collision[checkY * w + (tx + dx)] === 0) touchesWalkable = true;
+        }
+      } else {
+        const checkY = ty - 1;
+        if (checkY >= 0) {
+          for (let dx = 0; dx < tw; dx++) if (collision[checkY * w + (tx + dx)] === 0) touchesWalkable = true;
+        }
+      }
+      return touchesWalkable;
+    };
+
+    const canPlaceGroundDetail = (tx, ty, sw, sh) => {
+      const tw = sw / 32, th = sh / 32;
+      if (tx < 1 || ty < 2 || tx + tw > w - 1 || ty + th > h - 2) return false;
+      for (let dy = 0; dy < th; dy++) for (let dx = 0; dx < tw; dx++) {
+        const cx = tx + dx, cy = ty + dy;
+        const tc = terrainLayer[cy * w + cx];
+        if (collision[cy * w + cx] !== 0 || reserved.has(`${cx},${cy}`)) return false;
+        if (tc !== 0 && tc !== 1 && tc !== 10) return false;
       }
       return true;
     };
@@ -781,29 +693,44 @@ export function compileFullCampaignBundle(raw, manifest) {
     const areaNum = parseInt(id.slice(1), 10) || 0;
     const wfCols = new Set();
     for (const wf of bp.waterfalls) for (let dx = 0; dx < (wf.w || 1); dx++) wfCols.add(wf.x + dx);
+    // Reserve wall columns directly behind north-facing portals so bg scenery NEVER overlaps door frames
+    for (const p of portalObjects) {
+      if (p.properties.facing === 'up') {
+        const px = p.x / 32;
+        for (let dx = -1; dx <= 1; dx++) {
+          bgUsed.add(`${px + dx},0`);
+          bgUsed.add(`${px + dx},1`);
+        }
+      }
+    }
 
-    // North wall architectural storytelling (staggered multi-atlas monuments, arches, consoles, shelves, crags)
+    // North masonry wall dressing (only where solid masonry directly overlooks a walkable interior room)
     for (let x = 2, slot = 0; x <= w - 4 && bgPool.length; x += 3, slot++) {
       const pick = bgPool[(slot + areaNum) % bgPool.length];
       const tw = pick.sw / 32, th = pick.sh / 32;
       if (th > 2) continue;
-      let ok = canPlaceSolidDetail(x, 0, pick.sw, pick.sh);
-      for (let dx = 0; dx < tw; dx++) if (bgUsed.has(x + dx) || wfCols.has(x + dx)) ok = false;
-      if (!ok) continue;
-      for (let dx = 0; dx < tw; dx++) bgUsed.add(x + dx);
+      // Try y=0 first, then y=1 for recessed rooms
+      let placedY = -1;
+      for (const tryY of [0, 1]) {
+        let ok = canPlaceWallDetail(x, tryY, pick.sw, pick.sh, true);
+        for (let dx = 0; dx < tw; dx++) if (bgUsed.has(`${x + dx},${tryY}`) || wfCols.has(x + dx)) ok = false;
+        if (ok) { placedY = tryY; break; }
+      }
+      if (placedY < 0) continue;
+      for (let dx = 0; dx < tw; dx++) bgUsed.add(`${x + dx},${placedY}`);
       envDetails.push({
         id: `bg_${id.toLowerCase()}_${x}`, atlas: pick.atlas, layer: 'background',
-        tx: x, ty: 0, sx: pick.sx, sy: pick.sy, sw: pick.sw, sh: pick.sh
+        tx: x, ty: placedY, sx: pick.sx, sy: pick.sy, sw: pick.sw, sh: pick.sh
       });
       x += Math.max(0, tw - 2);
     }
 
-    // Foreground architectural framing on south rim (hanging moss, lantern strands, decon gantries, vaulted ribs)
+    // Foreground architectural framing on south masonry rims bordering interior rooms
     if (fgPool.length) {
       const fgPositions = [2, Math.max(6, Math.floor(w / 2) - 1), w - 5];
       fgPositions.forEach((fx, fi) => {
         const pick = fgPool[(fi + areaNum) % fgPool.length];
-        if (canPlaceSolidDetail(fx, h - 2, pick.sw, pick.sh)) {
+        if (canPlaceWallDetail(fx, h - 2, pick.sw, pick.sh, false)) {
           envDetails.push({
             id: `fg_${id.toLowerCase()}_${fi}`, atlas: pick.atlas, layer: 'foreground',
             tx: fx, ty: h - 2, sx: pick.sx, sy: pick.sy, sw: pick.sw, sh: pick.sh
@@ -812,34 +739,41 @@ export function compileFullCampaignBundle(raw, manifest) {
       });
     }
 
-    // Ground details (rugs, grates, lily pads, rail tracks, moss beds, cables, puddle reflections)
-    const groundAnchors = [
-      [3, 4], [Math.max(4, Math.floor(w / 2) - 3), Math.max(4, Math.floor(h / 2) - 1)],
-      [w - 7, 5], [5, h - 5], [Math.min(w - 6, Math.floor(w / 2) + 2), h - 5]
-    ];
-    groundAnchors.forEach(([gx, gy], gi) => {
-      if (!groundPool.length) return;
-      const pick = groundPool[(gi + areaNum) % groundPool.length];
+    // Ground storytelling accents placed cleanly on open walkable floor/path tiles (never on water, walls, rails, stairs, or portals)
+    const groundUsed = new Set();
+    const candidateGround = [];
+    for (let gy = 3; gy <= h - 4; gy += 2) {
+      for (let gx = 2; gx <= w - 4; gx += 4) candidateGround.push([gx, gy]);
+    }
+    let groundPlaced = 0;
+    for (let ci = 0; ci < candidateGround.length && groundPlaced < 4 && groundPool.length; ci++) {
+      const [gx, gy] = candidateGround[(ci * 3 + areaNum) % candidateGround.length];
+      const pick = groundPool[(groundPlaced + areaNum) % groundPool.length];
       const tw = pick.sw / 32, th = pick.sh / 32;
-      if (gx >= 2 && gy >= 3 && gx + tw <= w - 2 && gy + th <= h - 2) {
-        envDetails.push({
-          id: `gr_${id.toLowerCase()}_${gi}`, atlas: pick.atlas, layer: 'ground',
-          tx: gx, ty: gy, sx: pick.sx, sy: pick.sy, sw: pick.sw, sh: pick.sh
-        });
-      }
-    });
+      if (!canPlaceGroundDetail(gx, gy, pick.sw, pick.sh)) continue;
+      let overlap = false;
+      for (let dy = 0; dy < th; dy++) for (let dx = 0; dx < tw; dx++) if (groundUsed.has(`${gx + dx},${gy + dy}`)) overlap = true;
+      if (overlap) continue;
+      for (let dy = 0; dy < th; dy++) for (let dx = 0; dx < tw; dx++) groundUsed.add(`${gx + dx},${gy + dy}`);
+      envDetails.push({
+        id: `gr_${id.toLowerCase()}_${groundPlaced}`, atlas: pick.atlas, layer: 'ground',
+        tx: gx, ty: gy, sx: pick.sx, sy: pick.sy, sw: pick.sw, sh: pick.sh
+      });
+      groundPlaced++;
+    }
 
-    // Properly positioned TILE-COORDINATE Sea-of-Stars lamps for warm/cool atmospheric pools
-    const lamps = [
-      { x: 3, y: 2, r: 98, color: meta.lampColor, flicker: true },
-      { x: Math.floor(w / 2), y: Math.floor(h / 2) - 1, r: 118, color: meta.lampColor, flicker: false },
-      { x: w - 4, y: 2, r: 98, color: meta.lampColor, flicker: true },
-      { x: Math.max(4, Math.floor(w / 3)), y: h - 3, r: 88, color: '#72dce8', flicker: false },
-      { x: Math.min(w - 5, Math.floor((w * 2) / 3)), y: h - 3, r: 88, color: meta.lampColor, flicker: true }
+    const lamps = bp.lamps?.length ? bp.lamps : [
+      { x: startTx, y: Math.max(2, startTy - 1), r: 105, color: meta.lampColor, flicker: false },
+      { x: Math.floor(w / 2), y: Math.floor(h / 2), r: 115, color: meta.lampColor, flicker: true }
     ];
 
     const scConf = STEALTH_CONFIG[id];
-    const drones = scConf ? [{
+    const dSpec = bp.anchors?.drone;
+    const drones = scConf ? (dSpec ? [{
+      start: dSpec.start,
+      zone: dSpec.zone,
+      waypoints: dSpec.waypoints
+    }] : [{
       start: [Math.floor(w / 2) + 2, 4],
       zone: [Math.floor(w / 2) - 1, 3, w - 3, h - 4],
       waypoints: [
@@ -848,28 +782,31 @@ export function compileFullCampaignBundle(raw, manifest) {
         [w - 4, h - 5],
         [Math.floor(w / 2) + 2, h - 5]
       ]
-    }] : [];
+    }]) : [];
 
-    const security = scConf ? {
-      defaultMode: 'normal',
-      zones: [{
-        id: scConf.zoneId,
-        x: (Math.floor(w / 2) - 1) * 32,
-        y: 3 * 32,
-        w: (w - 3 - (Math.floor(w / 2) - 1) + 1) * 32,
-        h: (h - 4 - 3 + 1) * 32,
-        mode: 'stealth',
-        consequence: scConf.conseq,
-        ...(scConf.enc ? { encounterId: scConf.enc } : {})
-      }]
-    } : undefined;
+    const security = scConf ? (() => {
+      const z = dSpec ? dSpec.zone : [Math.floor(w / 2) - 1, 3, w - 3, h - 4];
+      return {
+        defaultMode: 'normal',
+        zones: [{
+          id: scConf.zoneId,
+          x: z[0] * 32,
+          y: z[1] * 32,
+          w: (z[2] - z[0] + 1) * 32,
+          h: (z[3] - z[1] + 1) * 32,
+          mode: 'stealth',
+          consequence: scConf.conseq,
+          ...(scConf.enc ? { encounterId: scConf.enc } : {})
+        }]
+      };
+    })() : undefined;
 
     maps.push({
       id, name: area.name, act: meta.act,
       orientation: 'orthogonal', tilewidth: 32, tileheight: 32, width: w, height: h,
       environmentPalette: meta.palette, campaignTheme: meta.theme,
       environmentDetails: envDetails,
-      terrainLayer: bp.terrainLayer,
+      terrainLayer,
       waterfalls: bp.waterfalls,
       lightShafts: bp.lightShafts,
       skyBackdrop: bp.skyBackdrop,
@@ -881,14 +818,7 @@ export function compileFullCampaignBundle(raw, manifest) {
         { type: 'objectgroup', name: 'portals', objects: portalObjects }
       ],
       entities, triggers,
-      props: [
-        ...(meta.arch === 'stasis_cryo_bay' || meta.arch === 'relay_colonnade' || meta.arch === 'quarantine_spine'
-          ? [{ t: 'cable', x: 3, y: h - 4, w: Math.min(8, w - 6), h: 1, solid: false }]
-          : []),
-        ...(meta.arch === 'rootway_ravine' || meta.arch === 'sky_viaduct'
-          ? [{ t: 'debris', x: w - 5, y: 3, w: 1, h: 1, solid: false }]
-          : [])
-      ],
+      props: [],
       lamps, drones,
       objective: area.story_purpose || 'Explore the sector',
       objectives: [],

@@ -95,31 +95,38 @@ function rack(c, p) {
 function paintCampaignTerrainCell(c, code, x, y, atT, theme) {
   const X = x * T, Y = y * T;
   if (code === 1) {
-    // Architectural stone/metal walkway or ceremonial path with beveled curbs
+    // Seamless architectural stone/metal walkway or ceremonial path with outer beveled curbs only
     const warm = theme === 'lantern' || theme === 'mail' || theme === 'wasteland';
     const base = warm ? 'rgba(138,108,74,0.34)' : theme === 'cathedral' || theme === 'archive' ? 'rgba(92,118,162,0.30)' : 'rgba(116,144,158,0.28)';
     const rim = warm ? 'rgba(245,204,132,0.38)' : 'rgba(176,226,242,0.34)';
-    R(c, base, X + 1, Y + 1, T - 2, T - 2);
+    R(c, base, X, Y, T, T);
     if (atT(x, y - 1) !== 1) { R(c, rim, X, Y, T, 2); R(c, 'rgba(0,0,0,0.28)', X, Y + 2, T, 1); }
     if (atT(x, y + 1) !== 1) { R(c, 'rgba(0,0,0,0.42)', X, Y + T - 2, T, 2); }
     if (atT(x - 1, y) !== 1) { R(c, rim, X, Y, 2, T); }
     if (atT(x + 1, y) !== 1) { R(c, 'rgba(0,0,0,0.36)', X + T - 2, Y, 2, T); }
-    R(c, 'rgba(255,255,255,0.06)', X + 6, Y + 6, 8, 1);
-    R(c, 'rgba(0,0,0,0.14)', X + 18, Y + 22, 9, 1);
+    if (hsh(x, y, 13) > 0.45) R(c, 'rgba(255,255,255,0.06)', X + 6, Y + 6, 8, 1);
+    if (hsh(x, y, 19) > 0.50) R(c, 'rgba(0,0,0,0.12)', X + 18, Y + 22, 9, 1);
   } else if (code === 2) {
-    // Deep water / coolant canal basin with stone embankment edges & foam lip
-    const deep = theme === 'stasis' || theme === 'cathedral' ? '#0d2536' : theme === 'wetland' || theme === 'quay' ? '#103038' : '#0f2c36';
-    const mid = theme === 'wetland' || theme === 'quay' ? '#184b52' : '#164558';
-    const foam = theme === 'wetland' ? 'rgba(154,238,224,0.45)' : 'rgba(148,232,250,0.42)';
-    R(c, deep, X, Y, T, T);
-    R(c, mid, X + 2, Y + 3, T - 4, T - 5);
+    // Seamless deep water / coolant canal basin with organic ripples & shoreline foam only on edges
+    const deep = theme === 'stasis' || theme === 'cathedral' ? '#0d293b' : theme === 'wetland' || theme === 'quay' ? '#123840' : '#113340';
+    const mid = theme === 'wetland' || theme === 'quay' ? '#1a525a' : '#174b60';
+    const glint = theme === 'wetland' ? 'rgba(154,242,226,0.28)' : 'rgba(148,232,250,0.26)';
+    const foam = theme === 'wetland' ? 'rgba(164,244,230,0.52)' : 'rgba(158,236,255,0.48)';
+    R(c, mid, X, Y, T, T);
+    // Subtle multi-tile depth bands & shimmering current glints (no tile-box seams!)
+    if (((x + y) & 1) === 0) R(c, 'rgba(8,22,30,0.14)', X, Y, T, T);
+    const rx = 3 + Math.floor(hsh(x, y, 27) * 14);
+    const ry = 6 + Math.floor(hsh(x, y, 29) * 18);
+    R(c, glint, X + rx, Y + ry, 9, 1);
+    R(c, 'rgba(255,255,255,0.14)', X + rx + 2, Y + ry, 4, 1);
+    if (hsh(x, y, 31) > 0.55) R(c, deep, X + 4, Y + ((ry + 12) % 26), 12, 2);
     if (atT(x, y - 1) !== 2) {
       R(c, '#1c2a30', X, Y, T, 4); R(c, '#49636b', X, Y, T, 1);
-      R(c, 'rgba(0,0,0,0.48)', X, Y + 4, T, 4); R(c, foam, X + 2, Y + 8, T - 4, 1);
+      R(c, 'rgba(0,0,0,0.45)', X, Y + 4, T, 4); R(c, foam, X + 1, Y + 8, T - 2, 1);
     }
-    if (atT(x, y + 1) !== 2) { R(c, '#2d4047', X, Y + T - 3, T, 3); R(c, foam, X + 3, Y + T - 4, T - 6, 1); }
-    if (atT(x - 1, y) !== 2) { R(c, '#1c2a30', X, Y, 3, T); R(c, foam, X + 3, Y + 2, 1, T - 4); }
-    if (atT(x + 1, y) !== 2) { R(c, '#1c2a30', X + T - 3, Y, 3, T); R(c, foam, X + T - 4, Y + 2, 1, T - 4); }
+    if (atT(x, y + 1) !== 2) { R(c, '#2d4047', X, Y + T - 3, T, 3); R(c, foam, X + 2, Y + T - 4, T - 4, 1); }
+    if (atT(x - 1, y) !== 2) { R(c, '#1c2a30', X, Y, 3, T); R(c, foam, X + 3, Y + 1, 1, T - 2); }
+    if (atT(x + 1, y) !== 2) { R(c, '#1c2a30', X + T - 3, Y, 3, T); R(c, foam, X + T - 4, Y + 1, 1, T - 2); }
   } else if (code === 3) {
     // Multi-step elevation stairway / ramp with treads, riser shadows & side handrails
     const stone = theme === 'lantern' || theme === 'wetland' ? '#634a35' : theme === 'wasteland' ? '#6b5642' : '#3d4c59';
@@ -166,6 +173,171 @@ function paintCampaignTerrainCell(c, code, x, y, atT, theme) {
     R(c, 'rgba(255,255,255,0.45)', X + 15, Y, 2, T);
     R(c, '#2d3b47', X + 9, Y + 6, 14, 3);
     R(c, '#2d3b47', X + 9, Y + 22, 14, 3);
+  } else if (code === 7) {
+    // Timber boardwalk / wooden pier bridge over water or marsh
+    const base = theme === 'quay' || theme === 'relay' ? '#584434' : '#694a31';
+    const hi = theme === 'quay' || theme === 'relay' ? '#7a6049' : '#8e6644';
+    const seam = '#241810';
+    R(c, '#1c140e', X, Y, T, T);
+    for (let px = 0; px < T; px += 6) {
+      R(c, base, X + px + 1, Y + 1, 5, T - 2);
+      R(c, hi, X + px + 1, Y + 1, 1, T - 2);
+      R(c, seam, X + px, Y, 1, T);
+      R(c, '#1e1610', X + px + 3, Y + 4, 1, 1);
+      R(c, '#1e1610', X + px + 3, Y + T - 5, 1, 1);
+    }
+    if (atT(x, y - 1) === 2) {
+      // North bridge curb & timber railing posts over water
+      R(c, '#3d2a1c', X, Y, T, 3); R(c, '#a8825b', X, Y, T, 1);
+      R(c, '#2c1e14', X + 2, Y - 1, 3, 5); R(c, '#2c1e14', X + T - 5, Y - 1, 3, 5);
+    }
+    if (atT(x, y + 1) === 2) {
+      // South bridge beam & dark shadow cast into water below
+      R(c, '#3d2a1c', X, Y + T - 3, T, 3); R(c, '#8c6848', X, Y + T - 3, T, 1);
+    }
+    if (atT(x - 1, y) === 2) { R(c, '#3d2a1c', X, Y, 3, T); R(c, '#a8825b', X, Y, 1, T); }
+    if (atT(x + 1, y) === 2) { R(c, '#3d2a1c', X + T - 3, Y, 3, T); R(c, '#20150e', X + T - 1, Y, 1, T); }
+  } else if (code === 8) {
+    // Architectural building roof / bunker shelter cap (corrugated metal, slate shingles, or armored deck)
+    const warm = theme === 'lantern' || theme === 'mail' || theme === 'wasteland' || theme === 'wetland';
+    const roofBase = warm ? '#4e3326' : theme === 'cathedral' || theme === 'archive' ? '#252c3f' : '#2d3844';
+    const roofHi = warm ? '#744c38' : theme === 'cathedral' || theme === 'archive' ? '#404c6b' : '#4a5d6e';
+    const roofDark = warm ? '#291912' : '#131921';
+    R(c, roofBase, X, Y, T, T);
+    for (let ry = 0; ry < T; ry += 6) {
+      R(c, roofHi, X + 1, Y + ry, T - 2, 2);
+      R(c, roofDark, X, Y + ry + 5, T, 1);
+    }
+    // Vertical seam ribs
+    R(c, 'rgba(0,0,0,0.28)', X + 15, Y, 1, T);
+    R(c, 'rgba(255,255,255,0.08)', X + 16, Y, 1, T);
+    // Ridge highlight on north edge; shadowed eave overhang on south edge
+    if (atT(x, y - 1) !== 8) { R(c, roofHi, X, Y, T, 3); R(c, 'rgba(255,236,196,0.25)', X, Y, T, 1); }
+    if (atT(x, y + 1) !== 8) { R(c, roofDark, X, Y + T - 4, T, 4); R(c, '#d6a44e', X, Y + T - 5, T, 1); }
+    if (atT(x - 1, y) !== 8) { R(c, roofHi, X, Y, 2, T); }
+    if (atT(x + 1, y) !== 8) { R(c, roofDark, X + T - 2, Y, 2, T); }
+    // Occasional rooftop vent or skylight hatch
+    if (hsh(x, y, 61) > 0.78) {
+      R(c, roofDark, X + 9, Y + 9, 14, 10);
+      R(c, roofHi, X + 10, Y + 10, 12, 2);
+      R(c, '#151d24', X + 11, Y + 13, 10, 4);
+    }
+  } else if (code === 9) {
+    // Building exterior facade wall with illuminated windows, timber/steel trim & stone foundation
+    const warm = theme === 'lantern' || theme === 'mail' || theme === 'wetland' || theme === 'wasteland' || theme === 'sky';
+    const facade = warm ? '#5b4331' : theme === 'cathedral' || theme === 'archive' ? '#2c3347' : '#35434f';
+    const hi = warm ? '#7c5d45' : theme === 'cathedral' || theme === 'archive' ? '#485473' : '#536878';
+    const trim = warm ? '#2e2016' : '#182028';
+    const winGlow = warm ? '#ffd884' : theme === 'cathedral' ? '#c99eff' : '#7ae8ff';
+    R(c, facade, X, Y, T, T);
+    // Eave shadow cast from roof above
+    R(c, 'rgba(0,0,0,0.45)', X, Y, T, 4);
+    R(c, hi, X, Y + 4, T, 2);
+    // Corner studs / pilasters
+    R(c, trim, X, Y + 4, 2, T - 9);
+    R(c, trim, X + T - 2, Y + 4, 2, T - 9);
+    // Foundation plinth at base
+    R(c, '#23282e', X, Y + T - 6, T, 6);
+    R(c, '#46505a', X, Y + T - 6, T, 1);
+    // Illuminated window frame (glowing panes with mullions)
+    R(c, trim, X + 7, Y + 8, 18, 13);
+    R(c, winGlow, X + 9, Y + 10, 14, 9);
+    R(c, 'rgba(255,255,255,0.45)', X + 10, Y + 11, 5, 3);
+    R(c, trim, X + 15, Y + 9, 2, 11);
+    R(c, trim, X + 8, Y + 14, 16, 1);
+    // Window sill
+    R(c, hi, X + 6, Y + 21, 20, 2);
+  } else if (code === 10) {
+    // Seamless organic packed-earth / pebble outdoor dirt trail (soft mossy verge only on outer borders)
+    const dirt = theme === 'wetland' ? 'rgba(116,96,68,0.56)' : theme === 'sky' || theme === 'wasteland' ? 'rgba(156,126,86,0.52)' : 'rgba(114,98,74,0.50)';
+    const edge = theme === 'wetland' ? 'rgba(64,104,58,0.44)' : 'rgba(92,82,58,0.38)';
+    R(c, dirt, X, Y, T, T);
+    if (atT(x, y - 1) !== 10) R(c, edge, X, Y, T, 3);
+    if (atT(x, y + 1) !== 10) R(c, edge, X, Y + T - 3, T, 3);
+    if (atT(x - 1, y) !== 10) R(c, edge, X, Y, 3, T);
+    if (atT(x + 1, y) !== 10) R(c, edge, X + T - 3, Y, 3, T);
+    for (let i = 0; i < 8; i++) {
+      const px = X + 3 + Math.floor(hsh(x, y, 70 + i) * 24);
+      const py = Y + 3 + Math.floor(hsh(x, y, 90 + i) * 24);
+      R(c, i % 2 ? 'rgba(220,202,168,0.28)' : 'rgba(42,32,20,0.28)', px, py, 3, 2);
+    }
+  } else if (code === 11) {
+    // Elevated railway track bed: gravel ballast, dark timber sleepers, twin gleaming steel rails
+    R(c, 'rgba(32,36,42,0.55)', X, Y + 2, T, T - 4);
+    for (let sx = 2; sx < T; sx += 8) {
+      R(c, '#2d2219', X + sx, Y + 3, 4, T - 6);
+      R(c, '#473628', X + sx, Y + 3, 1, T - 6);
+    }
+    // Twin horizontal steel rails
+    R(c, '#1c232b', X, Y + 7, T, 4); R(c, '#9eb4c4', X, Y + 8, T, 2);
+    R(c, '#1c232b', X, Y + 21, T, 4); R(c, '#9eb4c4', X, Y + 22, T, 2);
+  } else if (code === 12) {
+    // Natural rocky cliff / canyon escarpment face (replaces indoor brick walls outdoors!)
+    const warm = theme === 'wasteland' || theme === 'sky' || theme === 'lantern';
+    const rockDark = warm ? '#3b2d22' : theme === 'wetland' ? '#24322e' : '#2a3330';
+    const rockMid = warm ? '#5b4534' : theme === 'wetland' ? '#364a44' : '#404d46';
+    const rockHi = warm ? '#82644b' : theme === 'wetland' ? '#567066' : '#5e7064';
+    R(c, rockDark, X, Y, T, T);
+    // Layered craggy stone strata
+    R(c, rockMid, X + 1, Y + 3, 16, 11); R(c, rockHi, X + 1, Y + 3, 16, 2);
+    R(c, rockMid, X + 18, Y + 5, 13, 10); R(c, rockHi, X + 18, Y + 5, 13, 2);
+    R(c, rockMid, X + 2, Y + 16, 12, 12); R(c, rockHi, X + 2, Y + 16, 12, 1);
+    R(c, rockMid, X + 15, Y + 17, 15, 12); R(c, rockHi, X + 15, Y + 17, 15, 1);
+    // Top cliff crest rim & moss/grass cap
+    if (atT(x, y - 1) !== 12) {
+      R(c, rockHi, X, Y, T, 3);
+      R(c, warm ? '#788542' : '#467d42', X + 2, Y + 1, 12, 3);
+      R(c, warm ? '#98a653' : '#64a852', X + 18, Y + 1, 10, 2);
+    }
+    if (atT(x, y + 1) !== 12) {
+      R(c, 'rgba(0,0,0,0.45)', X, Y + T - 4, T, 4);
+    }
+  } else if (code === 13) {
+    // Dense organic wetland reeds / forest canopy foliage border mass
+    const bg = theme === 'wetland' ? '#102d30' : '#132418';
+    const leaf1 = theme === 'wetland' ? '#1f4d3b' : '#254a29';
+    const leaf2 = theme === 'wetland' ? '#31734d' : '#3d7338';
+    const leaf3 = theme === 'wetland' ? '#58a86a' : '#65a64d';
+    R(c, bg, X, Y, T, T);
+    for (let i = 0; i < 14; i++) {
+      const ox = Math.floor(hsh(x, y, 110 + i) * 22);
+      const oy = Math.floor(hsh(x, y, 140 + i) * 22);
+      const sz = 6 + (i % 5);
+      R(c, i % 3 === 0 ? leaf3 : i % 2 ? leaf2 : leaf1, X + ox, Y + oy, sz, sz - 1);
+    }
+    // Bright sunlit crown specks
+    R(c, '#8fe096', X + 8 + ((x * 5) % 12), Y + 5, 3, 2);
+    R(c, '#8fe096', X + 16, Y + 14 + ((y * 3) % 8), 2, 2);
+  } else if (code === 14) {
+    // Seamless functional floor zoning: woven rug, ceremonial runner, dawn mosaic terrace, or hazard bay
+    if (theme === 'lantern' || theme === 'mail' || theme === 'archive' || theme === 'cathedral' || theme === 'sky') {
+      const cloth = theme === 'cathedral' ? '#3d2559' : theme === 'archive' ? '#253c59' : theme === 'sky' ? '#8c7656' : '#6b3228';
+      const trim = theme === 'cathedral' ? '#d4a8ff' : theme === 'sky' ? '#f7d88b' : '#e5b864';
+      R(c, cloth, X, Y, T, T);
+      if (atT(x, y - 1) !== 14) R(c, trim, X, Y + 1, T, 2);
+      if (atT(x, y + 1) !== 14) R(c, trim, X, Y + T - 3, T, 2);
+      if (atT(x - 1, y) !== 14) R(c, trim, X + 1, Y, 2, T);
+      if (atT(x + 1, y) !== 14) R(c, trim, X + T - 3, Y, 2, T);
+      if (((x + y) & 1) === 0) R(c, 'rgba(255,255,255,0.06)', X + 8, Y + 8, 16, 16);
+    } else {
+      // Industrial cryo / quarantine hazard safety deck border
+      R(c, 'rgba(24,36,46,0.45)', X, Y, T, T);
+      const stripe = theme === 'quarantine' ? '#e6a632' : '#58c4d8';
+      if (atT(x, y - 1) !== 14) for (let sx = 0; sx < T; sx += 8) R(c, stripe, X + sx, Y, 4, 2);
+      if (atT(x, y + 1) !== 14) for (let sx = 0; sx < T; sx += 8) R(c, stripe, X + sx, Y + T - 2, 4, 2);
+      if (atT(x - 1, y) !== 14) for (let sy = 0; sy < T; sy += 8) R(c, stripe, X, Y + sy, 2, 4);
+      if (atT(x + 1, y) !== 14) for (let sy = 0; sy < T; sy += 8) R(c, stripe, X + T - 2, Y + sy, 2, 4);
+    }
+  } else if (code === 15) {
+    // Collapsed masonry rubble & cracked ruins
+    for (let i = 0; i < 12; i++) {
+      const rx = X + 2 + Math.floor(hsh(x, y, 170 + i) * 23);
+      const ry = Y + 3 + Math.floor(hsh(x, y, 190 + i) * 23);
+      const rw = 4 + (i % 5), rh = 3 + (i % 3);
+      R(c, '#1c2224', rx, ry + 1, rw, rh);
+      R(c, i % 2 ? '#596360' : '#434c49', rx, ry, rw, rh - 1);
+      R(c, '#7e8a85', rx, ry, rw, 1);
+    }
   }
 }
 
@@ -179,6 +351,8 @@ export function bakeMap(map, mission) {
   const atT = (x, y) => (!tLayer || x < 0 || y < 0 || x >= map.w || y >= map.h) ? 0 : tLayer[y * map.w + x];
   for (let y = 0; y < map.h; y++) for (let x = 0; x < map.w; x++) {
     const g = at(x, y);
+    const tc = tLayer ? atT(x, y) : 0;
+    const solidOverride = tc === 2 || tc === 8 || tc === 9 || tc === 12 || tc === 13;
     // ONLY an owner-private selected 32x32 map palette replaces a default
     // schematic tile. Original Ghost Signal missions retain their renderer.
     if (g === 2) {
@@ -194,7 +368,7 @@ export function bakeMap(map, mission) {
         }
       }
       else floor(c, x, y, at(x, y - 1) === 1);
-    }else if (g === 1) {
+    }else if (g === 1 && !solidOverride) {
       if(palette?.wall){
         c.drawImage(palette.wall,x*T,y*T);
         const X = x * T, Y = y * T;
@@ -213,23 +387,21 @@ export function bakeMap(map, mission) {
       else if (at(x, y + 1) === 2) wallFace(c, x, y);
       else wallTop(c, x, y, at);
     }
-    if (tLayer) {
-      const tc = atT(x, y);
-      if (tc > 0) paintCampaignTerrainCell(c, tc, x, y, atT, mission.campaignTheme);
-    }
+    if (tc > 0) paintCampaignTerrainCell(c, tc, x, y, atT, mission.campaignTheme);
   }
   paintCampaignEnvironmentDetails(c,mission.environmentDetails,'ground');
   // Soft directional ambient occlusion & top-left wall cast shadows onto adjacent floors
   for (let y = 0; y < map.h; y++) for (let x = 0; x < map.w; x++) if (at(x, y) === 2) {
     const X = x * T, Y = y * T;
-    if (palette && at(x, y - 1) === 1) {
+    const northSolid = at(x, y - 1) === 1 && atT(x, y - 1) !== 2;
+    if (palette && northSolid) {
       R(c, 'rgba(0,0,0,0.46)', X, Y, T, 4);
       R(c, 'rgba(0,0,0,0.24)', X, Y + 4, T, 5);
       R(c, 'rgba(0,0,0,0.10)', X, Y + 9, T, 5);
     }
-    if (at(x - 1, y) !== 2) { R(c, 'rgba(0,0,0,.32)', X, Y, 3, T); R(c, 'rgba(0,0,0,.15)', X + 3, Y, 4, T); }
-    if (at(x + 1, y) !== 2) { R(c, 'rgba(0,0,0,.32)', X + T - 3, Y, 3, T); R(c, 'rgba(0,0,0,.15)', X + T - 7, Y, 4, T); }
-    if (at(x, y + 1) !== 2) { R(c, 'rgba(0,0,0,.3)', X, Y + T - 3, T, 3); R(c, 'rgba(0,0,0,.14)', X, Y + T - 7, T, 4); }
+    if (at(x - 1, y) !== 2 && atT(x - 1, y) !== 2) { R(c, 'rgba(0,0,0,.32)', X, Y, 3, T); R(c, 'rgba(0,0,0,.15)', X + 3, Y, 4, T); }
+    if (at(x + 1, y) !== 2 && atT(x + 1, y) !== 2) { R(c, 'rgba(0,0,0,.32)', X + T - 3, Y, 3, T); R(c, 'rgba(0,0,0,.15)', X + T - 7, Y, 4, T); }
+    if (at(x, y + 1) !== 2 && atT(x, y + 1) !== 2) { R(c, 'rgba(0,0,0,.3)', X, Y + T - 3, T, 3); R(c, 'rgba(0,0,0,.14)', X, Y + T - 7, T, 4); }
   }
   paintCampaignEnvironmentDetails(c,mission.environmentDetails,'background');
   const draw = { machine, crate, debris, cable, hazard, rack };
@@ -313,7 +485,11 @@ export function drawEntity(c, e, g) {
     const w=img?.naturalWidth??img?.width,h=img?.naturalHeight??img?.height;
     if(w>0&&h>0){
       c.imageSmoothingEnabled=false;
-      c.drawImage(img,Math.round(X+16-w/2),Math.round(Y+32-h));
+      // Align side-profile airlocks/arches flush with their east/west wall,
+      // and front-facing doors / ground thresholds anchored cleanly at tile base.
+      const dx=w===32&&e.portalDir==='right'?X+T-w:w===32&&e.portalDir==='left'?X:X+16-w/2;
+      const dy=h===32?Y:Y+32-h;
+      c.drawImage(img,Math.round(dx),Math.round(dy));
       return;
     }
   }
