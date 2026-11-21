@@ -227,6 +227,12 @@ export function createCampaignMissionFactory(world,{getWorld=()=>({}),onPortal=(
     const doorSprites=doorways.forArea(id).map(e=>({
       ...e,...(environmentArt?{artImages:environmentArt.door(e.type,e.portalArt)}:{})
     }));
+    const portalAssemblies=doorSprites
+      .filter(e=>e.portalAssembly)
+      .map(e=>Object.freeze({
+        portalId:e.portalId,tx:e.tx,ty:e.ty,dir:e.portalDir,
+        assembly:e.portalAssembly,style:e.type,art:e.portalArt
+      }));
     const col=source.layers.find(l=>l.name==='collision').data;
     const grid=Uint8Array.from(col,x=>x?0:2),w=source.width,h=source.height;
     for(let y=0;y<h;y++)for(let x=0;x<w;x++)if(!grid[y*w+x]&&
@@ -242,6 +248,7 @@ export function createCampaignMissionFactory(world,{getWorld=()=>({}),onPortal=(
       start:{...source.start},
       environmentArt:visual,
       environmentDetails:details,
+      portalAssemblies,
       terrainLayer:Array.isArray(source.terrainLayer)?source.terrainLayer:null,
       waterfalls:Array.isArray(source.waterfalls)?source.waterfalls:[],
       lightShafts:Array.isArray(source.lightShafts)?source.lightShafts:[],

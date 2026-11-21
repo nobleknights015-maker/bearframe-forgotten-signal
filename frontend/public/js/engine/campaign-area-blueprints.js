@@ -1,43 +1,71 @@
 // Bespoke spatial architecture & worldbuilding blueprints for all 29 Aeon Circuit sectors (A00-A28).
-// Every sector has a unique architectural floor plan or outdoor landscape composition, structurally
-// integrated doorways/passages (zero floating doors), and geographically meaningful functional anchors.
+// Every sector is handcrafted as a believable, purposeful place with substantial JRPG scale,
+// structurally integrated multi-tile entrance assemblies (zero floating doors), zero auto-tunneling,
+// and explicit semantic anchors for every story object, NPC, save point, supply cache, quest & encounter.
 // Contains NO screenplay dialogue, lore text, or private story copy.
 
 // Terrain layer codes (rendered by tiles.js paintCampaignTerrainCell):
 //  1 = paved stone/metal walkway with curbs
-//  2 = deep water / coolant canal basin (usually collision=1)
+//  2 = deep water / coolant canal basin (solid collision=1)
 //  3 = multi-step stairway / ramp
-//  4 = viaduct / cliff drop-off safety guardrail edge
+//  4 = viaduct / cliff drop-off safety guardrail edge (solid collision=1)
 //  5 = organic moss / grass / wildflower ground transition
 //  6 = recessed energy / relay conduit trench
 //  7 = timber boardwalk / wooden pier bridge over water
-//  8 = building roof / shelter cap (collision=1)
-//  9 = building exterior facade wall with illuminated windows (collision=1)
+//  8 = building roof / shelter cap (solid collision=1)
+//  9 = building exterior facade wall with illuminated windows (solid collision=1)
 // 10 = natural packed-earth / stone dirt trail
 // 11 = elevated railway track bed (ballast + sleepers + twin rails)
-// 12 = rocky cliff / canyon escarpment face (collision=1)
-// 13 = dense wetland reeds / forest canopy foliage border (collision=1)
+// 12 = rocky cliff / canyon escarpment face (solid collision=1)
+// 13 = dense wetland reeds / forest canopy foliage border (solid collision=1)
 // 14 = interior ceremonial runner / woven plaza rug / cryo hazard deck
 // 15 = collapsed masonry rubble / broken ruins
+// 16 = cryo stasis pod bank embedded in bulkhead (solid collision=1)
+// 17 = laboratory / control-room workstation console bank (solid collision=1)
+// 18 = archive bookshelf / vault data-canister storage rack (solid collision=1)
+// 19 = carved architectural column / cathedral buttress pillar (solid collision=1)
+// 20 = weathered ancient stone ruin wall draped with moss & roots (solid collision=1)
 
 export const AREA_DIMENSIONS = Object.freeze({
-  A00: { w: 28, h: 16 }, A01: { w: 24, h: 14 }, A02: { w: 30, h: 18 }, A03: { w: 28, h: 16 },
-  A04: { w: 22, h: 15 }, A05: { w: 28, h: 17 }, A06: { w: 26, h: 15 }, A07: { w: 24, h: 15 },
-  A08: { w: 26, h: 16 }, A09: { w: 30, h: 18 }, A10: { w: 26, h: 16 }, A11: { w: 24, h: 15 },
-  A12: { w: 28, h: 15 }, A13: { w: 26, h: 15 }, A14: { w: 24, h: 15 }, A15: { w: 30, h: 18 },
-  A16: { w: 28, h: 16 }, A17: { w: 24, h: 15 }, A18: { w: 28, h: 18 }, A19: { w: 22, h: 14 },
-  A20: { w: 26, h: 16 }, A21: { w: 30, h: 16 }, A22: { w: 22, h: 14 }, A23: { w: 24, h: 14 },
-  A24: { w: 30, h: 18 }, A25: { w: 24, h: 16 }, A26: { w: 26, h: 16 }, A27: { w: 26, h: 15 },
-  A28: { w: 28, h: 16 }
+  A00: { w: 42, h: 24 }, // Benchmark #1: Stasis Hollow (5-zone cryogenic facility)
+  A01: { w: 28, h: 16 }, // Auxiliary Stasis Corridor & Root Breach
+  A02: { w: 44, h: 26 }, // Benchmark #2: Rootway Ruins (canyon, waterfall, pavilion, creek)
+  A03: { w: 32, h: 18 }, // Filter Basin Waterworks
+  A04: { w: 24, h: 16 }, // Upper Rootway Overlook Shrine
+  A05: { w: 34, h: 20 }, // Relay Court Communications Hub
+  A06: { w: 30, h: 18 }, // Mail Vault Sorting Facility
+  A07: { w: 26, h: 16 }, // Lower Relay Service Conduit
+  A08: { w: 32, h: 18 }, // Flooded Quay Wharf & Water-Lock
+  A09: { w: 40, h: 24 }, // Lantern Shelf Multi-Building Settlement
+  A10: { w: 30, h: 18 }, // Shelf Air-Exchange Turbine Plant
+  A11: { w: 26, h: 16 }, // Upper Lantern Residential Terrace
+  A12: { w: 40, h: 18 }, // Broken Sky-Rail Cantilevered Viaduct
+  A13: { w: 30, h: 16 }, // Switchyard Overpass & Canyon Ramp
+  A14: { w: 26, h: 16 }, // Ravine Under-Deck Floor
+  A15: { w: 46, h: 28 }, // Benchmark #3: Survey Wetland (outpost, islets, boardwalks)
+  A16: { w: 34, h: 18 }, // Floodgate Pier & Hydro-Pump Station
+  A17: { w: 26, h: 16 }, // Highland Survey Ridge Camp
+  A18: { w: 38, h: 24 }, // Census Archive Grand Library Nave
+  A19: { w: 24, h: 15 }, // Sealed Records Annex Vault
+  A20: { w: 32, h: 18 }, // Return Haven Fortified Courtyard
+  A21: { w: 40, h: 22 }, // Quarantine Spine Multi-Chamber Containment Wing
+  A22: { w: 24, h: 15 }, // Quarantine Observation Wing
+  A23: { w: 28, h: 16 }, // Cathedral Antechamber Processional Bridge
+  A24: { w: 44, h: 30 }, // Benchmark #4: Control Cathedral Cruciform Basilica
+  A25: { w: 26, h: 18 }, // Quiet Engine Core Suspended Arena
+  A26: { w: 32, h: 18 }, // WARD-7 Switch Chamber & Surface Lift
+  A27: { w: 30, h: 16 }, // Surface Ascent Landing & Elevator Headhouse
+  A28: { w: 34, h: 18 }  // First Morning Overlook Promontory
 });
 
 function createGridBuilder(w, h) {
-  // Start fully solid (1) so every sector is CARVED into true irregular rooms, buildings, or landscapes
+  // Start fully solid (1) so every sector is CARVED deliberately into rooms, buildings, or landscapes
   const col = new Array(w * h).fill(1);
   const terr = new Array(w * h).fill(0);
   const waterfalls = [];
   const lightShafts = [];
   const lamps = [];
+  const details = [];
   const portalSlots = {};
   const anchors = {
     start: null,
@@ -47,7 +75,9 @@ function createGridBuilder(w, h) {
     ambient: null,
     npcs: [],
     scenes: [],
+    sceneById: {},
     sidequests: [],
+    sidequestById: {},
     puzzles: [],
     battles: [],
     drone: null
@@ -79,15 +109,21 @@ function createGridBuilder(w, h) {
     }
   };
 
+  const WALKABLE_TERRAIN = new Set([1, 3, 5, 6, 7, 10, 11, 14, 15]);
   const paintT = (x0, y0, x1, y1, tCode) => {
-    for (let y = y0; y <= y1; y++) for (let x = x0; x <= x1; x++) setT(x, y, tCode);
+    const floorOnly = WALKABLE_TERRAIN.has(tCode);
+    for (let y = y0; y <= y1; y++) {
+      for (let x = x0; x <= x1; x++) {
+        if (floorOnly && getC(x, y) !== 0) continue;
+        setT(x, y, tCode);
+      }
+    }
   };
 
-  // Construct an actual multi-tile exterior building with roof (8) and lit windowed facade wall (9)
-  const building = (x0, y0, x1, y1, roofRows = Math.max(1, y1 - y0)) => {
+  // Multi-tile exterior building with corrugated/slate roof (8) meeting lit windowed facade wall (9)
+  const building = (x0, y0, x1, y1) => {
     const facadeY = y1;
-    const roofEnd = Math.min(y1 - 1, y0 + roofRows - 1);
-    for (let y = y0; y <= roofEnd; y++) {
+    for (let y = y0; y < facadeY; y++) {
       for (let x = x0; x <= x1; x++) { setC(x, y, 1); setT(x, y, 8); }
     }
     for (let x = x0; x <= x1; x++) { setC(x, facadeY, 1); setT(x, facadeY, 9); }
@@ -98,56 +134,72 @@ function createGridBuilder(w, h) {
     for (let y = y0; y <= y1; y++) for (let x = x0; x <= x1; x++) { setC(x, y, 1); setT(x, y, 2); }
   };
 
-  // Walkable wooden pier / bridge over water
+  // Walkable wooden pier / boardwalk over water
   const bridge = (x0, y0, x1, y1) => {
     for (let y = y0; y <= y1; y++) for (let x = x0; x <= x1; x++) {
       if (x >= 1 && y >= 2 && x <= w - 2 && y <= h - 3) { setC(x, y, 0); setT(x, y, 7); }
     }
   };
 
-  // Structurally embedded portal registration: ensures approach floor + framing jambs/architecture
+  const SOLID_TERRAIN = new Set([2, 4, 8, 9, 12, 13, 16, 17, 18, 19, 20]);
+  const ensureWalkableTerrain = (x, y, assembly) => {
+    if (!inB(x, y)) return;
+    if (SOLID_TERRAIN.has(getT(x, y))) {
+      const t = assembly === 'bridge_exit' ? 7 : assembly === 'rail_gantry' ? 11 : assembly === 'trail_exit' ? 10 : 1;
+      setT(x, y, t);
+    }
+  };
+  const ensureSolidTerrain = (x, y) => {
+    if (!inB(x, y)) return;
+    if (WALKABLE_TERRAIN.has(getT(x, y))) setT(x, y, 0);
+  };
+
+  // Structurally embedded portal registration with architectural assembly metadata
   const portal = (toId, tx, ty, dir, art, label, style = 'bulkhead', opts = {}) => {
-    // Ensure portal tile itself is walkable and inside safe bounds
     const px = Math.max(1, Math.min(w - 2, tx));
     const py = Math.max(2, Math.min(h - 3, ty));
     setC(px, py, 0);
-    // Clear an inward approach tile so arrival & interaction are never cramped
+    ensureWalkableTerrain(px, py, opts.assembly);
     const inDx = dir === 'right' ? -1 : dir === 'left' ? 1 : 0;
     const inDy = dir === 'down' ? -1 : dir === 'up' ? 1 : 0;
     if (px + inDx >= 1 && px + inDx <= w - 2 && py + inDy >= 2 && py + inDy <= h - 3) {
       setC(px + inDx, py + inDy, 0);
+      ensureWalkableTerrain(px + inDx, py + inDy, opts.assembly);
     }
-    // Enforce structural framing jambs for interior doors/airlocks/arches so ZERO doors float in open floor
     if (opts.frame !== false) {
+      const frameWall = (x, y) => { setC(x, y, 1); ensureSolidTerrain(x, y); };
       if (dir === 'up') {
-        setC(px, py - 1, 1);
-        if (px - 1 >= 0 && getC(px - 1, py - 1) === 0) setC(px - 1, py - 1, 1);
-        if (px + 1 < w && getC(px + 1, py - 1) === 0) setC(px + 1, py - 1, 1);
+        frameWall(px, py - 1);
+        if (px - 1 >= 0 && getC(px - 1, py - 1) === 0) frameWall(px - 1, py - 1);
+        if (px + 1 < w && getC(px + 1, py - 1) === 0) frameWall(px + 1, py - 1);
       } else if (dir === 'down') {
-        setC(px, py + 1, 1);
+        frameWall(px, py + 1);
         if (opts.jambs !== false) {
-          if (px - 1 >= 1) setC(px - 1, py + 1, 1);
-          if (px + 1 <= w - 2) setC(px + 1, py + 1, 1);
+          if (px - 1 >= 1) frameWall(px - 1, py + 1);
+          if (px + 1 <= w - 2) frameWall(px + 1, py + 1);
         }
       } else if (dir === 'right') {
-        setC(px + 1, py, 1);
+        frameWall(px + 1, py);
         if (opts.jambs !== false) {
-          setC(px + 1, py - 1, 1);
-          setC(px + 1, py + 1, 1);
+          frameWall(px + 1, py - 1);
+          frameWall(px + 1, py + 1);
         }
       } else if (dir === 'left') {
-        setC(px - 1, py, 1);
+        frameWall(px - 1, py);
         if (opts.jambs !== false) {
-          setC(px - 1, py - 1, 1);
-          setC(px - 1, py + 1, 1);
+          frameWall(px - 1, py - 1);
+          frameWall(px - 1, py + 1);
         }
       }
     }
-    portalSlots[`to_${toId}`] = { tx: px, ty: py, dir, art, label, style };
+    portalSlots[`to_${toId}`] = {
+      tx: px, ty: py, dir, art, label, style,
+      ...(opts.assembly ? { assembly: opts.assembly } : {})
+    };
   };
 
   return {
-    w, h, col, terr, waterfalls, lightShafts, lamps, portalSlots, anchors,
+    w, h, col, terr, waterfalls, lightShafts, lamps, details, portalSlots, anchors,
     setC, setT, getC, getT, carve, wall, paintT, building, water, bridge, portal
   };
 }
@@ -163,228 +215,322 @@ function partitionH(b, y, x0, x1, gapX, gapW = 2) {
 }
 
 export function buildAreaArchitecture(id, meta) {
-  const dims = AREA_DIMENSIONS[id] || { w: meta.w || 24, h: meta.h || 14 };
+  const dims = AREA_DIMENSIONS[id] || { w: meta.w || 28, h: meta.h || 16 };
   const b = createGridBuilder(dims.w, dims.h);
   const { w, h } = b;
 
   switch (id) {
     // =========================================================================
-    // ACT 0 — STASIS WING (Ancient Subterranean Cryogenic Bunker Complex)
+    // ACT 0 — STASIS WING (Ancient Subterranean Cryogenic Research Complex)
     // =========================================================================
     case 'A00': {
-      // BENCHMARK #1: A00 Stasis Hollow — 3-Room Cryogenic Vault & Airlock Complex
-      // Room 1 (West): Stepped Cryo-Awakening Alcove (x:2..9, y:3..12)
-      b.carve(2, 4, 9, 12, 0);
-      b.carve(3, 3, 8, 3, 0); // recessed north cryo-pod bay
-      b.paintT(3, 5, 8, 10, 14); // hazard-bordered cryo deck
-      b.paintT(5, 3, 5, 12, 6);  // glowing main stasis power conduit
+      // BENCHMARK #1: A00 Stasis Hollow (42x24) — 5-Zone Subterranean Cryogenic Facility
+      // 1. Cryo-Pod Awakening Ward (NW, x:2..13, y:3..13)
+      b.carve(2, 4, 13, 13, 0);
+      b.carve(4, 3, 11, 3, 0); // recessed north cryo pod gallery
+      // Bank of recessed dormant Cryo Stasis Pods (16) lining the north & west alcoves
+      b.wall(2, 3, 3, 3, 16);
+      b.wall(5, 2, 6, 2, 16);
+      b.wall(9, 2, 10, 2, 16);
+      b.wall(12, 3, 13, 3, 16);
+      b.wall(2, 6, 2, 7, 16);
+      b.wall(2, 10, 2, 11, 16);
+      b.paintT(4, 5, 11, 11, 14); // hazard-bordered cryogenic bay deck
+      b.paintT(7, 3, 8, 13, 6);   // twin glowing main stasis power bus conduits
+      b.paintT(11, 8, 13, 9, 1);  // exit walkway toward diagnostic bulkhead
 
-      // Structural Bulkhead Partition separating Cryo Bay from Central Diagnostic Atrium
-      partitionV(b, 10, 3, 12, 7, 2);
+      // Structural Bulkhead Partition #1 separating Cryo Ward from Diagnostic Control Lab
+      partitionV(b, 14, 3, 13, 8, 2);
 
-      // Room 2 (Center): Diagnostic Atrium with raised north console gallery & south equipment nook
-      b.carve(11, 3, 21, 12, 0);
-      b.wall(11, 3, 12, 3, 0); b.wall(20, 3, 21, 3, 0); // stepped north diagnostic niche
-      b.paintT(13, 3, 19, 4, 1); // upper diagnostic deck
-      b.paintT(15, 5, 17, 5, 3); // broad stairs down to atrium floor
-      b.paintT(11, 7, 21, 8, 1); // main transit lane
-      b.paintT(16, 6, 16, 12, 6); // secondary power bus
-      // South recessed storage alcove (partial divider wall)
-      b.wall(13, 10, 13, 12, 0); b.wall(19, 10, 19, 12, 0);
-      b.paintT(14, 11, 18, 12, 14);
+      // 2. Life-Support & Diagnostic Control Room (North-Center, x:15..28, y:3..13)
+      b.carve(15, 3, 28, 13, 0);
+      // Raised north telemetry deck with continuous Lab Workstation Consoles (17)
+      b.wall(16, 2, 20, 2, 17);
+      b.wall(23, 2, 27, 2, 17);
+      b.paintT(16, 3, 27, 5, 1);   // elevated diagnostic deck
+      b.paintT(20, 6, 23, 6, 3);   // broad steel stairs down to central atrium
+      b.paintT(15, 8, 28, 9, 1);   // primary east-west facility corridor
+      b.paintT(21, 7, 22, 13, 6);  // life-support power conduit feeding south bay
+      // Structural console island in center-south of lab
+      b.wall(17, 11, 19, 11, 17);
+      b.wall(24, 11, 26, 11, 17);
 
-      // Structural Bulkhead Partition into East Airlock Vestibule
-      partitionV(b, 22, 3, 12, 7, 2);
+      // Horizontal Bulkhead Partition #2 opening south into Maintenance & Cryo-Storage Bay
+      partitionH(b, 14, 2, 28, 19, 3);
 
-      // Room 3 (East): Narrow Armored Airlock Vestibule leading directly to A01
-      b.carve(23, 5, 26, 10, 1);
-      b.paintT(23, 7, 26, 8, 14);
-      b.portal('A01', 26, 7, 'right', 'airlock_east', 'AUX CORRIDOR AIRLOCK', 'bulkhead');
+      // 3. Maintenance & Cryo-Storage Bay (South-West & South-Center, x:3..27, y:15..20)
+      b.carve(3, 15, 27, 20, 0);
+      // Storage racking aisles (18) & coolant pipe trench (6)
+      b.wall(4, 15, 6, 15, 18);
+      b.wall(10, 15, 12, 15, 18);
+      b.wall(4, 20, 7, 20, 18);
+      b.wall(14, 18, 15, 20, 18);
+      b.paintT(8, 16, 26, 17, 1);
+      b.paintT(19, 15, 21, 17, 1);
+      b.paintT(22, 18, 26, 19, 14); // maintenance hazard workpad
+      b.paintT(11, 19, 12, 19, 15); // minor floor masonry collapse near old conduit
+      // Secondary service corridor connecting Storage Bay east to Security Checkpoint
+      partitionV(b, 28, 15, 20, 16, 2);
 
-      b.anchors.start = [5, 8, 'right'];
-      b.anchors.npcs = [[8, 6]]; // Guardian positioned inside cryo-bay entrance
-      b.anchors.save = [16, 3]; // Save terminal centered in north diagnostic niche
-      b.anchors.crate = [16, 11]; // Supply cache tucked inside south storage alcove
-      b.anchors.scenes = [[4, 4], [7, 4], [14, 4], [19, 6], [24, 6]];
-      b.anchors.ambient = [12, 11];
-      b.lightShafts.push({ x: 5, y: 1, w: 2, h: 7, color: '#7eeeff', alpha: 0.12 });
-      b.lightShafts.push({ x: 15, y: 1, w: 3, h: 7, color: '#88e8ff', alpha: 0.10 });
+      // Structural Bulkhead Partition #3 into Security Checkpoint Hall
+      partitionV(b, 29, 3, 14, 8, 2);
+
+      // 4. Security Checkpoint Hall (East-Center, x:30..34, y:6..18)
+      b.carve(30, 6, 34, 18, 0);
+      b.wall(30, 6, 30, 6, 19); b.wall(34, 6, 34, 6, 19); // armored checkpoint pillars
+      b.wall(30, 14, 30, 14, 19); b.wall(34, 14, 34, 14, 19);
+      b.wall(31, 5, 33, 5, 17); // checkpoint security monitoring console bank
+      b.paintT(30, 8, 34, 10, 14);
+      b.paintT(31, 11, 33, 17, 1);
+      b.paintT(29, 16, 31, 17, 1); // connect south maintenance exit cleanly!
+      b.setC(29, 16, 0); b.setC(29, 17, 0);
+
+      // Structural Bulkhead Partition #4 into East Armored Airlock Vestibule
+      partitionV(b, 35, 6, 18, 10, 3);
+
+      // 5. Armored East Airlock Vestibule (x:36..40, y:8..14)
+      b.carve(36, 8, 40, 14, 1);
+      b.paintT(36, 10, 40, 12, 14); // pressurized airlock floor plating
+      b.wall(37, 8, 38, 8, 17);     // airlock pressure-gauge bank
+      b.portal('A01', 40, 11, 'right', 'airlock_east', 'AUX CORRIDOR AIRLOCK', 'bulkhead', { assembly: 'airlock' });
+
+      // Explicit semantic anchors — ZERO silent relocation
+      b.anchors.start = [6, 9, 'right']; // Sleeper wakes in Cryo-Pod Awakening Ward
+      b.anchors.npcs = [[32, 9]]; // Guardian stationed in Security Checkpoint Hall
+      b.anchors.save = [21, 4];   // Save Terminal centered on north Diagnostic Control Deck
+      b.anchors.crate = [7, 18];  // Supply Cache tucked inside Maintenance & Cryo-Storage Bay
+      b.anchors.ambient = [26, 4]; // Field Record on east diagnostic bench
+      b.anchors.sceneById = {
+        'SC-001': [4, 7],   // Sleeper Cryo Pod Awakening Terminal (Cryo Ward West)
+        'SC-002': [5, 5],   // Cryo Pod Bay inspection (Cryo Ward NW)
+        'SC-003': [10, 5],  // Secondary Stasis Pod / Diagnostic readout (Cryo Ward NE)
+        'SC-048': [17, 4],  // Life-Support Telemetry Console (Diagnostic Lab West)
+        'SC-004': [38, 10]  // Airlock Override Switch (East Airlock Vestibule)
+      };
+      b.anchors.scenes = [[25, 10], [10, 12], [20, 10], [32, 12]];
+      b.anchors.puzzles = [[24, 18], [16, 19], [32, 14], [11, 16]];
+      b.anchors.battles = [[23, 19], [32, 16]];
+      b.lightShafts.push({ x: 6, y: 1, w: 3, h: 9, color: '#7eeeff', alpha: 0.12 });
+      b.lightShafts.push({ x: 20, y: 1, w: 4, h: 9, color: '#88e8ff', alpha: 0.11 });
+      b.lightShafts.push({ x: 31, y: 4, w: 3, h: 8, color: '#a8f4ff', alpha: 0.09 });
       b.lamps.push(
-        { x: 5, y: 3, r: 95, color: '#72dce8', flicker: false },
-        { x: 16, y: 4, r: 115, color: '#72dce8', flicker: false },
-        { x: 16, y: 11, r: 85, color: '#f2bd75', flicker: true },
-        { x: 24, y: 7, r: 90, color: '#7dffb0', flicker: false }
+        { x: 7, y: 5, r: 120, color: '#72dce8', flicker: false },
+        { x: 21, y: 5, r: 135, color: '#72dce8', flicker: false },
+        { x: 11, y: 17, r: 110, color: '#f2bd75', flicker: true },
+        { x: 24, y: 18, r: 105, color: '#72dce8', flicker: false },
+        { x: 32, y: 10, r: 115, color: '#72dce8', flicker: false },
+        { x: 38, y: 11, r: 95, color: '#7dffb0', flicker: false }
       );
       break;
     }
 
     case 'A01': {
-      // Auxiliary Stasis Corridor — L-shaped Utility Wing + Collapsed Root Breach
-      // West entry vestibule from A00
-      b.carve(1, 6, 5, 9, 1);
-      b.portal('A00', 1, 7, 'left', 'airlock_west', 'STASIS HOLLOW AIRLOCK', 'bulkhead');
-      // Partition into main utility hall
-      partitionV(b, 6, 4, 11, 7, 2);
-      // North collapsed ceiling breach where moss & vines first break into the bunker
-      b.carve(7, 3, 15, 10, 0);
-      b.paintT(8, 3, 13, 5, 5);
-      b.paintT(9, 4, 11, 4, 15);
-      b.paintT(7, 7, 15, 8, 1);
-      // South auxiliary generator bay
-      b.wall(7, 10, 10, 10, 0);
-      b.carve(11, 10, 15, 11, 14);
-      // East overgrown breach tunnel into Rootway (A02)
-      partitionV(b, 16, 3, 11, 7, 2);
-      b.carve(17, 6, 22, 9, 10);
-      b.paintT(18, 6, 21, 6, 5);
-      b.paintT(19, 9, 21, 9, 15);
-      b.portal('A02', 22, 7, 'right', 'arch_east', 'ROOTWAY BREACH', 'hatch');
+      // Auxiliary Stasis Corridor (28x16) — Utility Wing, Collapsed Ceiling & Root Breach
+      b.carve(1, 6, 5, 10, 1);
+      b.portal('A00', 1, 8, 'left', 'airlock_west', 'STASIS HOLLOW AIRLOCK', 'bulkhead', { assembly: 'airlock' });
+      partitionV(b, 6, 3, 12, 7, 3);
+      // Main utility corridor with collapsed moss ceiling breach & south generator alcove
+      b.carve(7, 3, 18, 12, 0);
+      b.wall(8, 2, 10, 2, 17);
+      b.wall(15, 2, 17, 2, 18);
+      b.paintT(9, 3, 14, 5, 5);
+      b.paintT(10, 4, 12, 4, 15);
+      b.paintT(7, 7, 18, 9, 1);
+      b.wall(7, 11, 10, 12, 18);
+      b.paintT(12, 11, 17, 12, 14);
+      // East overgrown stone breach tunnel leading into Rootway (A02)
+      partitionV(b, 19, 3, 12, 7, 3);
+      b.carve(20, 6, 26, 10, 10);
+      b.wall(20, 5, 26, 5, 20);
+      b.wall(20, 11, 26, 11, 20);
+      b.paintT(21, 6, 24, 6, 5);
+      b.paintT(22, 10, 24, 10, 15);
+      b.portal('A02', 26, 8, 'right', 'arch_east', 'ROOTWAY BREACH', 'hatch', { assembly: 'archway' });
 
-      b.anchors.start = [4, 7, 'right'];
-      b.anchors.save = [13, 11];
-      b.anchors.scenes = [[10, 6], [14, 5]];
-      b.lightShafts.push({ x: 9, y: 1, w: 3, h: 6, color: '#a8ffaa', alpha: 0.14 });
+      b.anchors.start = [4, 8, 'right'];
+      b.anchors.save = [15, 11];
+      b.anchors.ambient = [12, 11];
+      b.anchors.scenes = [[11, 6], [16, 6], [23, 8]];
+      b.anchors.puzzles = [[13, 10], [17, 10], [9, 10], [22, 7]];
+      b.anchors.battles = [[15, 8], [21, 9]];
+      b.lightShafts.push({ x: 10, y: 1, w: 4, h: 7, color: '#a8ffaa', alpha: 0.14 });
       b.lamps.push(
-        { x: 3, y: 7, r: 85, color: '#72dce8', flicker: true },
-        { x: 11, y: 5, r: 105, color: '#8ef5a8', flicker: false },
-        { x: 20, y: 7, r: 95, color: '#a4f096', flicker: false }
+        { x: 3, y: 8, r: 90, color: '#72dce8', flicker: true },
+        { x: 13, y: 6, r: 120, color: '#8ef5a8', flicker: false },
+        { x: 24, y: 8, r: 100, color: '#a4f096', flicker: false }
       );
       break;
     }
 
     // =========================================================================
-    // ACT 1 — ROOTWAY (Overgrown Ruined Ravine, Sluice Waterworks & Upper Shrine)
+    // ACT 1 — ROOTWAY (Overgrown Ruined Canyon, Waterworks & Upper Shrine)
     // =========================================================================
     case 'A02': {
-      // BENCHMARK #2: A02 Rootway Ruins — Organic Ravine, Ruined Pavilion & Rainwater Stream
-      // Natural canyon cliff & dense canopy perimeter (ZERO artificial bunker box!)
-      b.wall(0, 0, w - 1, 2, 12); // rocky cliff escarpment north
-      b.wall(0, h - 3, w - 1, h - 1, 13); // overgrown forest/vine ravine rim south
-      b.wall(0, 2, 1, h - 3, 12); // west canyon wall (where Stasis tunnel emerges)
-      b.wall(w - 2, 2, w - 1, h - 3, 12); // east aqueduct rock wall
+      // BENCHMARK #2: A02 Rootway Ruins (44x26) — Overgrown Canyon, Waterfall Gorge, Collapsed Pavilion & Creek
+      // Natural jagged canyon cliff & forest canopy perimeter (ZERO rectangular bunker box!)
+      b.wall(0, 0, w - 1, 2, 12);         // north limestone canyon cliffs
+      b.wall(0, h - 3, w - 1, h - 1, 13); // south dense forest canopy & roots
+      b.wall(0, 2, 1, h - 3, 12);         // west canyon cliff wall (Stasis tunnel emerges here)
+      b.wall(w - 2, 2, w - 1, h - 3, 12); // east cliff wall (Aqueduct mouth carved here)
 
-      // Irregular organic open ravine floor
-      b.carve(2, 4, 27, 14, 0);
-      b.carve(12, 2, 16, 4, 10); // north cliffside ascending gorge toward A04
-      b.wall(2, 3, 6, 4, 13);   // NW dense canopy overhang
-      b.wall(2, 13, 5, 14, 13); // SW foliage bank
-      b.wall(23, 13, 27, 14, 13); // SE foliage bank
-      b.wall(19, 3, 22, 4, 12); // NE crag outcrop
+      // Carve expansive irregular canyon basin
+      b.carve(2, 4, 41, 22, 0);
+      // Organic rocky outcrops & dense canopy overhangs breaking every straight edge
+      b.wall(2, 3, 6, 6, 13);
+      b.wall(2, 17, 6, 22, 13);
+      b.wall(7, 20, 11, 22, 13);
+      b.wall(37, 19, 41, 22, 13);
+      b.wall(37, 3, 41, 6, 12);
+      b.wall(15, 3, 17, 4, 12);
+      b.wall(25, 3, 36, 4, 12); // north cliff escarpment backing the Collapsed Pavilion
 
-      // Winding subterranean rainwater stream cutting organically across lower ravine + waterfall!
-      b.water(6, 11, 23, 12);
-      b.water(10, 10, 14, 11);
-      b.water(20, 12, 24, 13);
-      b.waterfalls.push({ x: 8, y: 1, w: 2, h: 3, color: 'rgba(72,210,196,0.78)' });
-      b.water(7, 4, 10, 5); // plunge pool beneath waterfall!
-      // Two weathered timber footbridges spanning the stream
-      b.bridge(8, 11, 9, 12);
-      b.bridge(18, 11, 19, 12);
+      // 1. North-West Twin Waterfall Gorge & Deep Turquoise Plunge Pool feeding the creek
+      b.waterfalls.push({ x: 8, y: 1, w: 2, h: 3, color: 'rgba(72,216,198,0.80)' });
+      b.waterfalls.push({ x: 12, y: 1, w: 2, h: 3, color: 'rgba(72,216,198,0.78)' });
+      b.water(7, 4, 14, 7);
+      b.water(9, 8, 12, 9);
+      b.paintT(6, 8, 8, 9, 5);
+      b.paintT(13, 8, 15, 9, 5);
 
-      // Partially collapsed stone ruin pavilion in East-North courtyard (real walls + broken masonry)
-      b.wall(20, 5, 25, 5, 0);
-      b.wall(20, 6, 20, 8, 0);
-      b.wall(25, 6, 25, 7, 0);
-      b.paintT(21, 6, 24, 8, 1);
-      b.paintT(20, 9, 22, 9, 15); // crumbled southern wall rubble
+      // 2. Winding Rainwater Creek sweeping across lower canyon + 2 Weathered Timber Bridges
+      b.water(7, 16, 36, 18);
+      b.water(10, 15, 14, 16);
+      b.water(24, 17, 29, 19);
+      b.water(34, 15, 37, 17);
+      b.bridge(12, 15, 14, 18); // West timber footbridge
+      b.bridge(27, 16, 29, 19); // East timber footbridge
 
-      // Organic dirt trail & stone terrace connecting all 3 exits cleanly
-      b.paintT(1, 7, 14, 8, 10);
-      b.paintT(13, 2, 15, 9, 10);
-      b.paintT(13, 5, 15, 5, 3); // stone ruin stairs rising to north pass
-      b.paintT(14, 8, 28, 9, 10);
-      b.paintT(3, 5, 6, 6, 5);
-      b.paintT(16, 4, 18, 6, 5);
-      b.paintT(11, 13, 17, 14, 5);
+      // 3. North Ascending Cliff Gorge & Stone Stairway toward Upper Overlook (A04)
+      b.carve(19, 2, 23, 6, 10);
+      b.paintT(19, 6, 23, 7, 3); // broad weathered stone steps climbing into north pass
+      // Terraced Central Ancient Stone Plaza flanked by carved weathered stone columns (19)
+      b.paintT(16, 8, 26, 13, 1);
+      b.wall(16, 8, 16, 8, 19); b.wall(26, 8, 26, 8, 19);
+      b.wall(16, 13, 16, 13, 19); b.wall(26, 13, 26, 13, 19);
+      b.paintT(19, 11, 20, 11, 15); // crumbled central masonry beside Pica's trap
 
-      // Three geographically natural exits:
-      b.portal('A01', 1, 7, 'left', 'arch_west', 'STASIS BREACH TUNNEL', 'hatch');
-      b.portal('A04', 14, 2, 'up', 'trail_passage', 'UPPER SHRINE TRAIL', 'hatch', { frame: false });
-      b.portal('A03', 28, 8, 'right', 'arch_east', 'FILTER BASIN AQUEDUCT', 'bulkhead');
+      // 4. Collapsed Multi-Room Research Pavilion (NE, x:29..39, y:5..12) built with Mossy Ruin Walls (20)
+      b.wall(29, 5, 39, 5, 20);
+      b.wall(29, 6, 29, 11, 20);
+      b.wall(39, 6, 39, 10, 20);
+      b.wall(34, 6, 34, 8, 20); // interior ruined partition wall separating vestibule & storage room
+      b.wall(29, 12, 31, 12, 20);
+      b.wall(36, 12, 38, 12, 20);
+      b.paintT(30, 6, 38, 11, 1); // preserved flagstone pavilion floor
+      b.paintT(32, 12, 35, 12, 15); // collapsed south doorway rubble (walkable entrance!)
+      b.paintT(30, 10, 31, 11, 15);
 
-      b.anchors.start = [4, 7, 'right'];
-      b.anchors.npcs = [[15, 7]]; // Pica trapped at the central moss-draped terrace
-      b.anchors.save = [12, 6];
-      b.anchors.crate = [23, 7]; // Supply cache tucked inside the collapsed stone pavilion!
-      b.anchors.battles = [[21, 10]]; // Filter Crawler patrolling east trail
-      b.anchors.scenes = [[11, 7], [17, 7]];
-      b.anchors.ambient = [12, 13];
-      b.lightShafts.push({ x: 6, y: 0, w: 3, h: 8, color: '#c4ffb0', alpha: 0.14 });
-      b.lightShafts.push({ x: 14, y: 0, w: 3, h: 7, color: '#fff0a8', alpha: 0.12 });
+      // 5. Natural Organic Dirt Trails & Lush Wildflower Verges connecting all 3 exits cleanly
+      b.paintT(1, 12, 16, 14, 10);  // west entry trail from Stasis Breach
+      b.paintT(20, 2, 22, 14, 10);  // north-south spine to Upper Shrine Trail
+      b.paintT(26, 12, 42, 14, 10); // east canyon road toward Filter Basin Aqueduct
+      b.paintT(13, 19, 28, 21, 10); // south meadow creekside path
+      b.paintT(3, 9, 6, 11, 5);
+      b.paintT(16, 19, 24, 22, 5);
+      b.paintT(31, 20, 35, 21, 5);
+      b.paintT(30, 14, 33, 15, 5);
+
+      // Three geographically natural entrances:
+      b.portal('A01', 1, 13, 'left', 'arch_west', 'STASIS BREACH TUNNEL', 'hatch', { assembly: 'archway' });
+      b.portal('A04', 21, 2, 'up', 'trail_passage', 'UPPER SHRINE TRAIL', 'hatch', { frame: false, assembly: 'trail_exit' });
+      b.portal('A03', 42, 13, 'right', 'arch_east', 'FILTER BASIN AQUEDUCT', 'bulkhead', { assembly: 'archway' });
+
+      // Explicit semantic anchors
+      b.anchors.start = [5, 13, 'right'];
+      b.anchors.npcs = [[21, 10]]; // Pica trapped in the central mossy ruin plaza
+      b.anchors.save = [14, 10];   // Save Beacon beside the waterfall terrace
+      b.anchors.crate = [36, 7];   // Supply Cache tucked inside the Collapsed Research Pavilion's east room
+      b.anchors.ambient = [19, 20]; // Field Record in the south wildflower clearing across the bridges
+      b.anchors.sceneById = {
+        'SC-005': [10, 12],
+        'SC-006': [24, 10]
+      };
+      b.anchors.scenes = [[32, 8], [18, 10], [26, 11]];
+      b.anchors.battles = [[31, 20], [16, 20]]; // Filter Crawler patrolling south creek bank
+      b.anchors.puzzles = [[31, 7], [23, 11], [15, 21], [37, 11]];
+      b.lightShafts.push({ x: 8, y: 0, w: 4, h: 10, color: '#c4ffb0', alpha: 0.14 });
+      b.lightShafts.push({ x: 19, y: 0, w: 4, h: 10, color: '#fff0a8', alpha: 0.13 });
+      b.lightShafts.push({ x: 32, y: 3, w: 4, h: 9, color: '#d8ffb8', alpha: 0.10 });
       b.lamps.push(
-        { x: 4, y: 7, r: 95, color: '#82e896', flicker: false },
-        { x: 14, y: 7, r: 120, color: '#c2f59a', flicker: false },
-        { x: 23, y: 7, r: 100, color: '#f2bd75', flicker: true },
-        { x: 14, y: 13, r: 90, color: '#72dce8', flicker: false }
+        { x: 5, y: 13, r: 105, color: '#82e896', flicker: false },
+        { x: 14, y: 10, r: 115, color: '#72dce8', flicker: false },
+        { x: 21, y: 10, r: 140, color: '#c2f59a', flicker: false },
+        { x: 35, y: 8, r: 115, color: '#f2bd75', flicker: true },
+        { x: 20, y: 20, r: 110, color: '#82e896', flicker: false },
+        { x: 40, y: 13, r: 95, color: '#72dce8', flicker: false }
       );
       break;
     }
 
     case 'A03': {
-      // Filter Basin — Dual Sunken Waterworks Tanks, Elevated Catwalks & Boss Control Deck
-      b.carve(1, 5, 5, 9, 1); // West aqueduct intake vestibule
-      partitionV(b, 6, 3, 12, 7, 2);
-      b.carve(7, 3, 21, 12, 0);
-      // Twin flooded settling basins with cascading intake waterfalls
-      b.water(8, 4, 13, 6);
-      b.water(15, 4, 20, 6);
-      b.water(8, 10, 13, 11);
+      // Filter Basin (32x18) — Dual Settling Waterworks, Elevated Catwalks & Boss Control Deck
+      b.carve(1, 6, 5, 11, 1);
+      partitionV(b, 6, 3, 14, 8, 2);
+      b.carve(7, 3, 24, 14, 0);
+      b.water(8, 4, 14, 6);
+      b.water(17, 4, 23, 6);
+      b.water(8, 12, 14, 13);
       b.waterfalls.push({ x: 10, y: 1, w: 2, h: 3, color: 'rgba(54,192,222,0.78)' });
-      b.waterfalls.push({ x: 17, y: 1, w: 2, h: 3, color: 'rgba(54,192,222,0.78)' });
-      // Elevated catwalks & stealth cover pillars
-      b.paintT(7, 7, 21, 8, 1);
-      b.bridge(14, 3, 14, 7);
-      b.wall(16, 10, 17, 10, 0); // filtration baffle for stealth cover
-      // East raised Sluice Control Deck & Fuse Warden Boss Arena
-      partitionV(b, 22, 3, 12, 7, 2);
-      b.carve(23, 4, 26, 11, 1);
-      b.paintT(23, 7, 23, 8, 3); // stairs up to control lock
+      b.waterfalls.push({ x: 19, y: 1, w: 2, h: 3, color: 'rgba(54,192,222,0.78)' });
+      b.paintT(7, 8, 24, 9, 1);
+      b.bridge(15, 3, 16, 8);
+      b.wall(18, 11, 19, 11, 17); // filtration control baffle for stealth cover
+      b.wall(21, 11, 22, 11, 19);
+      partitionV(b, 25, 3, 14, 8, 2);
+      b.carve(26, 5, 30, 12, 1);
+      b.wall(27, 4, 29, 4, 17);
+      b.paintT(26, 8, 26, 9, 3);
 
-      b.portal('A02', 1, 7, 'left', 'arch_west', 'ROOTWAY AQUEDUCT', 'bulkhead');
-      b.portal('A05', 26, 7, 'right', 'airlock_east', 'RELAY COURT BULKHEAD', 'bulkhead');
+      b.portal('A02', 1, 8, 'left', 'arch_west', 'ROOTWAY AQUEDUCT', 'bulkhead', { assembly: 'archway' });
+      b.portal('A05', 30, 8, 'right', 'airlock_east', 'RELAY COURT BULKHEAD', 'bulkhead', { assembly: 'airlock' });
 
-      b.anchors.start = [3, 7, 'right'];
-      b.anchors.save = [14, 3];
-      b.anchors.battles = [[18, 11]];
-      b.anchors.scenes = [[12, 8], [19, 8], [24, 6]];
-      b.anchors.drone = { start: [15, 8], zone: [13, 7, 21, 12], waypoints: [[15, 8], [20, 8], [20, 11], [15, 11]] };
-      b.lightShafts.push({ x: 13, y: 1, w: 3, h: 7, color: '#7ce8ff', alpha: 0.11 });
+      b.anchors.start = [3, 8, 'right'];
+      b.anchors.save = [15, 3];
+      b.anchors.ambient = [16, 13];
+      b.anchors.battles = [[20, 13], [11, 10]];
+      b.anchors.scenes = [[12, 8], [21, 8], [28, 7], [28, 10]];
+      b.anchors.puzzles = [[16, 11], [23, 12], [9, 10], [27, 11]];
+      b.anchors.drone = { start: [17, 8], zone: [15, 7, 24, 14], waypoints: [[17, 8], [23, 8], [23, 13], [17, 13]] };
+      b.lightShafts.push({ x: 14, y: 1, w: 4, h: 8, color: '#7ce8ff', alpha: 0.11 });
       b.lamps.push(
-        { x: 4, y: 7, r: 90, color: '#72dce8', flicker: false },
-        { x: 14, y: 8, r: 115, color: '#72dce8', flicker: true },
-        { x: 24, y: 7, r: 100, color: '#f2bd75', flicker: false }
+        { x: 4, y: 8, r: 95, color: '#72dce8', flicker: false },
+        { x: 16, y: 8, r: 125, color: '#72dce8', flicker: true },
+        { x: 28, y: 8, r: 105, color: '#f2bd75', flicker: false }
       );
       break;
     }
 
     case 'A04': {
-      // Upper Rootway Overlook — Semicircular Forest Cliff Clearing & Ruined Shrine
+      // Upper Rootway Overlook (24x16) — Semicircular Forest Cliff Clearing & Ruined Shrine
       b.wall(0, 0, w - 1, 2, 13);
       b.wall(0, 2, 2, h - 1, 12);
       b.wall(w - 3, 2, w - 1, h - 1, 13);
       b.wall(0, h - 3, w - 1, h - 1, 12);
-      // Organic curved hilltop clearing
-      b.carve(4, 3, 17, 11, 0);
-      b.carve(3, 5, 18, 10, 0);
-      b.carve(9, 10, 12, 12, 10); // south descending trail mouth
-      b.wall(3, 3, 4, 4, 13); b.wall(17, 3, 18, 4, 13);
-      // Central stone shrine dais with stairs & wildflower ring
-      b.paintT(8, 4, 13, 6, 1);
-      b.paintT(10, 7, 11, 7, 3);
-      b.paintT(5, 5, 7, 9, 5);
-      b.paintT(14, 5, 16, 9, 5);
-      b.paintT(9, 8, 12, 12, 10);
+      b.carve(4, 3, 19, 12, 0);
+      b.carve(3, 5, 20, 11, 0);
+      b.carve(10, 11, 13, 13, 10);
+      b.wall(3, 3, 4, 4, 13); b.wall(19, 3, 20, 4, 13);
+      b.wall(8, 3, 8, 4, 20); b.wall(15, 3, 15, 4, 20); // ancient mossy shrine colonnade
+      b.paintT(9, 4, 14, 7, 1);
+      b.paintT(11, 8, 12, 8, 3);
+      b.paintT(5, 5, 7, 10, 5);
+      b.paintT(16, 5, 18, 10, 5);
+      b.paintT(10, 9, 13, 13, 10);
       b.paintT(5, 4, 6, 4, 15);
-      b.portal('A02', 10, 12, 'down', 'trail_passage', 'ROOTWAY DESCENT', 'hatch', { frame: false });
+      b.portal('A02', 11, 13, 'down', 'trail_passage', 'ROOTWAY DESCENT', 'hatch', { frame: false, assembly: 'trail_exit' });
 
-      b.anchors.start = [10, 10, 'up'];
+      b.anchors.start = [11, 11, 'up'];
+      b.anchors.save = [13, 5];
       b.anchors.crate = [5, 8];
-      b.anchors.sidequests = [[11, 5]];
-      b.anchors.ambient = [15, 7];
-      b.lightShafts.push({ x: 9, y: 0, w: 4, h: 8, color: '#ffe8a8', alpha: 0.16 });
+      b.anchors.sidequests = [[11, 5], [13, 6]];
+      b.anchors.ambient = [17, 8];
+      b.anchors.scenes = [[10, 6], [14, 6]];
+      b.anchors.puzzles = [[7, 10], [16, 10], [6, 6], [17, 6]];
+      b.anchors.battles = [[15, 10], [8, 10]];
+      b.lightShafts.push({ x: 10, y: 0, w: 4, h: 8, color: '#ffe8a8', alpha: 0.16 });
       b.lamps.push(
-        { x: 10, y: 5, r: 120, color: '#f2bd75', flicker: false },
-        { x: 6, y: 8, r: 85, color: '#9cf5a8', flicker: false }
+        { x: 11, y: 5, r: 125, color: '#f2bd75', flicker: false },
+        { x: 6, y: 8, r: 90, color: '#9cf5a8', flicker: false }
       );
       break;
     }
@@ -393,247 +539,254 @@ export function buildAreaArchitecture(id, meta) {
     // ACT 2 — RELAY COURT (Communications Hub, Mail Vault, Under-Conduit & Quay)
     // =========================================================================
     case 'A05': {
-      // Relay Court Main Hall — T-Shaped Communications Hub with Shutter Gallery & Stealth Wing
-      b.carve(1, 6, 5, 10, 1); // west arrival airlock hall
-      partitionV(b, 6, 3, 13, 7, 3);
-      // Grand central court
-      b.carve(7, 3, 21, 13, 0);
+      // Relay Court Main Hall (34x20) — Multi-Wing Communications Hub & Shutter Gallery
+      b.carve(1, 7, 5, 12, 1);
+      partitionV(b, 6, 3, 16, 8, 3);
+      b.carve(7, 3, 26, 16, 0);
       // North raised Relay Command Gallery (where Rill is trapped behind shutters)
-      b.wall(7, 5, 11, 5, 0); b.wall(17, 5, 21, 5, 0);
-      b.paintT(8, 3, 20, 4, 1);
-      b.paintT(13, 5, 15, 5, 3);
-      // Twin illuminated relay conduits running north-south
-      b.paintT(10, 6, 10, 13, 6);
-      b.paintT(18, 6, 18, 13, 6);
-      // Stealth cover server baffles on east wing
-      b.wall(15, 8, 16, 8, 0);
-      b.wall(15, 11, 16, 11, 0);
-      // East Mail Vault vestibule
-      partitionV(b, 22, 3, 13, 7, 2);
-      b.carve(23, 6, 26, 9, 1);
-      // South descending stairwell alcove to A07
-      b.carve(12, 13, 16, 14, 1);
-      b.paintT(13, 13, 15, 13, 3);
+      b.wall(7, 6, 12, 6, 0); b.wall(21, 6, 26, 6, 0);
+      b.wall(9, 2, 13, 2, 17); b.wall(20, 2, 24, 2, 17);
+      b.paintT(8, 3, 25, 5, 1);
+      b.paintT(15, 6, 18, 6, 3);
+      b.paintT(11, 7, 11, 16, 6);
+      b.paintT(22, 7, 22, 16, 6);
+      // Tactical server baffle pillars in stealth wing
+      b.wall(16, 9, 17, 9, 17);
+      b.wall(16, 13, 17, 13, 17);
+      b.wall(20, 11, 20, 11, 19);
+      partitionV(b, 27, 3, 16, 8, 3);
+      b.carve(28, 7, 32, 12, 1);
+      b.carve(14, 16, 19, 17, 1);
+      b.paintT(15, 16, 18, 16, 3);
 
-      b.portal('A03', 1, 8, 'left', 'airlock_west', 'FILTER BASIN LOCK', 'bulkhead');
-      b.portal('A06', 26, 7, 'right', 'airlock_east', 'MAIL VAULT LOCK', 'bulkhead');
-      b.portal('A07', 14, 14, 'down', 'south_threshold', 'LOWER CONDUIT STAIRS', 'bulkhead');
+      b.portal('A03', 1, 9, 'left', 'airlock_west', 'FILTER BASIN LOCK', 'bulkhead', { assembly: 'airlock' });
+      b.portal('A06', 32, 9, 'right', 'airlock_east', 'MAIL VAULT LOCK', 'bulkhead', { assembly: 'airlock' });
+      b.portal('A07', 16, 17, 'down', 'south_threshold', 'LOWER CONDUIT STAIRS', 'bulkhead', { assembly: 'archway' });
 
-      b.anchors.start = [4, 8, 'right'];
-      b.anchors.npcs = [[14, 3]]; // Rill in north command gallery
-      b.anchors.save = [8, 3];
-      b.anchors.scenes = [[12, 7], [14, 9], [19, 7]];
-      b.anchors.drone = { start: [19, 7], zone: [14, 6, 21, 13], waypoints: [[19, 7], [20, 12], [14, 12], [14, 7]] };
-      b.lightShafts.push({ x: 13, y: 1, w: 3, h: 7, color: '#9cd8ff', alpha: 0.11 });
+      b.anchors.start = [4, 9, 'right'];
+      b.anchors.npcs = [[16, 4]]; // Rill in north Relay Command Gallery
+      b.anchors.save = [9, 4];
+      b.anchors.ambient = [24, 4];
+      b.anchors.scenes = [[13, 9], [19, 9], [13, 13], [24, 9]];
+      b.anchors.puzzles = [[10, 14], [24, 14], [19, 14], [9, 11]];
+      b.anchors.battles = [[23, 12], [10, 12]];
+      b.anchors.drone = { start: [23, 8], zone: [15, 7, 26, 15], waypoints: [[23, 8], [25, 14], [15, 14], [15, 8]] };
+      b.lightShafts.push({ x: 15, y: 1, w: 4, h: 9, color: '#9cd8ff', alpha: 0.11 });
       b.lamps.push(
-        { x: 14, y: 4, r: 120, color: '#92d6ea', flicker: false },
-        { x: 14, y: 10, r: 105, color: '#92d6ea', flicker: false },
-        { x: 24, y: 7, r: 85, color: '#f2bd75', flicker: false }
+        { x: 16, y: 4, r: 130, color: '#92d6ea', flicker: false },
+        { x: 16, y: 12, r: 115, color: '#92d6ea', flicker: false },
+        { x: 30, y: 9, r: 95, color: '#f2bd75', flicker: false }
       );
       break;
     }
 
     case 'A06': {
-      // Mail Vault — Partitioned Multi-Room Sorting Facility & Clerk's Alcove
-      b.carve(1, 5, 7, 10, 1); // West receiving room
-      partitionV(b, 8, 3, 12, 7, 2);
-      // Central sorting bay with hazard deck & mail aisles
-      b.carve(9, 3, 18, 12, 0);
-      b.paintT(10, 6, 17, 9, 14);
-      // North clerk's vault partition with doorway
-      partitionH(b, 5, 9, 18, 13, 2);
-      b.paintT(10, 3, 17, 4, 1);
-      // East loading dock leading to Flooded Quay (A08)
-      partitionV(b, 19, 3, 12, 7, 2);
-      b.carve(20, 5, 24, 10, 1);
+      // Mail Vault (30x18) — Partitioned Multi-Room Sorting Facility & Clerk's Archive
+      b.carve(1, 6, 7, 12, 1);
+      partitionV(b, 8, 3, 14, 8, 2);
+      b.carve(9, 3, 22, 14, 0);
+      b.paintT(11, 8, 20, 12, 14);
+      partitionH(b, 6, 9, 22, 14, 3); // North Clerk's Vault
+      b.wall(10, 2, 13, 2, 18); b.wall(18, 2, 21, 2, 18); // tall mail sorting racks!
+      b.wall(10, 14, 12, 14, 18); b.wall(19, 14, 21, 14, 18);
+      b.paintT(10, 3, 21, 5, 1);
+      partitionV(b, 23, 3, 14, 8, 2);
+      b.carve(24, 6, 28, 12, 1);
 
-      b.portal('A05', 1, 7, 'left', 'airlock_west', 'RELAY COURT', 'bulkhead');
-      b.portal('A08', 24, 7, 'right', 'airlock_east', 'FLOODED QUAY LOCK', 'bulkhead');
+      b.portal('A05', 1, 9, 'left', 'airlock_west', 'RELAY COURT', 'bulkhead', { assembly: 'airlock' });
+      b.portal('A08', 28, 9, 'right', 'airlock_east', 'FLOODED QUAY LOCK', 'bulkhead', { assembly: 'airlock' });
 
-      b.anchors.start = [4, 7, 'right'];
-      b.anchors.crate = [11, 3];
-      b.anchors.sidequests = [[16, 3]];
-      b.anchors.battles = [[14, 10]];
-      b.anchors.scenes = [[12, 7], [15, 7]];
-      b.lightShafts.push({ x: 13, y: 1, w: 2, h: 6, color: '#ffd898', alpha: 0.10 });
+      b.anchors.start = [4, 9, 'right'];
+      b.anchors.save = [15, 4];
+      b.anchors.crate = [11, 4];
+      b.anchors.ambient = [20, 4];
+      b.anchors.sidequests = [[18, 4], [12, 5]];
+      b.anchors.battles = [[15, 12], [19, 11]];
+      b.anchors.scenes = [[12, 9], [17, 9], [20, 9]];
+      b.anchors.puzzles = [[13, 13], [17, 13], [11, 11], [25, 11]];
+      b.lightShafts.push({ x: 14, y: 1, w: 3, h: 7, color: '#ffd898', alpha: 0.10 });
       b.lamps.push(
-        { x: 4, y: 7, r: 90, color: '#f2bd75', flicker: false },
-        { x: 14, y: 7, r: 115, color: '#f2bd75', flicker: false },
-        { x: 22, y: 7, r: 90, color: '#72dce8', flicker: true }
+        { x: 4, y: 9, r: 95, color: '#f2bd75', flicker: false },
+        { x: 15, y: 9, r: 125, color: '#f2bd75', flicker: false },
+        { x: 26, y: 9, r: 95, color: '#72dce8', flicker: true }
       );
       break;
     }
 
     case 'A07': {
-      // Lower Relay Conduit — Stepped Z-Bend Underground Service Bypass
-      // North stairwell room arriving from A05
-      b.carve(3, 2, 9, 6, 1);
-      b.paintT(5, 3, 7, 3, 3);
-      // Narrow vertical maintenance shaft bending east
-      b.carve(5, 6, 8, 11, 0);
-      b.paintT(6, 5, 6, 11, 6);
-      // Central underground junction bay with coolant channel
-      b.carve(9, 7, 17, 12, 0);
-      b.water(11, 11, 15, 12);
-      b.paintT(9, 8, 17, 9, 1);
-      // East pressurized exit corridor toward Lantern Shelf (A09)
-      partitionV(b, 18, 7, 12, 8, 2);
-      b.carve(19, 7, 22, 10, 1);
+      // Lower Relay Conduit (26x16) — Z-Bend Underground Service Bypass
+      b.carve(3, 2, 10, 6, 1);
+      b.paintT(5, 3, 8, 3, 3);
+      b.carve(5, 6, 9, 12, 0);
+      b.paintT(7, 5, 7, 12, 6);
+      b.carve(10, 7, 19, 13, 0);
+      b.water(12, 12, 17, 13);
+      b.paintT(10, 8, 19, 10, 1);
+      b.wall(12, 6, 16, 6, 17);
+      partitionV(b, 20, 7, 13, 9, 2);
+      b.carve(21, 8, 24, 11, 1);
 
-      b.portal('A05', 6, 2, 'up', 'service', 'RELAY COURT STAIRS', 'bulkhead');
-      b.portal('A09', 22, 8, 'right', 'airlock_east', 'LANTERN SHELF APPROACH', 'bulkhead');
+      b.portal('A05', 6, 2, 'up', 'service', 'RELAY COURT STAIRS', 'bulkhead', { assembly: 'airlock' });
+      b.portal('A09', 24, 9, 'right', 'airlock_east', 'LANTERN SHELF APPROACH', 'bulkhead', { assembly: 'airlock' });
 
       b.anchors.start = [6, 4, 'down'];
-      b.anchors.save = [13, 7];
-      b.anchors.ambient = [16, 10];
+      b.anchors.save = [14, 8];
+      b.anchors.ambient = [18, 11];
+      b.anchors.scenes = [[12, 9], [16, 9]];
+      b.anchors.puzzles = [[11, 11], [17, 9], [8, 10], [15, 10]];
+      b.anchors.battles = [[14, 10], [18, 9]];
       b.lamps.push(
         { x: 6, y: 4, r: 95, color: '#92d6ea', flicker: false },
-        { x: 13, y: 8, r: 110, color: '#72dce8', flicker: true },
-        { x: 20, y: 8, r: 90, color: '#f8cb7c', flicker: false }
+        { x: 14, y: 9, r: 120, color: '#72dce8', flicker: true },
+        { x: 22, y: 9, r: 95, color: '#f8cb7c', flicker: false }
       );
       break;
     }
 
     case 'A08': {
-      // Flooded Quay — L-Shaped Industrial Wharf Over Deep Subterranean Canal
-      // Deep flooded canal filling south & southeast
-      b.water(2, 9, w - 3, h - 3);
-      b.water(16, 6, w - 3, h - 3);
-      b.waterfalls.push({ x: 18, y: 1, w: 2, h: 3, color: 'rgba(54,192,222,0.75)' });
-      // North & West concrete cargo wharf
-      b.carve(1, 3, 15, 8, 1);
-      b.carve(1, 8, 8, 12, 1);
-      // Timber pier fingers extending across the flooded harbor to the East Water-Lock Gatehouse
-      b.bridge(15, 6, 21, 7);
-      b.bridge(8, 10, 17, 10);
-      b.bridge(17, 7, 18, 10);
-      // East Gatehouse Dock (building roof + facade guarding the lock to Lantern Shelf)
-      b.building(21, 2, 24, 4, 2);
-      b.carve(21, 5, 24, 8, 1);
+      // Flooded Quay (32x18) — L-Shaped Harbor Wharf, Timber Piers & East Water-Lock Gatehouse
+      b.water(2, 10, w - 3, h - 3);
+      b.water(18, 6, w - 3, h - 3);
+      b.waterfalls.push({ x: 21, y: 1, w: 2, h: 3, color: 'rgba(54,192,222,0.76)' });
+      b.carve(1, 3, 17, 9, 1);
+      b.carve(1, 9, 9, 14, 1);
+      b.wall(4, 2, 7, 2, 18); // harbor cargo racks
+      b.wall(11, 2, 14, 2, 17);
+      b.bridge(17, 6, 25, 8);
+      b.bridge(9, 12, 21, 13);
+      b.bridge(21, 8, 22, 12);
+      b.building(25, 2, 30, 5, 3);
+      b.carve(25, 6, 30, 10, 1);
 
-      b.portal('A06', 1, 5, 'left', 'airlock_west', 'MAIL VAULT DOCK', 'bulkhead');
-      b.portal('A09', 24, 6, 'right', 'arch_east', 'LANTERN WATER-LOCK', 'bulkhead');
+      b.portal('A06', 1, 6, 'left', 'airlock_west', 'MAIL VAULT DOCK', 'bulkhead', { assembly: 'airlock' });
+      b.portal('A09', 30, 7, 'right', 'arch_east', 'LANTERN WATER-LOCK', 'bulkhead', { assembly: 'archway' });
 
-      b.anchors.start = [3, 5, 'right'];
-      b.anchors.battles = [[11, 6]];
-      b.anchors.scenes = [[18, 6]]; // Quay Grapple boss arena on pier!
-      b.anchors.save = [4, 11];
-      b.lightShafts.push({ x: 10, y: 1, w: 3, h: 7, color: '#7ce8ff', alpha: 0.11 });
+      b.anchors.start = [3, 6, 'right'];
+      b.anchors.save = [5, 13];
+      b.anchors.ambient = [7, 11];
+      b.anchors.battles = [[13, 6], [14, 12]];
+      b.anchors.scenes = [[21, 7], [15, 7], [27, 8]];
+      b.anchors.puzzles = [[8, 5], [11, 8], [26, 9], [16, 12]];
+      b.lightShafts.push({ x: 12, y: 1, w: 3, h: 8, color: '#7ce8ff', alpha: 0.11 });
       b.lamps.push(
-        { x: 5, y: 5, r: 100, color: '#72dce8', flicker: false },
-        { x: 16, y: 6, r: 110, color: '#72dce8', flicker: true },
-        { x: 22, y: 6, r: 105, color: '#f8cb7c', flicker: false }
+        { x: 6, y: 6, r: 105, color: '#72dce8', flicker: false },
+        { x: 20, y: 7, r: 120, color: '#72dce8', flicker: true },
+        { x: 27, y: 7, r: 110, color: '#f8cb7c', flicker: false }
       );
       break;
     }
 
     // =========================================================================
-    // ACT 3 — LANTERN SHELF (Multi-Building Cliffside Settlement)
+    // ACT 3 — LANTERN SHELF (Substantial Multi-Building Cliffside Settlement)
     // =========================================================================
     case 'A09': {
-      // Lantern Shelf Commons — Authentic Village Plaza with 3 Roofed Buildings, Streets & Hearth!
-      b.wall(0, 0, w - 1, 1, 12); // rocky cliff shelf backdrop north
-      b.wall(0, h - 2, w - 1, h - 2, 4); // single cliff drop-off guardrail overlooking canyon sky
-      // Carve village streets & central plaza
-      b.carve(1, 3, 28, 15, 0);
-      b.carve(13, 2, 16, 4, 1); // north street ascending to Upper Terrace (A11)
-      b.carve(13, 14, 16, 15, 10); // south switchback trail to Ravine (A14)
+      // Lantern Shelf Commons (40x24) — 5-Building Cliffside Settlement, Cobbled Streets & Hearth Square
+      b.wall(0, 0, w - 1, 1, 12);
+      b.wall(0, h - 2, w - 1, h - 2, 4); // scenic canyon cliff parapet south
+      b.carve(1, 3, 38, 21, 0);
+      b.carve(18, 2, 21, 5, 1);   // north avenue climbing to Upper Terrace (A11)
+      b.carve(18, 19, 21, 21, 10); // south switchback trail to Ravine (A14)
 
-      // BUILDING 1 (NW): Noll's Lantern Workshop (roof + warm lit windowed facade)
-      b.building(3, 2, 10, 5, 3);
-      // BUILDING 2 (NE): Archive Liaison Office & Supply Depot
-      b.building(18, 2, 26, 5, 3);
-      // BUILDING 3 (SW): Communal Shelter House & Rest Porch
-      b.building(3, 12, 9, 15, 3);
-      // South-east rocky cliff garden
-      b.wall(21, 13, 27, 15, 12);
-      b.paintT(19, 13, 20, 14, 5);
+      // 5 Distinct Roofed Settlement Buildings forming real streets & alleys!
+      b.building(3, 2, 11, 6, 3);   // Building 1 (NW): Noll's Lantern Workshop
+      b.building(25, 2, 34, 6, 3);  // Building 2 (NE): Archive Liaison Office & Supply Depot
+      b.building(3, 16, 10, 20, 3); // Building 3 (SW): Communal Shelter House
+      b.building(28, 15, 36, 19, 3); // Building 4 (SE): Lantern Canteen & Bunkhouse
+      b.building(12, 17, 15, 20, 2); // Building 5 (South): Watchtower Kiosk
 
-      // Cobbled village avenues & warm woven central hearth plaza
-      b.paintT(1, 6, 28, 9, 1);
-      b.paintT(13, 2, 16, 15, 1);
-      b.paintT(13, 3, 16, 3, 3); // terraced steps up to A11
-      b.paintT(11, 7, 18, 11, 14); // central communal hearth rug/square
-      b.paintT(10, 12, 12, 14, 5);
+      // Cobbled village avenues, terraced stairs & warm central hearth plaza
+      b.paintT(1, 8, 38, 12, 1);
+      b.paintT(18, 2, 21, 21, 1);
+      b.paintT(18, 3, 21, 4, 3);    // stone steps ascending to A11
+      b.paintT(14, 9, 25, 14, 14);  // central communal hearth square
+      b.paintT(12, 7, 16, 7, 5);
+      b.paintT(23, 15, 26, 18, 5);
+      b.paintT(3, 13, 6, 15, 5);
 
-      // Five distinct geographically coherent village exits (2 west, 1 north, 1 east, 1 south):
-      b.portal('A08', 1, 6, 'left', 'arch_west', 'FLOODED QUAY GATE', 'bulkhead');
-      b.portal('A07', 1, 10, 'left', 'arch_west', 'LOWER CONDUIT TUNNEL', 'bulkhead');
-      b.portal('A11', 14, 2, 'up', 'trail_passage', 'UPPER TERRACE LANE', 'bulkhead', { frame: false });
-      b.portal('A10', 28, 8, 'right', 'airlock_east', 'AIR-EXCHANGE PLANT', 'bulkhead');
-      b.portal('A14', 14, 15, 'down', 'trail_passage', 'RAVINE SWITCHBACK', 'hatch', { frame: false });
+      b.portal('A08', 1, 9, 'left', 'arch_west', 'FLOODED QUAY GATE', 'bulkhead', { assembly: 'archway' });
+      b.portal('A07', 1, 14, 'left', 'arch_west', 'LOWER CONDUIT TUNNEL', 'bulkhead', { assembly: 'archway' });
+      b.portal('A11', 19, 2, 'up', 'trail_passage', 'UPPER TERRACE LANE', 'bulkhead', { frame: false, assembly: 'trail_exit' });
+      b.portal('A10', 38, 10, 'right', 'airlock_east', 'AIR-EXCHANGE PLANT', 'bulkhead', { assembly: 'airlock' });
+      b.portal('A14', 19, 21, 'down', 'trail_passage', 'RAVINE SWITCHBACK', 'hatch', { frame: false, assembly: 'trail_exit' });
 
-      b.anchors.start = [5, 8, 'right'];
-      b.anchors.npcs = [[14, 8], [7, 6], [21, 6]]; // Ves in plaza, Noll outside workshop, Ilen by archive office!
-      b.anchors.bench = [10, 13]; // Rest bench right outside the Shelter House
-      b.anchors.save = [17, 6];
-      b.anchors.crate = [25, 11];
-      b.anchors.scenes = [[12, 9], [16, 9], [14, 11], [19, 9], [12, 6]];
-      b.anchors.sidequests = [[4, 6], [9, 6], [19, 6], [24, 6], [11, 11], [17, 11], [11, 14], [18, 12]];
-      b.lightShafts.push({ x: 12, y: 0, w: 4, h: 8, color: '#ffdf96', alpha: 0.13 });
+      b.anchors.start = [5, 10, 'right'];
+      b.anchors.npcs = [[19, 10], [8, 7], [29, 7]]; // Ves in hearth square, Noll outside workshop, Ilen by Archive Office
+      b.anchors.bench = [11, 16]; // Rest bench beside Shelter House porch
+      b.anchors.save = [23, 7];
+      b.anchors.crate = [35, 13];
+      b.anchors.ambient = [16, 16];
+      b.anchors.scenes = [[16, 11], [22, 11], [19, 13], [26, 10], [15, 8], [24, 13]];
+      b.anchors.sidequests = [[4, 7], [11, 7], [26, 7], [33, 7], [13, 13], [25, 16], [30, 20], [8, 14]];
+      b.anchors.puzzles = [[16, 18], [23, 19], [34, 8], [13, 10]];
+      b.anchors.battles = [[34, 12], [27, 13]];
+      b.lightShafts.push({ x: 17, y: 0, w: 5, h: 10, color: '#ffdf96', alpha: 0.13 });
       b.lamps.push(
-        { x: 7, y: 6, r: 115, color: '#f8cb7c', flicker: true },
-        { x: 14, y: 9, r: 135, color: '#ffd480', flicker: false },
-        { x: 22, y: 6, r: 115, color: '#f8cb7c', flicker: true },
-        { x: 10, y: 13, r: 100, color: '#f8cb7c', flicker: false },
-        { x: 26, y: 8, r: 95, color: '#72dce8', flicker: false }
+        { x: 8, y: 7, r: 125, color: '#f8cb7c', flicker: true },
+        { x: 19, y: 11, r: 155, color: '#ffd480', flicker: false },
+        { x: 29, y: 7, r: 125, color: '#f8cb7c', flicker: true },
+        { x: 11, y: 16, r: 110, color: '#f8cb7c', flicker: false },
+        { x: 32, y: 20, r: 115, color: '#f8cb7c', flicker: false },
+        { x: 36, y: 10, r: 100, color: '#72dce8', flicker: false }
       );
       break;
     }
 
     case 'A10': {
-      // Shelf Air-Exchange Plant — Twin Turbine Bays & Elevated Boss Deck
-      b.carve(1, 6, 5, 9, 1);
-      partitionV(b, 6, 3, 12, 7, 2);
-      // Central turbine hall with dual recessed air ducts & boss arena floor
-      b.carve(7, 3, 19, 12, 0);
-      b.wall(9, 4, 10, 5, 0); b.wall(16, 4, 17, 5, 0); // turbine intake housings
-      b.wall(9, 10, 10, 11, 0); b.wall(16, 10, 17, 11, 0);
-      b.paintT(11, 6, 15, 9, 14); // central Registry Auditor arena
-      b.paintT(7, 7, 19, 8, 1);
-      b.paintT(13, 3, 13, 12, 6);
-      // East Sky-Rail access gantry vestibule
-      partitionV(b, 20, 3, 12, 7, 2);
-      b.carve(21, 5, 24, 10, 1);
-      b.paintT(21, 7, 24, 8, 11); // railway track stub leading out to Sky-Rail
+      // Shelf Air-Exchange Plant (30x18) — Twin Turbine Bays & Elevated Boss Deck
+      b.carve(1, 7, 5, 10, 1);
+      partitionV(b, 6, 3, 14, 8, 2);
+      b.carve(7, 3, 22, 14, 0);
+      b.wall(9, 4, 11, 5, 17); b.wall(18, 4, 20, 5, 17); // turbine control housings
+      b.wall(9, 12, 11, 13, 19); b.wall(18, 12, 20, 13, 19);
+      b.paintT(12, 6, 17, 11, 14);
+      b.paintT(7, 8, 22, 9, 1);
+      b.paintT(14, 3, 15, 14, 6);
+      partitionV(b, 23, 3, 14, 8, 2);
+      b.carve(24, 6, 28, 11, 1);
+      b.paintT(24, 8, 28, 9, 11);
 
-      b.portal('A09', 1, 7, 'left', 'airlock_west', 'LANTERN COMMONS', 'bulkhead');
-      b.portal('A12', 24, 7, 'right', 'rail_gantry', 'SKY-RAIL GANTRY', 'exit');
+      b.portal('A09', 1, 8, 'left', 'airlock_west', 'LANTERN COMMONS', 'bulkhead', { assembly: 'airlock' });
+      b.portal('A12', 28, 8, 'right', 'rail_gantry', 'SKY-RAIL GANTRY', 'exit', { assembly: 'rail_gantry' });
 
-      b.anchors.start = [3, 7, 'right'];
-      b.anchors.scenes = [[13, 7]];
-      b.anchors.battles = [[13, 11]];
+      b.anchors.start = [3, 8, 'right'];
       b.anchors.save = [8, 3];
-      b.lightShafts.push({ x: 12, y: 1, w: 3, h: 7, color: '#ffd488', alpha: 0.11 });
+      b.anchors.ambient = [21, 3];
+      b.anchors.scenes = [[14, 8], [16, 8]];
+      b.anchors.battles = [[15, 13], [13, 13]];
+      b.anchors.puzzles = [[12, 4], [17, 4], [25, 10], [8, 11]];
+      b.lightShafts.push({ x: 13, y: 1, w: 4, h: 8, color: '#ffd488', alpha: 0.11 });
       b.lamps.push(
-        { x: 4, y: 7, r: 90, color: '#f8cb7c', flicker: false },
-        { x: 13, y: 7, r: 125, color: '#f8cb7c', flicker: false },
-        { x: 22, y: 7, r: 95, color: '#92d6ea', flicker: true }
+        { x: 4, y: 8, r: 95, color: '#f8cb7c', flicker: false },
+        { x: 15, y: 8, r: 135, color: '#f8cb7c', flicker: false },
+        { x: 26, y: 8, r: 100, color: '#92d6ea', flicker: true }
       );
       break;
     }
 
     case 'A11': {
-      // Upper Lantern Terrace — Quiet Cliffside Residential Street with Two Dwellings
+      // Upper Lantern Terrace (26x16) — Quiet Cliffside Residential Street with Two Homes
       b.wall(0, 0, w - 1, 2, 12);
-      b.carve(2, 4, 21, 12, 0);
-      // Two cozy roofed hillside homes framing a stone lane
-      b.building(3, 2, 9, 5, 3);
-      b.building(14, 2, 20, 5, 3);
-      b.wall(2, 10, 6, 12, 12); b.wall(17, 10, 21, 12, 12);
-      b.paintT(3, 6, 20, 8, 1);
-      b.paintT(10, 4, 13, 12, 1);
-      b.paintT(11, 11, 12, 11, 3);
-      b.paintT(4, 9, 8, 9, 5); b.paintT(15, 9, 19, 9, 5);
-      b.portal('A09', 11, 12, 'down', 'trail_passage', 'LANTERN COMMONS STEPS', 'bulkhead', { frame: false });
+      b.carve(2, 4, 23, 13, 0);
+      b.building(3, 2, 10, 5, 3);
+      b.building(15, 2, 22, 5, 3);
+      b.wall(2, 11, 6, 13, 12); b.wall(19, 11, 23, 13, 12);
+      b.paintT(3, 6, 22, 9, 1);
+      b.paintT(11, 4, 14, 13, 1);
+      b.paintT(12, 11, 13, 11, 3);
+      b.paintT(4, 10, 8, 10, 5); b.paintT(17, 10, 21, 10, 5);
+      b.portal('A09', 12, 13, 'down', 'trail_passage', 'LANTERN COMMONS STEPS', 'bulkhead', { frame: false, assembly: 'trail_exit' });
 
-      b.anchors.start = [11, 10, 'up'];
-      b.anchors.sidequests = [[6, 6], [17, 6]];
-      b.anchors.ambient = [12, 5];
-      b.lightShafts.push({ x: 10, y: 0, w: 3, h: 7, color: '#ffe29c', alpha: 0.13 });
+      b.anchors.start = [12, 11, 'up'];
+      b.anchors.save = [13, 5];
+      b.anchors.sidequests = [[6, 6], [19, 6], [9, 6]];
+      b.anchors.ambient = [12, 4];
+      b.anchors.scenes = [[10, 7], [15, 7]];
+      b.anchors.puzzles = [[8, 9], [17, 9], [5, 8], [20, 8]];
+      b.anchors.battles = [[16, 10], [9, 10]];
+      b.lightShafts.push({ x: 11, y: 0, w: 4, h: 8, color: '#ffe29c', alpha: 0.13 });
       b.lamps.push(
-        { x: 6, y: 6, r: 105, color: '#f8cb7c', flicker: true },
-        { x: 17, y: 6, r: 105, color: '#f8cb7c', flicker: false }
+        { x: 6, y: 6, r: 110, color: '#f8cb7c', flicker: true },
+        { x: 19, y: 6, r: 110, color: '#f8cb7c', flicker: false }
       );
       break;
     }
@@ -642,229 +795,255 @@ export function buildAreaArchitecture(id, meta) {
     // ACT 4 — BROKEN SKY-RAIL (Cantilevered Viaduct, Switchyard & Under-Ravine)
     // =========================================================================
     case 'A12': {
-      // Broken Sky-Rail Viaduct — Cantilevered Open-Air Railway Span Over Canyon Sky!
-      // Leave rows 0..2 and rows 12..14 mostly open void (g=0, t=0) so wasteland_canyon parallax shines!
-      b.carve(1, 5, 26, 10, 0);
-      // North concrete signal-box cabin built onto the viaduct deck (real stealth cover!)
-      b.building(9, 2, 15, 5, 3);
-      // Elevated steel railway tracks running seamlessly east-west across the entire bridge!
-      b.paintT(1, 7, 26, 8, 11);
-      b.paintT(1, 6, 26, 6, 1); // north service walkway
-      b.paintT(1, 9, 26, 10, 1); // south maintenance deck
-      // South cantilevered safety guardrail edge overlooking the canyon abyss
-      b.wall(1, 11, 26, 11, 4);
-      // South emergency maintenance stair bay descending to A14 Ravine
-      b.carve(13, 10, 15, 12, 1);
-      b.paintT(14, 11, 14, 11, 3);
-      b.paintT(21, 9, 23, 9, 15); // crumbled parapet rubble
+      // Broken Sky-Rail Viaduct (40x18) — Expansive Open-Air Railway Span Over Canyon Sky!
+      b.carve(1, 6, 38, 12, 0);
+      // Two viaduct structures: West Signal Box Cabin + East Switchman's Shed
+      b.building(9, 2, 16, 6, 3);
+      b.building(27, 2, 33, 6, 3);
+      // Continuous twin railway tracks running east-west across the full viaduct
+      b.paintT(1, 8, 38, 9, 11);
+      b.paintT(1, 7, 38, 7, 1);   // north service walkway
+      b.paintT(1, 10, 38, 12, 1); // south maintenance deck
+      b.wall(1, 13, 38, 13, 4);   // cantilevered canyon safety guardrail
+      // South emergency stair tower descending to Ravine Under-Deck (A14)
+      b.carve(19, 12, 21, 15, 1);
+      b.paintT(20, 13, 20, 14, 3);
+      b.paintT(24, 11, 26, 11, 15);
+      b.wall(22, 6, 23, 6, 17); // mid-span signal relay panel
 
-      b.portal('A10', 1, 7, 'left', 'rail_gantry', 'AIR-EXCHANGE GANTRY', 'exit', { frame: false });
-      b.portal('A13', 26, 7, 'right', 'rail_gantry', 'SWITCHYARD TRACK', 'exit', { frame: false });
-      b.portal('A14', 14, 12, 'down', 'south_threshold', 'RAVINE LADDER', 'hatch');
+      b.portal('A10', 1, 8, 'left', 'rail_gantry', 'AIR-EXCHANGE GANTRY', 'exit', { frame: false, assembly: 'rail_gantry' });
+      b.portal('A13', 38, 8, 'right', 'rail_gantry', 'SWITCHYARD TRACK', 'exit', { frame: false, assembly: 'rail_gantry' });
+      b.portal('A14', 20, 15, 'down', 'south_threshold', 'RAVINE LADDER', 'hatch', { assembly: 'archway' });
 
-      b.anchors.start = [4, 6, 'right'];
-      b.anchors.save = [7, 5];
-      b.anchors.crate = [24, 5];
-      b.anchors.sidequests = [[11, 6]];
-      b.anchors.battles = [[19, 9]];
-      b.anchors.scenes = [[8, 8], [18, 6]];
-      b.anchors.drone = { start: [17, 6], zone: [15, 5, 24, 10], waypoints: [[17, 6], [24, 6], [24, 9], [17, 9]] };
-      b.lightShafts.push({ x: 4, y: 0, w: 3, h: 8, color: '#ffe5a8', alpha: 0.14 });
-      b.lightShafts.push({ x: 19, y: 0, w: 3, h: 8, color: '#ffe5a8', alpha: 0.13 });
+      b.anchors.start = [4, 7, 'right'];
+      b.anchors.save = [7, 6];
+      b.anchors.crate = [35, 6];
+      b.anchors.ambient = [18, 6];
+      b.anchors.sidequests = [[12, 7], [30, 7]];
+      b.anchors.battles = [[28, 11], [15, 11]];
+      b.anchors.scenes = [[10, 10], [25, 7], [32, 10]];
+      b.anchors.puzzles = [[17, 11], [23, 7], [34, 11], [7, 11]];
+      b.anchors.drone = { start: [24, 7], zone: [21, 6, 36, 12], waypoints: [[24, 7], [35, 7], [35, 11], [24, 11]] };
+      b.lightShafts.push({ x: 5, y: 0, w: 4, h: 9, color: '#ffe5a8', alpha: 0.14 });
+      b.lightShafts.push({ x: 20, y: 0, w: 4, h: 9, color: '#ffe5a8', alpha: 0.13 });
       b.lamps.push(
-        { x: 5, y: 6, r: 95, color: '#92d6ea', flicker: false },
-        { x: 12, y: 6, r: 110, color: '#f8cb7c', flicker: true },
-        { x: 22, y: 6, r: 100, color: '#92d6ea', flicker: false }
+        { x: 5, y: 7, r: 100, color: '#92d6ea', flicker: false },
+        { x: 13, y: 7, r: 115, color: '#f8cb7c', flicker: true },
+        { x: 30, y: 7, r: 115, color: '#92d6ea', flicker: false }
       );
       break;
     }
 
     case 'A13': {
-      // Switchyard Overpass — Y-Split Railway Yard, Signal Booth & Canyon Descent Ramp
-      b.carve(1, 5, 24, 10, 0);
-      b.carve(14, 4, 24, 11, 0);
-      b.building(6, 2, 11, 4, 2); // switchyard signal tower
-      b.wall(1, 11, 16, 11, 4);   // south canyon guardrail
-      b.wall(17, 12, 24, 12, 12); // rocky eastern ridge descending toward wetland
-      // Twin diverging tracks
-      b.paintT(1, 7, 14, 7, 11);
-      b.paintT(14, 6, 20, 6, 11);
-      b.paintT(14, 9, 20, 9, 11);
-      // East rocky descent trail leading down to A15 Survey Wetland
-      b.paintT(21, 7, 24, 9, 10);
-      b.paintT(22, 8, 23, 8, 3);
+      // Switchyard Overpass (30x16) — Y-Split Railway Yard, Signal Tower & Wetland Descent
+      b.carve(1, 5, 28, 11, 0);
+      b.carve(16, 4, 28, 12, 0);
+      b.building(6, 2, 12, 5, 2);
+      b.wall(1, 12, 18, 12, 4);
+      b.wall(19, 13, 28, 13, 12);
+      b.paintT(1, 7, 15, 7, 11);
+      b.paintT(15, 6, 23, 6, 11);
+      b.paintT(15, 10, 23, 10, 11);
+      b.paintT(24, 7, 28, 10, 10);
+      b.paintT(25, 8, 26, 9, 3);
 
-      b.portal('A12', 1, 7, 'left', 'rail_gantry', 'SKY-RAIL VIADUCT', 'exit', { frame: false });
-      b.portal('A15', 24, 8, 'right', 'trail_passage', 'WETLAND DESCENT TRAIL', 'exit', { frame: false });
+      b.portal('A12', 1, 7, 'left', 'rail_gantry', 'SKY-RAIL VIADUCT', 'exit', { frame: false, assembly: 'rail_gantry' });
+      b.portal('A15', 28, 8, 'right', 'trail_passage', 'WETLAND DESCENT TRAIL', 'exit', { frame: false, assembly: 'trail_exit' });
 
       b.anchors.start = [4, 7, 'right'];
-      b.anchors.bench = [8, 5]; // scenic lookout bench by signal tower
-      b.anchors.sidequests = [[13, 5]];
-      b.anchors.scenes = [[16, 7], [18, 8], [20, 7]]; // Switchyard Mast boss arena
-      b.lightShafts.push({ x: 14, y: 0, w: 4, h: 9, color: '#ffe8b0', alpha: 0.15 });
+      b.anchors.bench = [9, 6];
+      b.anchors.save = [13, 5];
+      b.anchors.ambient = [14, 10];
+      b.anchors.sidequests = [[15, 5], [11, 10]];
+      b.anchors.scenes = [[18, 8], [21, 8], [23, 8], [19, 11]];
+      b.anchors.puzzles = [[17, 5], [22, 5], [16, 11], [23, 11]];
+      b.anchors.battles = [[20, 7], [20, 11]];
+      b.lightShafts.push({ x: 15, y: 0, w: 5, h: 10, color: '#ffe8b0', alpha: 0.15 });
       b.lamps.push(
-        { x: 9, y: 5, r: 105, color: '#ffe2a8', flicker: false },
-        { x: 18, y: 7, r: 120, color: '#ffe2a8', flicker: false }
+        { x: 9, y: 6, r: 110, color: '#ffe2a8', flicker: false },
+        { x: 20, y: 8, r: 130, color: '#ffe2a8', flicker: false }
       );
       break;
     }
 
     case 'A14': {
-      // Ravine Under-Deck — Irregular Eroded Canyon Floor Beneath the Viaduct
+      // Ravine Under-Deck (26x16) — Eroded Canyon Floor Beneath the Viaduct
       b.wall(0, 0, w - 1, 2, 12);
       b.wall(0, h - 3, w - 1, h - 1, 12);
       b.wall(0, 2, 1, h - 3, 12);
       b.wall(w - 2, 2, w - 1, h - 3, 12);
-      b.carve(2, 4, 21, 11, 0);
-      b.carve(4, 2, 7, 4, 10);  // NW switchback ramp up to Lantern Shelf (A09)
-      b.carve(16, 2, 19, 4, 1); // NE ladder pier up to Sky-Rail (A12)
-      b.wall(10, 6, 12, 7, 12); // central canyon boulder outcrop
-      b.paintT(5, 2, 6, 9, 10);
-      b.paintT(6, 9, 17, 10, 10);
-      b.paintT(17, 3, 18, 9, 10);
-      b.paintT(14, 5, 15, 6, 15); // fallen viaduct steel debris
-      b.paintT(3, 10, 5, 11, 5);
+      b.carve(2, 4, 23, 12, 0);
+      b.carve(4, 2, 8, 4, 10);
+      b.carve(17, 2, 21, 4, 1);
+      b.wall(11, 6, 13, 8, 12);
+      b.paintT(5, 2, 7, 10, 10);
+      b.paintT(6, 10, 19, 11, 10);
+      b.paintT(18, 3, 20, 10, 10);
+      b.paintT(15, 5, 16, 6, 15);
+      b.paintT(3, 11, 5, 12, 5);
 
-      b.portal('A09', 5, 2, 'up', 'trail_passage', 'LANTERN SWITCHBACK', 'hatch', { frame: false });
-      b.portal('A12', 17, 2, 'up', 'roof_hatch', 'SKY-RAIL LADDER', 'hatch');
+      b.portal('A09', 6, 2, 'up', 'trail_passage', 'LANTERN SWITCHBACK', 'hatch', { frame: false, assembly: 'trail_exit' });
+      b.portal('A12', 19, 2, 'up', 'roof_hatch', 'SKY-RAIL LADDER', 'hatch', { assembly: 'elevator' });
 
       b.anchors.start = [6, 5, 'down'];
-      b.anchors.save = [11, 9];
-      b.anchors.ambient = [15, 8];
+      b.anchors.save = [12, 10];
+      b.anchors.ambient = [16, 9];
+      b.anchors.scenes = [[9, 8], [16, 7]];
+      b.anchors.puzzles = [[4, 8], [21, 9], [10, 11], [15, 11]];
+      b.anchors.battles = [[14, 10], [8, 9]];
       b.lamps.push(
         { x: 6, y: 4, r: 95, color: '#f2bd75', flicker: false },
-        { x: 17, y: 4, r: 95, color: '#92d6ea', flicker: true }
+        { x: 19, y: 4, r: 95, color: '#92d6ea', flicker: true }
       );
       break;
     }
 
     // =========================================================================
-    // ACT 5 — SURVEY WETLAND (Organic Outdoor Marsh, Floodgate Pier & Ridge Camp)
+    // ACT 5 — SURVEY WETLAND (Organic Coastal Marsh, Outpost & Boardwalk Network)
     // =========================================================================
     case 'A15': {
-      // BENCHMARK #3: A15 Survey Wetland — True Irregular Outdoor Marsh, Islets & Boardwalks!
-      // Fill ENTIRE map canvas with deep marsh water (2), north limestone cliffs (12) & cypress reeds (13)
-      // ZERO rectangular bunker walls!
+      // BENCHMARK #3: A15 Survey Wetland (46x28) — Expansive Marsh, Twin-Building Outpost & Raised Boardwalks
+      // Fill basin with deep marsh water (2), north mossy cliffs (12) & dense cypress reed banks (13)
       b.water(0, 2, w - 1, h - 1);
-      b.wall(0, 0, w - 1, 2, 12); // jagged mossy limestone crags north
-      b.wall(0, h - 2, 9, h - 1, 13); // SW cypress reed bank
-      b.wall(19, h - 2, w - 1, h - 1, 13); // SE reed bank
-      b.wall(0, 3, 2, 5, 13);
-      b.wall(26, 3, w - 1, 5, 13);
+      b.wall(0, 0, w - 1, 2, 12);         // north mossy limestone crags
+      b.wall(0, h - 2, 12, h - 1, 13);    // SW reed & cypress bank
+      b.wall(28, h - 2, w - 1, h - 1, 13); // SE reed bank
+      b.wall(0, 3, 2, 7, 13);
+      b.wall(42, 3, w - 1, 8, 13);
+      b.wall(15, 22, 17, 25, 13);         // southern marsh reed islet
 
-      // Twin natural waterfalls spilling off north crags into the marsh lagoon!
-      b.waterfalls.push({ x: 9, y: 1, w: 2, h: 3, color: 'rgba(70,214,208,0.80)' });
-      b.waterfalls.push({ x: 22, y: 1, w: 2, h: 3, color: 'rgba(70,214,208,0.80)' });
+      // Three cascading waterfalls feeding the wetland lagoon
+      b.waterfalls.push({ x: 16, y: 1, w: 2, h: 3, color: 'rgba(70,214,208,0.82)' });
+      b.waterfalls.push({ x: 27, y: 1, w: 2, h: 3, color: 'rgba(70,214,208,0.80)' });
+      b.waterfalls.push({ x: 37, y: 1, w: 2, h: 3, color: 'rgba(70,214,208,0.78)' });
 
-      // West rocky landing bank (where canyon ramp arrives from A13 Switchyard)
-      b.carve(1, 7, 6, 11, 10);
-      b.paintT(2, 7, 5, 7, 5);
-      // Northwest elevated islet with weathered Survey Outpost Cabin on pilings!
-      b.carve(3, 5, 7, 7, 0);
-      b.building(3, 2, 7, 4, 2);
+      // 1. West Mountain Descent Landing (arriving from A13 Switchyard Ramp)
+      b.carve(1, 11, 9, 17, 10);
+      b.water(8, 16, 9, 17); // organic eroded shoreline
+      b.paintT(2, 11, 6, 12, 5);
+      b.paintT(2, 16, 6, 17, 5);
 
-      // Winding timber boardwalk (7) across western marsh channel to Central Survey Island
-      b.bridge(6, 9, 11, 10);
+      // 2. North-West Timber Survey Outpost Compound on pilings (2 real roofed buildings + dock!)
+      b.carve(4, 6, 15, 10, 0);
+      b.building(4, 2, 10, 5, 3);  // Main Survey Outpost Station (illuminated windows)
+      b.building(12, 3, 15, 5, 2); // Timber Equipment & Sample Shed
+      b.paintT(5, 6, 14, 9, 1);
+      b.bridge(6, 10, 7, 11);      // timber stairs/walkway connecting Outpost down to West Landing
 
-      // Irregular central vegetated survey island (organic shape, moss, wildflower tufts, Miya's station)
-      b.carve(11, 5, 19, 12, 0);
-      b.carve(12, 4, 18, 13, 0);
-      b.water(11, 5, 11, 6); b.water(19, 11, 19, 12); // erode corners so island is organic!
-      b.paintT(13, 6, 17, 10, 10);
-      b.paintT(12, 5, 13, 6, 5);
-      b.paintT(17, 5, 18, 7, 5);
-      b.paintT(12, 11, 14, 12, 5);
-      b.paintT(16, 11, 18, 12, 5);
+      // 3. Dual Timber Boardwalks crossing the Western Marsh Channel to the Central Survey Island
+      b.bridge(9, 13, 16, 15);
+      b.bridge(14, 8, 18, 9);      // upper outpost boardwalk directly into north side of island
 
-      // North stone ridge trail climbing past the waterfall toward A17 Highland Ridge
-      b.carve(14, 2, 16, 5, 10);
-      b.paintT(14, 4, 16, 4, 3);
+      // 4. Broad Organic Central Vegetated Survey Island (x:16..31, y:7..19)
+      b.carve(16, 8, 30, 18, 0);
+      b.carve(18, 7, 29, 19, 0);
+      // Erode corners so shoreline looks truly organic & natural
+      b.water(16, 8, 17, 8); b.water(16, 17, 17, 18);
+      b.water(29, 8, 30, 9); b.water(29, 17, 30, 18);
+      b.paintT(18, 11, 28, 15, 10);
+      b.paintT(18, 8, 20, 10, 5);
+      b.paintT(26, 9, 28, 11, 5);
+      b.paintT(19, 16, 22, 18, 5);
+      b.paintT(25, 16, 28, 18, 5);
+      b.wall(20, 9, 21, 9, 20); // ancient mossy survey cairn marker on island
 
-      // South-central fishing/survey spur pier (for sidequest & exploration loop!)
-      b.bridge(14, 13, 16, 15);
-      b.bridge(16, 14, 21, 14);
-      b.carve(21, 12, 24, 14, 0); // small SE mossy hummock islet with Supply Cache!
-      b.paintT(22, 13, 23, 13, 5);
+      // 5. North Waterfall Dam & Highland Ridge Trail climbing to A17
+      b.carve(22, 2, 25, 7, 10);
+      b.paintT(22, 5, 25, 6, 3); // stone steps climbing past twin waterfalls
 
-      // East long wooden boardwalk pier spanning the eastern lagoon to A16 Floodgate Pier
-      b.bridge(19, 8, 28, 9);
-      b.bridge(22, 10, 22, 12); // cross-pier connecting SE hummock back to main boardwalk
+      // 6. South Survey Observation Pier Loop & SE Mossy Hummock Islet
+      b.bridge(22, 19, 24, 23);
+      b.bridge(24, 22, 32, 23);
+      b.carve(32, 19, 37, 24, 0); // SE mossy hummock islet
+      b.water(37, 19, 37, 20); b.water(32, 24, 33, 24);
+      b.paintT(33, 20, 36, 23, 5);
+      b.bridge(35, 15, 36, 19);   // cross-pier linking SE islet back up to main East Causeway!
 
-      // Three 100% natural outdoor exits (ZERO floating vault doors!):
-      b.portal('A13', 1, 9, 'left', 'trail_passage', 'SWITCHYARD RAMP', 'hatch', { frame: false });
-      b.portal('A17', 15, 2, 'up', 'trail_passage', 'HIGHLAND RIDGE TRAIL', 'hatch', { frame: false });
-      b.portal('A16', 28, 8, 'right', 'bridge_passage', 'FLOODGATE BOARDWALK', 'bulkhead', { frame: false });
+      // 7. Long Raised East Timber Causeway spanning the Eastern Lagoon to A16 Floodgate Pier
+      b.bridge(30, 12, 44, 14);
 
-      b.anchors.start = [4, 9, 'right'];
-      b.anchors.npcs = [[15, 8]]; // Miya greeting party at central survey island
-      b.anchors.save = [5, 5]; // Save beacon right beside Survey Outpost Cabin porch!
-      b.anchors.crate = [23, 13]; // Supply Cache on the SE marsh islet
-      b.anchors.sidequests = [[15, 14]]; // Sidequest beacon on the south survey pier
-      b.anchors.scenes = [[14, 9]];
-      b.lightShafts.push({ x: 13, y: 0, w: 4, h: 9, color: '#9cf5c8', alpha: 0.13 });
-      b.lightShafts.push({ x: 4, y: 0, w: 3, h: 7, color: '#ffe5a8', alpha: 0.10 });
+      // Three 100% natural outdoor exits extending cleanly off-map (ZERO floating doors!):
+      b.portal('A13', 1, 14, 'left', 'trail_passage', 'SWITCHYARD RAMP', 'hatch', { frame: false, assembly: 'trail_exit' });
+      b.portal('A17', 23, 2, 'up', 'trail_passage', 'HIGHLAND RIDGE TRAIL', 'hatch', { frame: false, assembly: 'trail_exit' });
+      b.portal('A16', 44, 13, 'right', 'bridge_passage', 'FLOODGATE BOARDWALK', 'bulkhead', { frame: false, assembly: 'bridge_exit' });
+
+      // Explicit semantic anchors
+      b.anchors.start = [5, 14, 'right'];
+      b.anchors.npcs = [[23, 13]]; // Miya greeting party at Central Survey Island camp
+      b.anchors.save = [8, 7];     // Save Terminal right on the Survey Outpost Station porch
+      b.anchors.crate = [35, 21];  // Supply Cache tucked on the SE Mossy Hummock Islet
+      b.anchors.ambient = [12, 7]; // Field Record outside the Equipment Shed
+      b.anchors.sidequests = [[23, 22], [33, 22], [11, 9]]; // SQ-10 beacon on South Observation Pier
+      b.anchors.scenes = [[21, 14], [25, 14], [19, 12]];
+      b.anchors.puzzles = [[26, 12], [20, 16], [34, 22], [7, 12]];
+      b.anchors.battles = [[27, 16], [33, 20]];
+      b.lightShafts.push({ x: 20, y: 0, w: 5, h: 11, color: '#9cf5c8', alpha: 0.13 });
+      b.lightShafts.push({ x: 6, y: 0, w: 4, h: 8, color: '#ffe5a8', alpha: 0.11 });
       b.lamps.push(
-        { x: 5, y: 5, r: 105, color: '#f8cb7c', flicker: true },
-        { x: 15, y: 8, r: 130, color: '#82e896', flicker: false },
-        { x: 23, y: 13, r: 90, color: '#72dce8', flicker: false },
-        { x: 26, y: 8, r: 95, color: '#82e896', flicker: false }
+        { x: 8, y: 7, r: 120, color: '#f8cb7c', flicker: true },
+        { x: 23, y: 13, r: 150, color: '#82e896', flicker: false },
+        { x: 23, y: 22, r: 105, color: '#72dce8', flicker: false },
+        { x: 35, y: 21, r: 105, color: '#72dce8', flicker: false },
+        { x: 40, y: 13, r: 105, color: '#82e896', flicker: false }
       );
       break;
     }
 
     case 'A16': {
-      // Floodgate Pier & Pump Station — Marsh Causeway, Pump House & Archive Seal Cliff
+      // Floodgate Pier & Pump Station (34x18) — Marsh Causeway, Hydro-Pump House & Archive Cliff
       b.water(0, 2, w - 1, h - 1);
       b.wall(0, 0, w - 1, 2, 12);
-      b.wall(w - 3, 2, w - 1, h - 1, 12); // eastern cliffside housing the Census Archive entrance!
-      b.waterfalls.push({ x: 8, y: 1, w: 2, h: 3, color: 'rgba(64,204,218,0.78)' });
-      b.waterfalls.push({ x: 18, y: 1, w: 2, h: 3, color: 'rgba(64,204,218,0.78)' });
-      // West arrival boardwalk from A15
-      b.bridge(1, 7, 7, 8);
-      // Central Pump Station Platform + Roofed Hydro-Pump House
-      b.carve(8, 4, 17, 12, 1);
-      b.building(10, 2, 15, 4, 2);
-      // Twin inspection catwalks flanking the floodgate boss causeway
-      b.bridge(18, 6, 23, 9);
-      b.carve(23, 5, 25, 10, 1); // Archive threshold terrace built into east cliff!
+      b.wall(w - 3, 2, w - 1, h - 1, 12);
+      b.waterfalls.push({ x: 10, y: 1, w: 2, h: 3, color: 'rgba(64,204,218,0.78)' });
+      b.waterfalls.push({ x: 22, y: 1, w: 2, h: 3, color: 'rgba(64,204,218,0.78)' });
+      b.bridge(1, 8, 8, 9);
+      b.carve(9, 4, 20, 14, 1);
+      b.building(11, 2, 18, 5, 3);
+      b.bridge(21, 7, 28, 10);
+      b.carve(28, 6, 31, 11, 1);
 
-      b.portal('A15', 1, 7, 'left', 'bridge_passage', 'SURVEY WETLAND PIER', 'bulkhead', { frame: false });
-      b.portal('A18', 25, 7, 'right', 'arch_east', 'CENSUS ARCHIVE SEAL', 'exit');
+      b.portal('A15', 1, 8, 'left', 'bridge_passage', 'SURVEY WETLAND PIER', 'bulkhead', { frame: false, assembly: 'bridge_exit' });
+      b.portal('A18', 31, 8, 'right', 'arch_east', 'CENSUS ARCHIVE SEAL', 'exit', { assembly: 'archway' });
 
-      b.anchors.start = [4, 7, 'right'];
-      b.anchors.save = [12, 5];
-      b.anchors.battles = [[11, 10]];
-      b.anchors.scenes = [[20, 7]]; // Floodgate Warden boss arena on causeway
-      b.lightShafts.push({ x: 12, y: 0, w: 3, h: 8, color: '#72dce8', alpha: 0.12 });
+      b.anchors.start = [4, 8, 'right'];
+      b.anchors.save = [14, 6];
+      b.anchors.ambient = [17, 6];
+      b.anchors.battles = [[13, 12], [18, 12]];
+      b.anchors.scenes = [[24, 8], [16, 9], [29, 9]];
+      b.anchors.puzzles = [[11, 9], [19, 9], [15, 13], [26, 9]];
+      b.lightShafts.push({ x: 14, y: 0, w: 4, h: 9, color: '#72dce8', alpha: 0.12 });
       b.lamps.push(
-        { x: 12, y: 5, r: 115, color: '#72dce8', flicker: false },
-        { x: 24, y: 7, r: 110, color: '#98bfff', flicker: false }
+        { x: 14, y: 6, r: 125, color: '#72dce8', flicker: false },
+        { x: 29, y: 8, r: 115, color: '#98bfff', flicker: false }
       );
       break;
     }
 
     case 'A17': {
-      // Highland Survey Ridge — Crescent Cliffside Camp Overlooking Dawn Sky
-      // Leave upper north & NW open void so dawn_sky clouds & horizon sweep across the ridge!
-      b.carve(3, 5, 20, 11, 0);
-      b.carve(5, 4, 18, 12, 0);
-      b.carve(10, 11, 13, 12, 10); // south descent path to A15
-      b.wall(3, 4, 19, 4, 4); // scenic cliff guardrail overlooking sky!
-      b.building(15, 5, 19, 7, 2); // small timber ranger lean-to cabin
-      b.wall(2, 9, 4, 12, 12); b.wall(19, 10, 21, 12, 12);
-      b.paintT(5, 6, 9, 9, 5);
-      b.paintT(10, 6, 13, 12, 10);
-      b.paintT(11, 11, 12, 11, 3);
-      b.portal('A15', 11, 12, 'down', 'trail_passage', 'WETLAND DESCENT', 'hatch', { frame: false });
+      // Highland Survey Ridge (26x16) — Crescent Cliffside Camp Overlooking Dawn Sky
+      b.carve(3, 5, 22, 12, 0);
+      b.carve(5, 4, 20, 13, 0);
+      b.carve(11, 12, 14, 13, 10);
+      b.wall(3, 4, 21, 4, 4);
+      b.building(16, 5, 21, 8, 2);
+      b.wall(2, 10, 4, 13, 12); b.wall(21, 11, 23, 13, 12);
+      b.paintT(5, 6, 10, 10, 5);
+      b.paintT(11, 6, 14, 13, 10);
+      b.paintT(12, 11, 13, 11, 3);
+      b.portal('A15', 12, 13, 'down', 'trail_passage', 'WETLAND DESCENT', 'hatch', { frame: false, assembly: 'trail_exit' });
 
-      b.anchors.start = [11, 10, 'up'];
-      b.anchors.bench = [16, 8];
-      b.anchors.sidequests = [[7, 7]];
-      b.anchors.scenes = [[11, 6], [13, 7], [9, 8], [14, 8]];
-      b.lightShafts.push({ x: 8, y: 0, w: 5, h: 9, color: '#ffe8a8', alpha: 0.16 });
+      b.anchors.start = [12, 11, 'up'];
+      b.anchors.bench = [18, 9];
+      b.anchors.save = [15, 9];
+      b.anchors.ambient = [6, 9];
+      b.anchors.sidequests = [[7, 7], [9, 6]];
+      b.anchors.scenes = [[12, 6], [14, 7], [10, 8], [14, 10], [8, 9]];
+      b.anchors.puzzles = [[6, 6], [17, 11], [10, 10], [19, 10]];
+      b.anchors.battles = [[9, 10], [16, 10]];
+      b.lightShafts.push({ x: 9, y: 0, w: 5, h: 9, color: '#ffe8a8', alpha: 0.16 });
       b.lamps.push(
-        { x: 16, y: 8, r: 115, color: '#ffe2a8', flicker: true },
-        { x: 8, y: 7, r: 100, color: '#ffe2a8', flicker: false }
+        { x: 18, y: 9, r: 120, color: '#ffe2a8', flicker: true },
+        { x: 8, y: 7, r: 105, color: '#ffe2a8', flicker: false }
       );
       break;
     }
@@ -873,62 +1052,73 @@ export function buildAreaArchitecture(id, meta) {
     // ACT 6 — CENSUS ARCHIVE (Monumental Vaulted Library & Records Annex)
     // =========================================================================
     case 'A18': {
-      // Census Archive Grand Nave — Cross-Shaped Vaulted Library with Partitioned Reading Wings
-      b.carve(1, 7, 5, 10, 1); // West grand seal vestibule
-      partitionV(b, 6, 3, 14, 8, 2);
-      // Central vaulted nave
-      b.carve(7, 3, 21, 14, 0);
-      // Partitioned North-West & South-West Reading Stack Rooms (real interior walls!)
-      partitionH(b, 6, 7, 11, 9, 2);
-      partitionH(b, 11, 7, 11, 9, 2);
-      // Partitioned North-East & South-East Stack Rooms
-      partitionH(b, 6, 17, 21, 19, 2);
-      partitionH(b, 11, 17, 21, 19, 2);
-      // Ceremonial central carpet runner & illuminated index conduits
-      b.paintT(12, 3, 16, 14, 14);
-      b.paintT(11, 3, 11, 14, 6);
-      b.paintT(17, 3, 17, 14, 6);
-      b.paintT(13, 6, 15, 6, 3); // stairs up to north Records Annex seal
-      // East exit vestibule toward Return Haven (A20)
-      partitionV(b, 22, 3, 14, 8, 2);
-      b.carve(23, 7, 26, 10, 1);
+      // Census Archive Grand Nave (38x24) — Vaulted Library with 4 Partitioned Reading Stack Wings
+      b.carve(1, 9, 6, 14, 1);
+      partitionV(b, 7, 3, 20, 10, 3);
+      b.carve(8, 3, 29, 20, 0);
+      // 4 Partitioned Reading Stack Rooms lined with tall Archive Bookshelves (18)!
+      partitionH(b, 8, 8, 14, 10, 3);
+      partitionH(b, 15, 8, 14, 10, 3);
+      partitionH(b, 8, 23, 29, 25, 3);
+      partitionH(b, 15, 23, 29, 25, 3);
+      b.wall(9, 2, 13, 2, 18); b.wall(24, 2, 28, 2, 18);
+      b.wall(8, 20, 13, 20, 18); b.wall(24, 20, 29, 20, 18);
+      b.wall(8, 4, 8, 6, 18); b.wall(29, 4, 29, 6, 18);
+      b.wall(8, 17, 8, 19, 18); b.wall(29, 17, 29, 19, 18);
+      // Carved stone columns (19) flanking the grand ceremonial index nave
+      for (const py of [6, 11, 16]) {
+        b.wall(15, py, 15, py, 19);
+        b.wall(22, py, 22, py, 19);
+      }
+      b.paintT(16, 3, 21, 20, 14);
+      b.paintT(15, 3, 15, 20, 6);
+      b.paintT(22, 3, 22, 20, 6);
+      b.paintT(17, 6, 20, 7, 3);
+      partitionV(b, 30, 3, 20, 10, 3);
+      b.carve(31, 9, 36, 14, 1);
 
-      b.portal('A16', 1, 8, 'left', 'arch_west', 'FLOODGATE ARCH', 'exit');
-      b.portal('A19', 14, 3, 'up', 'archive_seal', 'SEALED RECORDS ANNEX', 'bulkhead');
-      b.portal('A20', 26, 8, 'right', 'arch_east', 'RETURN HAVEN ARCH', 'exit');
+      b.portal('A16', 1, 11, 'left', 'arch_west', 'FLOODGATE ARCH', 'exit', { assembly: 'archway' });
+      b.portal('A19', 18, 3, 'up', 'archive_seal', 'SEALED RECORDS ANNEX', 'bulkhead', { assembly: 'archway' });
+      b.portal('A20', 36, 11, 'right', 'arch_east', 'RETURN HAVEN ARCH', 'exit', { assembly: 'archway' });
 
-      b.anchors.start = [3, 8, 'right'];
-      b.anchors.npcs = [[14, 7]]; // Ilen blocking central census steps
-      b.anchors.save = [9, 4]; // Save terminal in NW reading room
-      b.anchors.crate = [19, 13]; // Supply cache in SE stack alcove
-      b.anchors.battles = [[9, 13], [19, 4]];
-      b.anchors.scenes = [[14, 9], [14, 11], [13, 8], [15, 8], [14, 13]];
-      b.lightShafts.push({ x: 13, y: 1, w: 3, h: 10, color: '#a8c8ff', alpha: 0.13 });
+      b.anchors.start = [4, 11, 'right'];
+      b.anchors.npcs = [[18, 9]]; // Ilen blocking central census steps
+      b.anchors.save = [11, 5];   // Save terminal inside NW Reading Room
+      b.anchors.crate = [26, 18]; // Supply Cache inside SE Stack Wing
+      b.anchors.ambient = [26, 5];
+      b.anchors.battles = [[11, 18], [26, 6], [19, 18]];
+      b.anchors.scenes = [[18, 11], [18, 14], [17, 12], [20, 12], [18, 17], [17, 15]];
+      b.anchors.puzzles = [[12, 6], [25, 17], [10, 12], [27, 12]];
+      b.lightShafts.push({ x: 17, y: 1, w: 4, h: 12, color: '#a8c8ff', alpha: 0.13 });
       b.lamps.push(
-        { x: 9, y: 4, r: 95, color: '#f2bd75', flicker: false },
-        { x: 14, y: 8, r: 130, color: '#98bfff', flicker: false },
-        { x: 19, y: 13, r: 95, color: '#f2bd75', flicker: false }
+        { x: 11, y: 5, r: 105, color: '#f2bd75', flicker: false },
+        { x: 18, y: 11, r: 155, color: '#98bfff', flicker: false },
+        { x: 26, y: 18, r: 105, color: '#f2bd75', flicker: false }
       );
       break;
     }
 
     case 'A19': {
-      // Sealed Records Annex — Intimate Two-Chamber Archival Vault
-      b.carve(8, 9, 13, 11, 1); // South entry vestibule
-      partitionH(b, 8, 3, 18, 10, 2);
-      // Twin north study chambers divided by a central catalog arch
-      b.carve(3, 3, 18, 7, 0);
-      partitionV(b, 10, 3, 7, 5, 2);
-      b.paintT(4, 4, 8, 6, 14);
-      b.paintT(12, 4, 17, 6, 14);
-      b.portal('A18', 10, 11, 'down', 'south_threshold', 'CENSUS NAVE', 'bulkhead');
+      // Sealed Records Annex (24x15) — Intimate Two-Chamber Archival Vault
+      b.carve(9, 10, 14, 12, 1);
+      partitionH(b, 9, 3, 20, 11, 2);
+      b.carve(3, 3, 20, 8, 0);
+      partitionV(b, 11, 3, 8, 5, 2);
+      b.wall(4, 2, 9, 2, 18); b.wall(13, 2, 19, 2, 18);
+      b.paintT(4, 4, 9, 7, 14);
+      b.paintT(13, 4, 19, 7, 14);
+      b.portal('A18', 11, 12, 'down', 'south_threshold', 'CENSUS NAVE', 'bulkhead', { assembly: 'archway' });
 
-      b.anchors.start = [10, 10, 'up'];
-      b.anchors.sidequests = [[6, 5], [15, 5]];
-      b.anchors.ambient = [12, 9];
+      b.anchors.start = [11, 10, 'up'];
+      b.anchors.save = [8, 4];
+      b.anchors.sidequests = [[6, 5], [16, 5], [18, 6]];
+      b.anchors.ambient = [13, 10];
+      b.anchors.scenes = [[7, 6], [15, 6]];
+      b.anchors.puzzles = [[5, 7], [18, 7], [9, 6], [14, 4]];
+      b.anchors.battles = [[15, 7], [6, 7]];
       b.lamps.push(
-        { x: 6, y: 5, r: 100, color: '#f2bd75', flicker: false },
-        { x: 15, y: 5, r: 100, color: '#f2bd75', flicker: false }
+        { x: 6, y: 5, r: 105, color: '#f2bd75', flicker: false },
+        { x: 16, y: 5, r: 105, color: '#f2bd75', flicker: false }
       );
       break;
     }
@@ -937,236 +1127,279 @@ export function buildAreaArchitecture(id, meta) {
     // ACT 7 — RETURN HAVEN & QUARANTINE SPINE
     // =========================================================================
     case 'A20': {
-      // Return Haven Outpost — Fortified Courtyard Shelter Before the Quarantine Gate
+      // Return Haven Outpost (32x18) — Fortified Courtyard Shelter Before the Quarantine Gate
       b.wall(0, 0, w - 1, 2, 12);
-      b.carve(1, 4, 24, 13, 0);
-      // North warm bunkhouse building & South supply depot shack
-      b.building(4, 2, 12, 5, 3);
-      b.building(15, 11, 21, 13, 2);
-      b.wall(2, 11, 5, 13, 12);
-      // Cobbled courtyard + warm hearth carpet
-      b.paintT(1, 6, 24, 9, 1);
-      b.paintT(7, 7, 13, 10, 14);
-      b.paintT(6, 11, 10, 12, 5);
-      // Heavy East Quarantine Airlock Gatehouse framing exit to A21
-      b.wall(22, 4, 24, 6, 0); b.wall(22, 10, 24, 12, 0);
-      b.paintT(21, 7, 24, 9, 14);
+      b.carve(1, 4, 30, 15, 0);
+      b.building(4, 2, 14, 6, 3);  // Warm Bunkhouse & Aid Station
+      b.building(18, 12, 25, 15, 2); // Supply Depot Shack
+      b.wall(2, 13, 6, 15, 12);
+      b.paintT(1, 7, 30, 10, 1);
+      b.paintT(8, 8, 16, 12, 14);
+      b.paintT(7, 13, 12, 14, 5);
+      b.wall(27, 4, 30, 6, 0); b.wall(27, 11, 30, 14, 0);
+      b.paintT(26, 7, 30, 10, 14);
 
-      b.portal('A18', 1, 7, 'left', 'arch_west', 'CENSUS ARCHIVE', 'bulkhead');
-      b.portal('A21', 24, 8, 'right', 'airlock_east', 'QUARANTINE SPINE LOCK', 'bulkhead');
+      b.portal('A18', 1, 8, 'left', 'arch_west', 'CENSUS ARCHIVE', 'bulkhead', { assembly: 'archway' });
+      b.portal('A21', 30, 9, 'right', 'airlock_east', 'QUARANTINE SPINE LOCK', 'bulkhead', { assembly: 'airlock' });
 
-      b.anchors.start = [3, 7, 'right'];
-      b.anchors.npcs = [[10, 7], [7, 6]]; // Ves & Talla in courtyard
-      b.anchors.bench = [11, 6];
-      b.anchors.save = [15, 6];
-      b.anchors.crate = [18, 9];
-      b.anchors.sidequests = [[8, 11]];
-      b.lightShafts.push({ x: 9, y: 0, w: 3, h: 8, color: '#ffdf96', alpha: 0.13 });
+      b.anchors.start = [4, 8, 'right'];
+      b.anchors.npcs = [[12, 8], [8, 7]]; // Ves & Talla in courtyard
+      b.anchors.bench = [14, 7];
+      b.anchors.save = [18, 6];
+      b.anchors.crate = [22, 10];
+      b.anchors.ambient = [16, 13];
+      b.anchors.sidequests = [[10, 13], [24, 7]];
+      b.anchors.scenes = [[12, 10], [20, 8]];
+      b.anchors.puzzles = [[15, 11], [23, 6], [9, 11], [25, 9]];
+      b.anchors.battles = [[24, 9], [17, 11]];
+      b.lightShafts.push({ x: 10, y: 0, w: 4, h: 9, color: '#ffdf96', alpha: 0.13 });
       b.lamps.push(
-        { x: 9, y: 7, r: 125, color: '#f8cb7c', flicker: false },
-        { x: 22, y: 8, r: 100, color: '#f09238', flicker: true }
+        { x: 11, y: 8, r: 135, color: '#f8cb7c', flicker: false },
+        { x: 27, y: 9, r: 105, color: '#f09238', flicker: true }
       );
       break;
     }
 
     case 'A21': {
-      // Quarantine Spine — 3 Sequential High-Security Airlock Chambers with Staggered Baffles!
-      // Chamber 1 (West Decon Entry)
-      b.carve(1, 4, 8, 12, 0);
-      b.paintT(2, 6, 7, 10, 14);
-      // Thick Partition Bulkhead 1 (offset upper choke passage!)
-      partitionV(b, 9, 3, 13, 5, 2);
-      b.wall(10, 3, 10, 4, 0); b.wall(10, 8, 10, 13, 0);
-      // Chamber 2 (Central Containment Hall + North Observation Door + WARD-7 Terminal)
-      b.carve(11, 3, 19, 13, 0);
-      b.paintT(15, 3, 15, 13, 6);
-      b.wall(13, 7, 13, 9, 0); b.wall(17, 7, 17, 9, 0); // tactical stealth cover baffles!
-      b.paintT(11, 5, 19, 6, 1);
-      b.paintT(11, 10, 19, 11, 1);
-      // Thick Partition Bulkhead 2 (offset lower choke passage!)
-      partitionV(b, 20, 3, 13, 10, 2);
+      // Quarantine Spine (40x22) — Multi-Chamber Containment Wing with Lab, Staggered Baffles & Boss Deck
+      // Chamber 1 (West Decon Entry & Intake Monitoring)
+      b.carve(1, 5, 10, 17, 0);
+      b.wall(3, 4, 8, 4, 17);
+      b.paintT(2, 8, 9, 14, 14);
+      // Bulkhead Partition 1 (upper offset choke)
+      partitionV(b, 11, 3, 18, 6, 3);
+      // Chamber 2 (Central Containment Hall + North Observation Lock + WARD-7 Monolith)
+      b.carve(12, 3, 27, 18, 0);
+      b.paintT(19, 3, 20, 18, 6);
+      // Staggered security cover baffles & monitoring consoles
+      b.wall(15, 8, 16, 11, 17);
+      b.wall(23, 8, 24, 11, 17);
+      b.wall(15, 15, 16, 15, 19); b.wall(23, 15, 24, 15, 19);
+      b.paintT(12, 6, 27, 7, 1);
+      b.paintT(12, 13, 27, 14, 1);
+      // Bulkhead Partition 2 (lower offset choke)
+      partitionV(b, 28, 3, 18, 13, 3);
       // Chamber 3 (East Inner Lock & Boss Containment Deck)
-      b.carve(21, 4, 28, 12, 0);
-      b.paintT(22, 6, 27, 10, 14);
+      b.carve(29, 5, 38, 17, 0);
+      b.wall(31, 4, 36, 4, 17);
+      b.paintT(30, 8, 37, 14, 14);
 
-      b.portal('A20', 1, 8, 'left', 'airlock_west', 'RETURN HAVEN LOCK', 'bulkhead');
-      b.portal('A22', 15, 3, 'up', 'quarantine_lock', 'OBSERVATION WING', 'bulkhead');
-      b.portal('A23', 28, 8, 'right', 'airlock_east', 'CATHEDRAL ANTECHAMBER', 'bulkhead');
+      b.portal('A20', 1, 11, 'left', 'airlock_west', 'RETURN HAVEN LOCK', 'bulkhead', { assembly: 'airlock' });
+      b.portal('A22', 19, 3, 'up', 'quarantine_lock', 'OBSERVATION WING', 'bulkhead', { assembly: 'airlock' });
+      b.portal('A23', 38, 11, 'right', 'airlock_east', 'CATHEDRAL ANTECHAMBER', 'bulkhead', { assembly: 'airlock' });
 
-      b.anchors.start = [3, 8, 'right'];
-      b.anchors.npcs = [[15, 8]]; // WARD-7 interface monolith in central chamber
-      b.anchors.save = [5, 5];
-      b.anchors.crate = [26, 5];
-      b.anchors.sidequests = [[5, 11]];
-      b.anchors.battles = [[18, 11]];
-      b.anchors.scenes = [[12, 5], [18, 5], [24, 8], [22, 10], [25, 10], [12, 11], [24, 6]];
-      b.anchors.drone = { start: [14, 10], zone: [11, 4, 19, 12], waypoints: [[14, 10], [18, 10], [18, 5], [14, 5]] };
-      b.lightShafts.push({ x: 14, y: 1, w: 2, h: 7, color: '#ffad52', alpha: 0.11 });
+      b.anchors.start = [4, 11, 'right'];
+      b.anchors.npcs = [[19, 10]]; // WARD-7 interface monolith in central containment hall
+      b.anchors.save = [6, 6];
+      b.anchors.crate = [35, 6];
+      b.anchors.ambient = [31, 16];
+      b.anchors.sidequests = [[6, 16], [14, 17]];
+      b.anchors.battles = [[25, 16], [33, 15]];
+      b.anchors.scenes = [[14, 6], [25, 6], [33, 9], [31, 13], [35, 13], [14, 13], [33, 7], [22, 13]];
+      b.anchors.puzzles = [[17, 16], [22, 16], [8, 15], [31, 7]];
+      b.anchors.drone = { start: [18, 13], zone: [12, 5, 27, 17], waypoints: [[18, 13], [26, 13], [26, 6], [13, 6]] };
+      b.lightShafts.push({ x: 18, y: 1, w: 4, h: 10, color: '#ffad52', alpha: 0.11 });
       b.lamps.push(
-        { x: 5, y: 8, r: 95, color: '#f09238', flicker: true },
-        { x: 15, y: 8, r: 120, color: '#f09238', flicker: false },
-        { x: 25, y: 8, r: 110, color: '#98bfff', flicker: false }
+        { x: 6, y: 11, r: 110, color: '#f09238', flicker: true },
+        { x: 19, y: 10, r: 145, color: '#f09238', flicker: false },
+        { x: 34, y: 11, r: 125, color: '#98bfff', flicker: false }
       );
       break;
     }
 
     case 'A22': {
-      // Quarantine Observation Wing — Glass-Windowed Viewing Gallery & Isolated Lab Bay
-      b.carve(8, 9, 13, 11, 1);
-      partitionH(b, 8, 3, 18, 10, 2);
-      b.carve(3, 3, 18, 7, 0);
-      // Clinical observation window wall dividing West Gallery from East Specimen Bay
-      b.wall(10, 3, 10, 4, 9);
-      b.wall(10, 7, 10, 7, 9);
-      b.paintT(4, 4, 8, 6, 1);
-      b.paintT(12, 4, 17, 6, 14);
-      b.portal('A21', 10, 11, 'down', 'south_threshold', 'QUARANTINE SPINE', 'bulkhead');
+      // Quarantine Observation Wing (24x15) — Glass-Windowed Viewing Gallery & Specimen Bay
+      b.carve(9, 10, 14, 12, 1);
+      partitionH(b, 9, 3, 20, 11, 2);
+      b.carve(3, 3, 20, 8, 0);
+      b.wall(11, 3, 11, 4, 9);
+      b.wall(11, 7, 11, 8, 9);
+      b.wall(4, 2, 8, 2, 17);
+      b.wall(15, 2, 19, 2, 16); // cryo specimen pods!
+      b.paintT(4, 4, 9, 7, 1);
+      b.paintT(13, 4, 19, 7, 14);
+      b.portal('A21', 11, 12, 'down', 'south_threshold', 'QUARANTINE SPINE', 'bulkhead', { assembly: 'airlock' });
 
-      b.anchors.start = [10, 10, 'up'];
-      b.anchors.save = [5, 4];
-      b.anchors.ambient = [15, 5];
+      b.anchors.start = [11, 10, 'up'];
+      b.anchors.save = [6, 4];
+      b.anchors.ambient = [17, 5];
+      b.anchors.scenes = [[8, 6], [15, 6]];
+      b.anchors.puzzles = [[5, 7], [18, 7], [14, 4], [9, 5]];
+      b.anchors.battles = [[16, 7], [7, 7]];
       b.lamps.push(
-        { x: 6, y: 5, r: 100, color: '#72dce8', flicker: false },
-        { x: 15, y: 5, r: 105, color: '#72dce8', flicker: true }
+        { x: 6, y: 5, r: 105, color: '#72dce8', flicker: false },
+        { x: 17, y: 5, r: 110, color: '#72dce8', flicker: true }
       );
       break;
     }
 
     case 'A23': {
-      // Cathedral Antechamber — Solemn Processional Bridge Flanked by Coolant Chasms
-      b.water(3, 3, 20, 4);
-      b.water(3, 10, 20, 11);
-      b.carve(1, 5, 22, 9, 1);
-      // Monumental colonnade pillars along processional bridge
-      b.wall(7, 5, 7, 5, 0); b.wall(7, 9, 7, 9, 0);
-      b.wall(15, 5, 15, 5, 0); b.wall(15, 9, 15, 9, 0);
-      b.paintT(2, 7, 21, 7, 14); // ceremonial runner leading up to Cathedral Gate
-      b.paintT(18, 6, 18, 8, 3); // grand ascending steps
+      // Cathedral Antechamber (28x16) — Solemn Processional Bridge Over Coolant Chasms
+      b.water(3, 3, 24, 5);
+      b.water(3, 11, 24, 13);
+      b.carve(1, 6, 26, 10, 1);
+      // Monumental carved stone colonnade pillars along processional bridge
+      for (const px of [7, 13, 19]) {
+        b.wall(px, 6, px, 6, 19);
+        b.wall(px, 10, px, 10, 19);
+      }
+      b.paintT(2, 8, 25, 8, 14);
+      b.paintT(22, 7, 22, 9, 3);
 
-      b.portal('A21', 1, 7, 'left', 'airlock_west', 'QUARANTINE SPINE', 'bulkhead');
-      b.portal('A24', 22, 7, 'right', 'arch_east', 'CONTROL CATHEDRAL', 'bulkhead');
+      b.portal('A21', 1, 8, 'left', 'airlock_west', 'QUARANTINE SPINE', 'bulkhead', { assembly: 'airlock' });
+      b.portal('A24', 26, 8, 'right', 'arch_east', 'CONTROL CATHEDRAL', 'bulkhead', { assembly: 'archway' });
 
-      b.anchors.start = [3, 7, 'right'];
-      b.anchors.scenes = [[12, 7]];
-      b.lightShafts.push({ x: 11, y: 1, w: 3, h: 8, color: '#b4c8ff', alpha: 0.13 });
+      b.anchors.start = [4, 8, 'right'];
+      b.anchors.save = [10, 7];
+      b.anchors.ambient = [16, 9];
+      b.anchors.scenes = [[14, 8], [18, 8]];
+      b.anchors.puzzles = [[9, 9], [16, 7], [21, 7], [11, 9]];
+      b.anchors.battles = [[15, 8], [20, 9]];
+      b.lightShafts.push({ x: 12, y: 1, w: 4, h: 9, color: '#b4c8ff', alpha: 0.13 });
       b.lamps.push(
-        { x: 5, y: 7, r: 95, color: '#98bfff', flicker: false },
-        { x: 19, y: 7, r: 115, color: '#e2a8ff', flicker: false }
+        { x: 5, y: 8, r: 100, color: '#98bfff', flicker: false },
+        { x: 23, y: 8, r: 125, color: '#e2a8ff', flicker: false }
       );
       break;
     }
 
     // =========================================================================
-    // ACT 8 — CONTROL CATHEDRAL (Grand Basilica, Core Engine & WARD-7 Sanctum)
+    // ACT 8 — CONTROL CATHEDRAL (Monumental Cruciform Basilica & Sanctum)
     // =========================================================================
     case 'A24': {
-      // BENCHMARK #4: A24 Control Cathedral — True Monumental Cruciform Basilica Floor Plan!
-      // West Narthex Portico (x:1..5, y:7..10)
-      b.carve(1, 7, 5, 10, 1);
-      // Grand Narthex Screen Wall dividing portico from main basilica nave
-      partitionV(b, 6, 3, 14, 8, 2);
+      // BENCHMARK #4: A24 Control Cathedral (44x30) — Monumental Cruciform Sci-Fi Basilica
+      // 1. West Narthex Portico (x:1..8, y:10..19)
+      b.carve(1, 10, 8, 19, 1);
+      b.wall(3, 10, 3, 10, 19); b.wall(3, 19, 3, 19, 19);
+      b.wall(6, 10, 6, 10, 19); b.wall(6, 19, 6, 19, 19);
+      b.paintT(1, 14, 8, 15, 14);
+      // Grand Narthex Screen Wall dividing portico from the Basilica Nave
+      partitionV(b, 9, 4, 25, 13, 4);
 
-      // Central Basilica Nave + Side Cloister Loops (x:7..22, y:3..14)
-      b.carve(7, 3, 22, 14, 0);
-      // North Choir Apse recess leading up to Quiet Engine Core (A25)
-      b.carve(12, 2, 17, 4, 1);
-      // Twin recessed abyssal coolant canals flanking the outer cloister walls + twin waterfalls!
-      b.water(7, 3, 9, 5); b.water(7, 12, 9, 14);
-      b.water(20, 3, 22, 5); b.water(20, 12, 22, 14);
-      b.waterfalls.push({ x: 8, y: 1, w: 2, h: 3, color: 'rgba(128,208,255,0.78)' });
-      b.waterfalls.push({ x: 20, y: 1, w: 2, h: 3, color: 'rgba(128,208,255,0.78)' });
+      // 2. Grand Central Nave, Side Cloister Aisles & Cruciform Transepts (x:10..33, y:4..25)
+      b.carve(10, 4, 33, 25, 0);
+      // Elevated North Choir Apse leading up to Monumental Quiet Engine Gate (A25)
+      b.carve(18, 2, 25, 5, 1);
+      // Four Recessed Abyssal Coolant Canals framing the cruciform transept corners + twin waterfalls!
+      b.water(10, 4, 14, 8);  b.water(29, 4, 33, 8);
+      b.water(10, 21, 14, 25); b.water(29, 21, 33, 25);
+      b.waterfalls.push({ x: 11, y: 2, w: 2, h: 3, color: 'rgba(136,208,255,0.80)' });
+      b.waterfalls.push({ x: 30, y: 2, w: 2, h: 3, color: 'rgba(136,208,255,0.80)' });
 
-      // Monumental Basilica Colonnade Pillars separating Central Nave from Side Cloisters
-      for (const px of [10, 14, 18]) {
-        b.wall(px, 6, px, 6, 0);
-        b.wall(px, 11, px, 11, 0);
+      // Double Colonnade of Monumental Carved Cathedral Pillars (19) framing the Nave & Cloisters
+      for (const px of [14, 18, 25, 29]) {
+        b.wall(px, 11, px, 11, 19);
+        b.wall(px, 18, px, 18, 19);
       }
+      // North Transept Save Sanctuary & South Transept Reliquary Console Banks (17)
+      b.wall(15, 3, 17, 3, 17);
+      b.wall(26, 3, 28, 3, 17);
+      b.wall(16, 26, 19, 26, 18); // south archive reliquary stacks
+      b.wall(24, 26, 27, 26, 18);
 
-      // Ceremonial Nave Runner, Twin Violet Conduits & Stepped Octagonal Sanctuary Dais
-      b.paintT(7, 8, 22, 9, 14);
-      b.paintT(13, 3, 13, 14, 6);
-      b.paintT(16, 3, 16, 14, 6);
-      b.paintT(13, 4, 16, 5, 3); // broad ceremonial choir steps up to A25 gate
-      b.paintT(11, 7, 18, 10, 1); // central sanctuary dais platform
-      b.paintT(12, 8, 17, 9, 14);
+      // Ceremonial Basilica Nave Runner, Twin Violet Energy Conduits & Octagonal Crossing Dais
+      b.paintT(10, 14, 33, 15, 14);
+      b.paintT(20, 3, 20, 25, 6);
+      b.paintT(23, 3, 23, 25, 6);
+      b.paintT(19, 6, 24, 7, 3);    // broad ceremonial choir staircase ascending to A25 Gate
+      b.paintT(16, 12, 27, 17, 1);  // raised central crossing sanctuary platform
+      b.paintT(18, 13, 25, 16, 14); // inner ceremonial dais carpet
+      b.paintT(15, 9, 28, 10, 1);   // north cloister walkway
+      b.paintT(15, 19, 28, 20, 1);  // south cloister walkway
 
-      // East Sanctuary Apse Partition leading to WARD-7 Switch Chamber (A26)
-      partitionV(b, 23, 3, 14, 8, 2);
-      b.carve(24, 6, 28, 11, 1);
-      b.paintT(24, 8, 28, 9, 14);
+      // Grand Sanctuary Screen Wall dividing Nave from East Control Apse
+      partitionV(b, 34, 4, 25, 13, 4);
 
-      b.portal('A23', 1, 8, 'left', 'arch_west', 'CATHEDRAL ANTECHAMBER', 'bulkhead');
-      b.portal('A25', 14, 2, 'up', 'cathedral_gate', 'QUIET ENGINE CORE', 'bulkhead');
-      b.portal('A26', 28, 8, 'right', 'arch_east', 'WARD-7 SANCTUM', 'bulkhead');
+      // 3. East Raised Control Apse & WARD-7 Sanctum Vestibule (x:35..42, y:10..19)
+      b.carve(35, 10, 42, 19, 1);
+      b.wall(36, 9, 40, 9, 17);   // apse telemetry control banks
+      b.wall(36, 20, 40, 20, 17);
+      b.paintT(36, 12, 36, 17, 3); // broad ascending steps to apse platform
+      b.paintT(37, 14, 42, 15, 14);
 
-      b.anchors.start = [3, 8, 'right'];
-      b.anchors.save = [11, 4]; // Save terminal in north cloister chapel
-      b.anchors.crate = [11, 13]; // Supply cache in south cloister alcove
-      b.anchors.battles = [[19, 13]];
-      b.anchors.scenes = [[14, 8], [16, 8], [26, 8]];
-      b.anchors.drone = { start: [17, 7], zone: [11, 6, 21, 11], waypoints: [[17, 7], [21, 7], [21, 10], [17, 10]] };
-      b.lightShafts.push({ x: 13, y: 0, w: 4, h: 10, color: '#dcb8ff', alpha: 0.15 });
-      b.lightShafts.push({ x: 25, y: 1, w: 2, h: 7, color: '#72e8ff', alpha: 0.11 });
+      // Three monumental integrated entrances:
+      b.portal('A23', 1, 14, 'left', 'arch_west', 'CATHEDRAL ANTECHAMBER', 'bulkhead', { assembly: 'archway' });
+      b.portal('A25', 21, 2, 'up', 'cathedral_gate', 'QUIET ENGINE CORE', 'bulkhead', { assembly: 'cathedral_gate' });
+      b.portal('A26', 42, 14, 'right', 'arch_east', 'WARD-7 SANCTUM', 'bulkhead', { assembly: 'archway' });
+
+      // Explicit semantic anchors
+      b.anchors.start = [4, 14, 'right'];
+      b.anchors.save = [16, 5];   // Save Sanctuary in North Transept Chapel
+      b.anchors.crate = [16, 24]; // Supply Reliquary in South Transept Alcove
+      b.anchors.ambient = [27, 5]; // Field Record in NE Choir Chapel
+      b.anchors.battles = [[26, 24], [19, 23], [24, 23]]; // EN-038 Regulators patrolling south transept
+      b.anchors.scenes = [[21, 14], [24, 14], [39, 14], [19, 14], [21, 10]];
+      b.anchors.puzzles = [[16, 10], [27, 10], [16, 19], [27, 19]];
+      b.anchors.drone = { start: [22, 12], zone: [15, 9, 28, 20], waypoints: [[22, 12], [28, 12], [28, 17], [15, 17]] };
+      b.lightShafts.push({ x: 19, y: 0, w: 6, h: 15, color: '#dcb8ff', alpha: 0.15 });
+      b.lightShafts.push({ x: 37, y: 8, w: 3, h: 9, color: '#72e8ff', alpha: 0.12 });
       b.lamps.push(
-        { x: 4, y: 8, r: 95, color: '#e2a8ff', flicker: false },
-        { x: 14, y: 8, r: 145, color: '#e2a8ff', flicker: false },
-        { x: 14, y: 4, r: 110, color: '#ff8a8a', flicker: true },
-        { x: 26, y: 8, r: 110, color: '#5ce4ff', flicker: false }
+        { x: 5, y: 14, r: 115, color: '#e2a8ff', flicker: false },
+        { x: 21, y: 14, r: 185, color: '#e2a8ff', flicker: false },
+        { x: 21, y: 5, r: 135, color: '#ff8a8a', flicker: true },
+        { x: 21, y: 24, r: 130, color: '#98bfff', flicker: false },
+        { x: 39, y: 14, r: 125, color: '#5ce4ff', flicker: false }
       );
       break;
     }
 
     case 'A25': {
-      // Quiet Engine Core Chamber — Suspended Octagonal Reactor Boss Arena Over Abyssal Coolant
+      // Quiet Engine Core Chamber (26x18) — Suspended Octagonal Reactor Boss Arena
       b.water(1, 2, w - 2, h - 3);
-      // Octagonal suspended reactor arena
-      b.carve(5, 4, 18, 11, 1);
-      b.carve(7, 3, 16, 12, 1);
-      // South bridge connecting from Cathedral Choir Gate (A24)
-      b.bridge(10, 12, 13, 13);
-      // Radial power conduits converging on central Quiet Engine Dais
-      b.paintT(11, 3, 12, 12, 6);
-      b.paintT(8, 6, 15, 9, 14);
-      b.paintT(10, 10, 13, 10, 3);
-      b.portal('A24', 11, 13, 'down', 'south_threshold', 'CONTROL CATHEDRAL', 'bulkhead');
+      b.carve(5, 4, 20, 13, 1);
+      b.carve(7, 3, 18, 14, 1);
+      b.bridge(11, 14, 14, 15);
+      b.wall(6, 5, 6, 5, 19); b.wall(19, 5, 19, 5, 19);
+      b.wall(6, 12, 6, 12, 19); b.wall(19, 12, 19, 12, 19);
+      b.paintT(12, 3, 13, 14, 6);
+      b.paintT(9, 6, 16, 11, 14);
+      b.paintT(11, 12, 14, 12, 3);
+      b.portal('A24', 12, 15, 'down', 'south_threshold', 'CONTROL CATHEDRAL', 'bulkhead', { assembly: 'archway' });
 
-      b.anchors.start = [11, 11, 'up'];
-      b.anchors.scenes = [[11, 7]]; // 3-Phase Quiet Engine Boss encounter
-      b.lightShafts.push({ x: 10, y: 0, w: 4, h: 10, color: '#ff8888', alpha: 0.14 });
+      b.anchors.start = [12, 13, 'up'];
+      b.anchors.save = [8, 12];
+      b.anchors.ambient = [17, 12];
+      b.anchors.scenes = [[12, 8], [14, 8]];
+      b.anchors.puzzles = [[8, 6], [17, 6], [8, 10], [17, 10]];
+      b.anchors.battles = [[13, 10], [10, 8]];
+      b.lightShafts.push({ x: 11, y: 0, w: 4, h: 11, color: '#ff8888', alpha: 0.14 });
       b.lamps.push(
-        { x: 11, y: 7, r: 145, color: '#ff7070', flicker: true },
-        { x: 7, y: 7, r: 90, color: '#e2a8ff', flicker: false },
-        { x: 16, y: 7, r: 90, color: '#e2a8ff', flicker: false }
+        { x: 12, y: 8, r: 160, color: '#ff7070', flicker: true },
+        { x: 7, y: 8, r: 95, color: '#e2a8ff', flicker: false },
+        { x: 18, y: 8, r: 95, color: '#e2a8ff', flicker: false }
       );
       break;
     }
 
     case 'A26': {
-      // WARD-7 Switch Chamber & Surface Lift — Tapered Ascending High Sanctum
-      b.carve(1, 6, 6, 10, 1);
-      b.carve(7, 4, 18, 12, 0);
-      b.carve(19, 6, 24, 10, 1);
-      // Twin ascending stair tiers leading eastward to WARD-7 Switch & Surface Elevator
-      b.paintT(8, 5, 8, 11, 3);
-      b.paintT(15, 5, 15, 11, 3);
-      b.paintT(9, 6, 14, 10, 14);
-      b.paintT(16, 7, 23, 9, 14);
-      b.wall(10, 4, 10, 4, 0); b.wall(10, 12, 10, 12, 0);
-      b.wall(17, 4, 17, 4, 0); b.wall(17, 12, 17, 12, 0);
+      // WARD-7 Switch Chamber & Surface Lift (32x18) — Tapered Ascending High Sanctum
+      b.carve(1, 6, 6, 12, 1);
+      b.carve(7, 4, 23, 14, 0);
+      b.carve(24, 6, 30, 12, 1);
+      b.paintT(9, 5, 9, 13, 3);
+      b.paintT(18, 5, 18, 13, 3);
+      b.paintT(10, 6, 17, 12, 14);
+      b.paintT(19, 7, 29, 11, 14);
+      b.wall(11, 4, 11, 4, 19); b.wall(11, 14, 11, 14, 19);
+      b.wall(21, 4, 21, 4, 19); b.wall(21, 14, 21, 14, 19);
+      b.wall(13, 3, 16, 3, 17);
 
-      b.portal('A24', 1, 8, 'left', 'arch_west', 'CATHEDRAL NAVE', 'bulkhead');
-      b.portal('A27', 24, 8, 'right', 'airlock_east', 'SURFACE ELEVATOR', 'exit');
+      b.portal('A24', 1, 9, 'left', 'arch_west', 'CATHEDRAL NAVE', 'bulkhead', { assembly: 'archway' });
+      b.portal('A27', 30, 9, 'right', 'airlock_east', 'SURFACE ELEVATOR', 'exit', { assembly: 'elevator' });
 
-      b.anchors.start = [3, 8, 'right'];
-      b.anchors.npcs = [[17, 8]]; // WARD-7 Switch Monolith
-      b.anchors.save = [12, 5];
-      b.anchors.crate = [12, 11];
-      b.anchors.scenes = [[11, 8], [13, 8], [20, 8]];
-      b.lightShafts.push({ x: 16, y: 0, w: 3, h: 10, color: '#72f0ff', alpha: 0.15 });
+      b.anchors.start = [4, 9, 'right'];
+      b.anchors.npcs = [[22, 9]]; // WARD-7 Switch Monolith
+      b.anchors.save = [14, 5];
+      b.anchors.crate = [14, 13];
+      b.anchors.ambient = [16, 5];
+      b.anchors.scenes = [[12, 9], [15, 9], [25, 9], [25, 11]];
+      b.anchors.puzzles = [[12, 7], [16, 11], [20, 7], [20, 11]];
+      b.anchors.battles = [[17, 9], [24, 7]];
+      b.lightShafts.push({ x: 20, y: 0, w: 4, h: 11, color: '#72f0ff', alpha: 0.15 });
       b.lamps.push(
-        { x: 12, y: 8, r: 120, color: '#5ce4ff', flicker: false },
-        { x: 18, y: 8, r: 130, color: '#5ce4ff', flicker: false },
-        { x: 23, y: 8, r: 100, color: '#ffe2a8', flicker: false }
+        { x: 14, y: 9, r: 130, color: '#5ce4ff', flicker: false },
+        { x: 22, y: 9, r: 145, color: '#5ce4ff', flicker: false },
+        { x: 28, y: 9, r: 105, color: '#ffe2a8', flicker: false }
       );
       break;
     }
@@ -1175,66 +1408,69 @@ export function buildAreaArchitecture(id, meta) {
     // ACT 9 — SURFACE MORNING (Emerging Into Daylight & First Morning Overlook)
     // =========================================================================
     case 'A27': {
-      // Surface Ascent Landing — Bunker Elevator Headhouse Opening Onto Sunlit Mountain Trail
-      // Open dawn sky along north/south drop-offs!
-      b.carve(1, 5, 24, 11, 0);
-      // West armored Surface Elevator Headhouse embedded in hillside!
-      b.building(1, 2, 6, 5, 3);
-      b.wall(0, 6, 0, 10, 9);
-      b.wall(1, 11, 7, 12, 12);
-      // Panoramic cliff guardrail on south ridge
-      b.wall(8, 12, 24, 12, 4);
-      // Sunlit wildflower slopes & packed-earth mountain trail winding east to A28
-      b.paintT(7, 5, 14, 6, 5);
-      b.paintT(16, 5, 22, 6, 5);
-      b.paintT(2, 7, 24, 9, 10);
-      b.paintT(13, 7, 14, 9, 3);
+      // Surface Ascent Landing (30x16) — Armored Elevator Headhouse Opening Onto Mountain Trail
+      b.carve(1, 5, 28, 12, 0);
+      b.building(1, 2, 7, 5, 3);
+      b.wall(0, 6, 0, 11, 9);
+      b.wall(1, 12, 8, 13, 12);
+      b.wall(9, 13, 28, 13, 4);
+      b.paintT(8, 5, 16, 6, 5);
+      b.paintT(18, 5, 25, 6, 5);
+      b.paintT(2, 8, 28, 10, 10);
+      b.paintT(15, 8, 16, 10, 3);
 
-      b.portal('A26', 1, 8, 'left', 'airlock_west', 'SURFACE ELEVATOR', 'exit');
-      b.portal('A28', 24, 8, 'right', 'trail_passage', 'FIRST MORNING RIDGE', 'exit', { frame: false });
+      b.portal('A26', 1, 9, 'left', 'airlock_west', 'SURFACE ELEVATOR', 'exit', { assembly: 'elevator' });
+      b.portal('A28', 28, 9, 'right', 'trail_passage', 'FIRST MORNING RIDGE', 'exit', { frame: false, assembly: 'trail_exit' });
 
-      b.anchors.start = [4, 8, 'right'];
-      b.anchors.sidequests = [[11, 6]];
-      b.anchors.scenes = [[17, 8]];
-      b.lightShafts.push({ x: 9, y: 0, w: 5, h: 10, color: '#ffebb0', alpha: 0.17 });
-      b.lightShafts.push({ x: 18, y: 0, w: 4, h: 10, color: '#ffebb0', alpha: 0.16 });
+      b.anchors.start = [4, 9, 'right'];
+      b.anchors.save = [9, 6];
+      b.anchors.ambient = [13, 11];
+      b.anchors.sidequests = [[12, 6], [20, 6]];
+      b.anchors.scenes = [[19, 9], [23, 9]];
+      b.anchors.puzzles = [[10, 11], [18, 11], [24, 11], [14, 7]];
+      b.anchors.battles = [[21, 11], [17, 7]];
+      b.lightShafts.push({ x: 10, y: 0, w: 5, h: 10, color: '#ffebb0', alpha: 0.17 });
+      b.lightShafts.push({ x: 20, y: 0, w: 5, h: 10, color: '#ffebb0', alpha: 0.16 });
       b.lamps.push(
-        { x: 4, y: 6, r: 100, color: '#ffe2a8', flicker: false },
-        { x: 16, y: 8, r: 135, color: '#ffe8b0', flicker: false }
+        { x: 4, y: 7, r: 105, color: '#ffe2a8', flicker: false },
+        { x: 18, y: 9, r: 145, color: '#ffe8b0', flicker: false }
       );
       break;
     }
 
     case 'A28':
     default: {
-      // First Morning Overlook — Panoramic Curved Hilltop Promontory Facing Endless Dawn Sky
-      b.carve(1, 6, 25, 11, 0);
-      b.carve(5, 4, 24, 12, 0);
-      b.carve(9, 3, 21, 13, 0);
-      // Weathered stone promontory parapet overlooking endless dawn horizon
-      b.wall(7, 13, 23, 13, 4);
-      b.wall(25, 5, 25, 11, 12);
+      // First Morning Overlook (34x18) — Panoramic Curved Hilltop Promontory Facing Sunrise
+      b.carve(1, 6, 30, 12, 0);
+      b.carve(5, 4, 29, 14, 0);
+      b.carve(10, 3, 26, 15, 0);
+      b.wall(8, 15, 28, 15, 4);
+      b.wall(30, 5, 31, 13, 12);
       b.wall(2, 3, 4, 5, 12);
-      // Ancient amphitheater stone steps facing the sunrise + wildflower fields
-      b.paintT(1, 7, 12, 9, 10);
-      b.paintT(12, 5, 22, 11, 1);
-      b.paintT(12, 6, 12, 10, 3);
-      b.paintT(6, 4, 10, 6, 5);
-      b.paintT(6, 10, 10, 12, 5);
-      b.paintT(14, 3, 19, 4, 5);
-      b.paintT(18, 6, 22, 10, 14);
-      b.paintT(4, 5, 5, 5, 15);
+      b.wall(15, 5, 15, 5, 19); b.wall(15, 13, 15, 13, 19);
+      b.paintT(1, 8, 14, 10, 10);
+      b.paintT(14, 5, 27, 13, 1);
+      b.paintT(14, 6, 14, 12, 3);
+      b.paintT(6, 4, 11, 6, 5);
+      b.paintT(6, 12, 11, 14, 5);
+      b.paintT(16, 3, 23, 4, 5);
+      b.paintT(21, 7, 27, 11, 14);
+      b.paintT(4, 6, 5, 6, 15);
 
-      b.portal('A27', 1, 8, 'left', 'trail_passage', 'SURFACE LANDING', 'exit', { frame: false });
+      b.portal('A27', 1, 9, 'left', 'trail_passage', 'SURFACE LANDING', 'exit', { frame: false, assembly: 'trail_exit' });
 
-      b.anchors.start = [4, 8, 'right'];
-      b.anchors.npcs = [[20, 8]]; // First Morning Messenger facing sunrise
-      b.anchors.scenes = [[14, 8], [16, 7], [16, 9], [18, 8]];
-      b.lightShafts.push({ x: 8, y: 0, w: 5, h: 11, color: '#ffedb5', alpha: 0.18 });
-      b.lightShafts.push({ x: 17, y: 0, w: 6, h: 11, color: '#fff2c4', alpha: 0.18 });
+      b.anchors.start = [4, 9, 'right'];
+      b.anchors.npcs = [[25, 9]]; // First Morning Messenger facing sunrise
+      b.anchors.save = [12, 7];
+      b.anchors.ambient = [12, 11];
+      b.anchors.scenes = [[17, 9], [20, 8], [20, 10], [23, 9]];
+      b.anchors.puzzles = [[17, 6], [17, 12], [23, 6], [23, 12]];
+      b.anchors.battles = [[19, 12], [19, 6]];
+      b.lightShafts.push({ x: 10, y: 0, w: 6, h: 12, color: '#ffedb5', alpha: 0.18 });
+      b.lightShafts.push({ x: 20, y: 0, w: 7, h: 12, color: '#fff2c4', alpha: 0.18 });
       b.lamps.push(
-        { x: 14, y: 8, r: 140, color: '#ffe8b0', flicker: false },
-        { x: 21, y: 8, r: 150, color: '#fff0c0', flicker: false }
+        { x: 17, y: 9, r: 155, color: '#ffe8b0', flicker: false },
+        { x: 25, y: 9, r: 165, color: '#fff0c0', flicker: false }
       );
       break;
     }
@@ -1247,6 +1483,7 @@ export function buildAreaArchitecture(id, meta) {
     waterfalls: b.waterfalls,
     lightShafts: b.lightShafts,
     lamps: b.lamps,
+    details: b.details,
     portalSlots: b.portalSlots,
     anchors: b.anchors,
     skyBackdrop: meta.sky || null

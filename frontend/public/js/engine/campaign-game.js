@@ -286,7 +286,8 @@ export async function mountCampaignGame({game,ui,sfx,touchMode,refreshTouch,sett
         const tag=$('campaign-area-tag');
         if(tag){
           if(area){
-            tag.textContent=`${area.id} · ${area.name.toUpperCase()}`;
+            const areaLabel=String(area.name||area.title||area.id||'SECTOR').toUpperCase();
+            tag.textContent=`${area.id} · ${areaLabel}`;
             tag.classList.remove('hidden');
           }else tag.classList.add('hidden');
         }

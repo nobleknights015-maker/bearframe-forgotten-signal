@@ -351,47 +351,94 @@ const BATTLE_ROSTER = {
   ]}
 };
 
-const SOLID_TERRAIN_OVERRIDES = new Set([2, 8, 9, 12, 13]);
+const SOLID_TERRAIN_OVERRIDES = new Set([2, 8, 9, 12, 13, 16, 17, 18, 19, 20]);
 
-function ensureRoomConnectivity(collision, terrainLayer, w, h, startTx, startTy) {
-  // BFS from start; if any walkable island is disconnected, carve a clean 1-tile bridge toward start
-  // without breaking building roofs or cliffs unless strictly required.
-  const markReachable = () => {
-    const seen = new Uint8Array(w * h);
-    const q = [startTy * w + startTx];
-    seen[q[0]] = 1;
-    for (let i = 0; i < q.length; i++) {
-      const p = q[i], x = p % w, y = Math.floor(p / w);
-      for (const [nx, ny] of [[x - 1, y], [x + 1, y], [x, y - 1], [x, y + 1]]) {
-        if (nx < 1 || ny < 2 || nx >= w - 1 || ny >= h - 2) continue;
-        const ni = ny * w + nx;
-        if (seen[ni] || collision[ni] !== 0) continue;
-        seen[ni] = 1; q.push(ni);
-      }
+function inferPortalAssembly(portalArt) {
+  if (portalArt === 'trail_passage') return 'trail_exit';
+  if (portalArt === 'bridge_passage') return 'bridge_exit';
+  if (portalArt === 'rail_gantry') return 'rail_gantry';
+  if (portalArt === 'cathedral_gate') return 'cathedral_gate';
+  if (portalArt === 'elevator' || portalArt === 'roof_hatch') return 'elevator';
+  if (['airlock_east', 'airlock_west', 'quarantine_lock', 'service'].includes(portalArt)) return 'airlock';
+  return 'archway';
+}
+
+/**
+ * Pure, architecture-preserving connectivity validator.
+ * NEVER tunnels through walls, buildings, cliffs, machinery, or water.
+ * Throws a descriptive error identifying exact disconnected tiles so authored
+ * blueprint geometry is corrected deliberately.
+ */
+export function validateAreaConnectivity(id, collision, w, h, startTx, startTy) {
+  if (!Number.isInteger(startTx) || !Number.isInteger(startTy) ||
+      startTx < 1 || startTy < 2 || startTx > w - 2 || startTy > h - 3) {
+    throw new Error(`Architecture error in ${id}: start position (${startTx},${startTy}) is out of valid interior bounds`);
+  }
+  if (collision[startTy * w + startTx] !== 0) {
+    throw new Error(`Architecture error in ${id}: start position (${startTx},${startTy}) is blocked by solid collision`);
+  }
+  const seen = new Uint8Array(w * h);
+  const startIdx = startTy * w + startTx;
+  const q = [startIdx];
+  seen[startIdx] = 1;
+  for (let i = 0; i < q.length; i++) {
+    const p = q[i], x = p % w, y = Math.floor(p / w);
+    for (const [nx, ny] of [[x - 1, y], [x + 1, y], [x, y - 1], [x, y + 1]]) {
+      if (nx < 0 || ny < 0 || nx >= w || ny >= h) continue;
+      const ni = ny * w + nx;
+      if (seen[ni] || collision[ni] !== 0) continue;
+      seen[ni] = 1;
+      q.push(ni);
     }
-    return seen;
-  };
-  let seen = markReachable();
-  for (let y = 2; y < h - 2; y++) {
-    for (let x = 1; x < w - 1; x++) {
+  }
+  const disconnected = [];
+  for (let y = 0; y < h; y++) {
+    for (let x = 0; x < w; x++) {
       if (collision[y * w + x] === 0 && !seen[y * w + x]) {
-        let cx = x, cy = y;
-        while (cx !== startTx) {
-          const idx = cy * w + cx;
-          collision[idx] = 0;
-          if (SOLID_TERRAIN_OVERRIDES.has(terrainLayer[idx])) terrainLayer[idx] = 7;
-          cx += cx < startTx ? 1 : -1;
-        }
-        while (cy !== startTy) {
-          const idx = cy * w + cx;
-          collision[idx] = 0;
-          if (SOLID_TERRAIN_OVERRIDES.has(terrainLayer[idx])) terrainLayer[idx] = 7;
-          cy += cy < startTy ? 1 : -1;
-        }
-        seen = markReachable();
+        disconnected.push(`(${x},${y})`);
       }
     }
   }
+  if (disconnected.length) {
+    const sample = disconnected.slice(0, 6).join(', ');
+    throw new Error(
+      `Architecture error in ${id}: ${disconnected.length} disconnected walkable tile(s) unreachable from start (${startTx},${startTy}): ${sample}`
+    );
+  }
+  return seen;
+}
+
+/**
+ * Strict authored-anchor validator.
+ * Mandatory story objects, NPCs, portals, save terminals, supply caches,
+ * sidequests, puzzles, and battles MUST occupy their explicit authored tile.
+ * Never silently relocates objects to arbitrary nearby tiles.
+ */
+export function placeAuthoredAnchor(id, role, anchor, ctx) {
+  const { w, h, collision, terrainLayer, occupied, portalApproaches } = ctx;
+  if (!Array.isArray(anchor) || anchor.length < 2 || !Number.isInteger(anchor[0]) || !Number.isInteger(anchor[1])) {
+    throw new Error(`Layout error in ${id}: missing authored anchor for ${role}`);
+  }
+  const [tx, ty] = anchor;
+  if (tx < 1 || ty < 2 || tx > w - 2 || ty > h - 3) {
+    throw new Error(`Layout error in ${id}: authored anchor for ${role} at (${tx},${ty}) is out of bounds (${w}x${h})`);
+  }
+  const idx = ty * w + tx;
+  if (collision[idx] !== 0) {
+    throw new Error(`Layout error in ${id}: authored anchor for ${role} at (${tx},${ty}) is blocked by solid geometry (terrain=${terrainLayer[idx]})`);
+  }
+  if (SOLID_TERRAIN_OVERRIDES.has(terrainLayer[idx])) {
+    throw new Error(`Layout error in ${id}: authored anchor for ${role} at (${tx},${ty}) conflicts with solid terrain code ${terrainLayer[idx]}`);
+  }
+  const k = `${tx},${ty}`;
+  if (portalApproaches.has(k)) {
+    throw new Error(`Layout error in ${id}: authored anchor for ${role} at (${tx},${ty}) blocks a doorway approach`);
+  }
+  if (occupied.has(k)) {
+    throw new Error(`Layout error in ${id}: authored anchor for ${role} at (${tx},${ty}) collides with another authored object`);
+  }
+  occupied.add(k);
+  return [tx, ty];
 }
 
 export function compileFullCampaignBundle(raw, manifest) {
@@ -437,81 +484,69 @@ export function compileFullCampaignBundle(raw, manifest) {
   const maps = [];
   for (const area of content.areas) {
     const id = area.id;
-    const meta = AREA_META[id] || AREA_META.A00;
+    const meta = AREA_META[id];
+    if (!meta) throw new Error(`Architecture error: unknown campaign sector ${id}`);
     const bp = buildAreaArchitecture(id, meta);
     const { w, h, collision, terrainLayer } = bp;
-    const startSpec = bp.anchors?.start || [Math.floor(w / 2), Math.floor(h / 2), 'right'];
+
+    // Validate explicit authored start position & full room connectivity WITHOUT mutating geometry
+    const startSpec = bp.anchors?.start;
+    if (!Array.isArray(startSpec) || startSpec.length < 2) {
+      throw new Error(`Layout error in ${id}: missing authored start anchor`);
+    }
     const startTx = startSpec[0], startTy = startSpec[1], startDir = startSpec[2] || 'right';
-    collision[startTy * w + startTx] = 0;
-    ensureRoomConnectivity(collision, terrainLayer, w, h, startTx, startTy);
+    const reachableMask = validateAreaConnectivity(id, collision, w, h, startTx, startTy);
     const start = { x: startTx * 32 + 16, y: startTy * 32 + 16, dir: startDir };
 
     const occupied = new Set([`${startTx},${startTy}`]);
     const portalApproaches = new Set();
+    const entranceClearance = new Set();
 
-    const takeFreeTile = (tx, ty, allowPortalApproach = false) => {
-      const maxRad = Math.max(w, h);
-      for (let rad = 0; rad < maxRad; rad++) {
-        for (let dy = -rad; dy <= rad; dy++) {
-          for (let dx = -rad; dx <= rad; dx++) {
-            const x = Math.max(1, Math.min(w - 2, tx + dx));
-            const y = Math.max(2, Math.min(h - 3, ty + dy));
-            const k = `${x},${y}`;
-            if (collision[y * w + x] !== 0 || occupied.has(k)) continue;
-            if (!allowPortalApproach && portalApproaches.has(k)) continue;
-            occupied.add(k);
-            return [x, y];
-          }
-        }
-      }
-      if (!allowPortalApproach) return takeFreeTile(tx, ty, true);
-      throw new Error(`No free tile near (${tx},${ty}) in ${id}`);
-    };
-
-    const takeAnchorTile = (anchor, fallbackX, fallbackY) => {
-      if (Array.isArray(anchor) && anchor.length >= 2) {
-        const [ax, ay] = anchor;
-        const k = `${ax},${ay}`;
-        if (ax >= 1 && ay >= 2 && ax <= w - 2 && ay <= h - 3 && collision[ay * w + ax] === 0 && !occupied.has(k)) {
-          occupied.add(k);
-          return [ax, ay];
-        }
-        return takeFreeTile(ax, ay);
-      }
-      return takeFreeTile(fallbackX, fallbackY);
-    };
-
-    // Place structurally embedded doorways/passages directly from each area's architectural blueprint
+    // Place structurally embedded doorways/passages strictly from each area's architectural blueprint
     const rawPortals = portalsByArea[id] || [];
     const portalObjects = rawPortals.map((p, idx) => {
       const slot = bp.portalSlots?.[p.name];
-      const targetMeta = AREA_META[p.to] || AREA_META.A00;
-      let tx, ty, facing, portalStyle, portalArt, portalLabel;
-      if (slot) {
-        tx = slot.tx;
-        ty = slot.ty;
-        facing = slot.dir || p.dir;
-        portalStyle = slot.style || targetMeta.doorStyle;
-        portalArt = slot.art || targetMeta.doorArt;
-        portalLabel = slot.label || null;
-        collision[ty * w + tx] = 0;
-        occupied.add(`${tx},${ty}`);
-      } else {
-        facing = p.dir;
-        portalStyle = targetMeta.doorStyle;
-        portalArt = targetMeta.doorArt;
-        portalLabel = null;
-        if (p.dir === 'right') { tx = w - 2; ty = Math.min(h - 4, Math.max(3, Math.floor(h / 2) + (idx % 2 ? -2 : 0))); }
-        else if (p.dir === 'left') { tx = 1; ty = Math.min(h - 4, Math.max(3, Math.floor(h / 2) + (idx % 2 ? 2 : 0))); }
-        else if (p.dir === 'up') { tx = Math.min(w - 3, Math.max(3, Math.floor(w / 2) - 3 + idx * 2)); ty = 2; }
-        else { tx = Math.min(w - 3, Math.max(3, Math.floor(w / 2) + 2 + idx * 2)); ty = h - 3; }
-        if (collision[ty * w + tx] !== 0 || occupied.has(`${tx},${ty}`)) [tx, ty] = takeFreeTile(tx, ty, true);
-        else occupied.add(`${tx},${ty}`);
+      if (!slot) {
+        throw new Error(`Architecture error in ${id}: missing authored portalSlot for ${p.name}`);
       }
-      // Keep the tile directly in front of a doorway clear of solid entities
+      const targetMeta = AREA_META[p.to] || AREA_META.A00;
+      const tx = slot.tx;
+      const ty = slot.ty;
+      const facing = slot.dir || p.dir;
+      const portalStyle = slot.style || targetMeta.doorStyle;
+      const portalArt = slot.art || targetMeta.doorArt;
+      const portalLabel = slot.label || null;
+      const portalAssembly = slot.assembly || inferPortalAssembly(portalArt);
+
+      if (!Number.isInteger(tx) || !Number.isInteger(ty) || tx < 1 || ty < 2 || tx > w - 2 || ty > h - 3) {
+        throw new Error(`Architecture error in ${id}: portal ${p.name} at (${tx},${ty}) is out of bounds`);
+      }
+      if (collision[ty * w + tx] !== 0 || reachableMask[ty * w + tx] !== 1) {
+        throw new Error(`Architecture error in ${id}: portal ${p.name} at (${tx},${ty}) is blocked or unreachable`);
+      }
+      const pk = `${tx},${ty}`;
+      if (occupied.has(pk)) {
+        throw new Error(`Architecture error in ${id}: portal ${p.name} at (${tx},${ty}) overlaps another authored position`);
+      }
+      occupied.add(pk);
+
+      // Verify and protect the inward approach tile directly in front of the doorway
       const inDx = facing === 'right' ? -1 : facing === 'left' ? 1 : 0;
       const inDy = facing === 'down' ? -1 : facing === 'up' ? 1 : 0;
-      portalApproaches.add(`${tx + inDx},${ty + inDy}`);
+      const ax = tx + inDx, ay = ty + inDy;
+      if (ax < 1 || ay < 2 || ax > w - 2 || ay > h - 3 || collision[ay * w + ax] !== 0) {
+        throw new Error(`Architecture error in ${id}: portal ${p.name} inward approach (${ax},${ay}) is blocked`);
+      }
+      portalApproaches.add(`${ax},${ay}`);
+
+      // Reserve the full architectural entrance clearance zone from background/foreground scenery
+      const outDx = -inDx, outDy = -inDy;
+      for (let dy = -1; dy <= 1; dy++) {
+        for (let dx = -1; dx <= 1; dx++) {
+          entranceClearance.add(`${tx + dx},${ty + dy}`);
+          entranceClearance.add(`${tx + outDx + dx},${ty + outDy + dy}`);
+        }
+      }
 
       return {
         id: idx + 1,
@@ -526,23 +561,27 @@ export function compileFullCampaignBundle(raw, manifest) {
           facing,
           portalStyle,
           portalArt,
+          portalAssembly,
           ...(portalLabel ? { portalLabel } : {}),
           ...(p.reqFlag ? { requiresFlag: p.reqFlag } : {})
         }
       };
     });
 
+    const anchorCtx = { w, h, collision, terrainLayer, occupied, portalApproaches };
+    const place = (role, anchor) => placeAuthoredAnchor(id, role, anchor, anchorCtx);
+
     const entities = [];
     const triggers = [];
 
     if (area.save_point === 'yes') {
-      const [tx, ty] = takeAnchorTile(bp.anchors?.save, startTx + 2, Math.max(3, startTy - 1));
+      const [tx, ty] = place('save_terminal', bp.anchors?.save);
       entities.push({ id: `save_${id.toLowerCase()}`, type: 'save', tx, ty, interact: true, solid: true, label: 'SAVE TERMINAL' });
     }
 
     if (AREA_CRATES[id]) {
       const cr = AREA_CRATES[id];
-      const [tx, ty] = takeAnchorTile(bp.anchors?.crate, w - 4, h - 4);
+      const [tx, ty] = place(`supply_crate:${cr.id}`, bp.anchors?.crate);
       entities.push({
         id: cr.id, type: 'crate', tx, ty, interact: true, solid: true,
         hideAfterFlag: cr.flag, grantItems: cr.grant, label: 'SUPPLY CACHE'
@@ -550,7 +589,7 @@ export function compileFullCampaignBundle(raw, manifest) {
     }
 
     (AREA_NPCS[id] || []).forEach((npc, ni) => {
-      const [tx, ty] = takeAnchorTile(bp.anchors?.npcs?.[ni], Math.floor(w / 2) - 2, 4);
+      const [tx, ty] = place(`npc:${npc.id}`, bp.anchors?.npcs?.[ni]);
       entities.push({
         id: npc.id, type: 'npc', artId: npc.artId, dir: npc.dir || 'down',
         tx, ty, interact: true, solid: true, label: npc.label,
@@ -562,12 +601,12 @@ export function compileFullCampaignBundle(raw, manifest) {
 
     const hasAmbient = (content.dialogue || []).some(d => d.area === id && d.scene_id === 'ambient');
     if (hasAmbient && !entities.some(e => e.ambientArea === id)) {
-      const [tx, ty] = takeAnchorTile(bp.anchors?.ambient, 4, h - 4);
+      const [tx, ty] = place('ambient_record', bp.anchors?.ambient);
       entities.push({ id: `ambient_${id.toLowerCase()}`, type: 'note', tx, ty, interact: true, label: 'FIELD RECORD', ambientArea: id });
     }
 
     if (['A09', 'A13', 'A17', 'A20'].includes(id)) {
-      const [tx, ty] = takeAnchorTile(bp.anchors?.bench, Math.floor(w / 2) + 3, 4);
+      const [tx, ty] = place('rest_bench', bp.anchors?.bench);
       entities.push({ id: `bench_${id.toLowerCase()}`, type: 'bench', tx, ty, interact: true, solid: true, label: 'REST BENCH' });
     }
 
@@ -583,7 +622,8 @@ export function compileFullCampaignBundle(raw, manifest) {
       const isPod = lowerTitle.includes('pod');
       const isTerminal = lowerTitle.includes('console') || lowerTitle.includes('case') || lowerTitle.includes('uplink') || lowerTitle.includes('cylinder') || lowerTitle.includes('ledger') || lowerTitle.includes('archive') || lowerTitle.includes('receiver');
       const isSwitch = lowerTitle.includes('switch') || lowerTitle.includes('breaker') || lowerTitle.includes('reclassify') || lowerTitle.includes('isolate') || lowerTitle.includes('repeater') || lowerTitle.includes('bridge') || lowerTitle.includes('exchanger');
-      const [tx, ty] = takeAnchorTile(bp.anchors?.scenes?.[sceneIdx++], Math.floor(w / 2) + 1, Math.floor(h / 2) - 1);
+      const explicitSceneAnchor = bp.anchors?.sceneById?.[sc.id] ?? bp.anchors?.scenes?.[sceneIdx++];
+      const [tx, ty] = place(`scene:${sc.id}`, explicitSceneAnchor);
 
       entities.push({
         id: `${isPod || isTerminal || isSwitch ? 'obj' : 'evt'}_${sc.id.toLowerCase().replace('-', '_')}`,
@@ -599,7 +639,8 @@ export function compileFullCampaignBundle(raw, manifest) {
       if (sqArea !== id) continue;
       const sq = (content.quests || []).find(q => q.id === sqId);
       if (!sq) continue;
-      const [tx, ty] = takeAnchorTile(bp.anchors?.sidequests?.[sqIdx++], 5, h - 4);
+      const explicitSqAnchor = bp.anchors?.sidequestById?.[sqId] ?? bp.anchors?.sidequests?.[sqIdx++];
+      const [tx, ty] = place(`sidequest:${sqId}`, explicitSqAnchor);
       entities.push({
         id: `sq_node_${sqId.toLowerCase().replace('-', '_')}`,
         type: 'terminal', tx, ty, interact: true, solid: true,
@@ -610,7 +651,8 @@ export function compileFullCampaignBundle(raw, manifest) {
 
     const noncombat = (content.encounters || []).filter(en => en.area === id && !['battle', 'boss'].includes(en.kind));
     noncombat.forEach((en, pi) => {
-      const [tx, ty] = takeAnchorTile(bp.anchors?.puzzles?.[pi], w - 5, 4);
+      const explicitPuzzleAnchor = bp.anchors?.puzzleById?.[en.id] ?? bp.anchors?.puzzles?.[pi];
+      const [tx, ty] = place(`encounter:${en.id}`, explicitPuzzleAnchor);
       entities.push({
         id: `enc_obj_${en.id.toLowerCase().replace('-', '_')}`,
         type: 'puzzle', tx, ty, interact: true, solid: true,
@@ -621,7 +663,8 @@ export function compileFullCampaignBundle(raw, manifest) {
 
     const optionalBattles = (content.encounters || []).filter(e => e.area === id && NON_MANDATORY_BATTLES.has(e.id));
     optionalBattles.forEach((en, bi) => {
-      const [tx, ty] = takeAnchorTile(bp.anchors?.battles?.[bi], w - 4, Math.floor(h / 2));
+      const explicitBattleAnchor = bp.anchors?.battleById?.[en.id] ?? bp.anchors?.battles?.[bi];
+      const [tx, ty] = place(`battle:${en.id}`, explicitBattleAnchor);
       entities.push({
         id: `battle_${en.id.toLowerCase().replace('-', '_')}`,
         type: 'switch', tx, ty, interact: true, solid: true,
@@ -630,14 +673,19 @@ export function compileFullCampaignBundle(raw, manifest) {
       });
     });
 
-    // Architecture-aware atlas dressing:
-    // - background/foreground props ONLY dress masonry walls (collision===1 && terrainLayer===0) adjacent to walkable interiors
-    //   and NEVER overwrite building roofs (8), lit facades (9), water (2), guardrails (4), cliffs (12), canopy (13), or waterfalls
-    // - ground details ONLY rest on clean walkable floor/path tiles (collision===0 && terrainLayer in {0, 1, 10})
+    // Purposeful, entrance-respecting architectural dressing:
+    // - Blueprint-authored `bp.details` come first
+    // - Wall/foreground atlas accents ONLY dress plain solid masonry (collision===1 && terrainLayer===0)
+    //   and NEVER overlap bespoke structural tiles (16-20), buildings (8/9), cliffs (12), water (2),
+    //   waterfalls, or ANY portal entrance clearance box!
     const reserved = new Set();
     reserved.add(`${startTx},${startTy}`);
     for (const p of portalObjects) reserved.add(`${p.x / 32},${p.y / 32}`);
     for (const e of entities) reserved.add(`${e.tx},${e.ty}`);
+    for (const k of portalApproaches) reserved.add(k);
+
+    const wfCols = new Set();
+    for (const wf of bp.waterfalls) for (let dx = 0; dx < (wf.w || 1); dx++) wfCols.add(wf.x + dx);
 
     const canPlaceWallDetail = (tx, ty, sw, sh, checkSouthWalkable) => {
       const tw = sw / 32, th = sh / 32;
@@ -645,7 +693,9 @@ export function compileFullCampaignBundle(raw, manifest) {
       let touchesWalkable = false;
       for (let dy = 0; dy < th; dy++) for (let dx = 0; dx < tw; dx++) {
         const cx = tx + dx, cy = ty + dy;
-        if (collision[cy * w + cx] !== 1 || terrainLayer[cy * w + cx] !== 0 || reserved.has(`${cx},${cy}`)) return false;
+        const key = `${cx},${cy}`;
+        if (collision[cy * w + cx] !== 1 || terrainLayer[cy * w + cx] !== 0) return false;
+        if (reserved.has(key) || entranceClearance.has(key)) return false;
       }
       if (checkSouthWalkable) {
         const checkY = ty + th;
@@ -666,9 +716,10 @@ export function compileFullCampaignBundle(raw, manifest) {
       if (tx < 1 || ty < 2 || tx + tw > w - 1 || ty + th > h - 2) return false;
       for (let dy = 0; dy < th; dy++) for (let dx = 0; dx < tw; dx++) {
         const cx = tx + dx, cy = ty + dy;
+        const key = `${cx},${cy}`;
         const tc = terrainLayer[cy * w + cx];
-        if (collision[cy * w + cx] !== 0 || reserved.has(`${cx},${cy}`)) return false;
-        if (tc !== 0 && tc !== 1 && tc !== 10) return false;
+        if (collision[cy * w + cx] !== 0 || reserved.has(key) || entranceClearance.has(key)) return false;
+        if (tc !== 0 && tc !== 10) return false;
       }
       return true;
     };
@@ -690,30 +741,39 @@ export function compileFullCampaignBundle(raw, manifest) {
 
     const envDetails = [];
     const bgUsed = new Set();
+    const groundUsed = new Set();
     const areaNum = parseInt(id.slice(1), 10) || 0;
-    const wfCols = new Set();
-    for (const wf of bp.waterfalls) for (let dx = 0; dx < (wf.w || 1); dx++) wfCols.add(wf.x + dx);
-    // Reserve wall columns directly behind north-facing portals so bg scenery NEVER overlaps door frames
-    for (const p of portalObjects) {
-      if (p.properties.facing === 'up') {
-        const px = p.x / 32;
-        for (let dx = -1; dx <= 1; dx++) {
-          bgUsed.add(`${px + dx},0`);
-          bgUsed.add(`${px + dx},1`);
+
+    // 1. Place explicit blueprint-authored structural/scenery compositions first
+    if (Array.isArray(bp.details)) {
+      for (const d of bp.details) {
+        const tw = d.sw / 32, th = d.sh / 32;
+        if (d.layer === 'ground') {
+          if (!canPlaceGroundDetail(d.tx, d.ty, d.sw, d.sh)) {
+            throw new Error(`Layout error in ${id}: authored ground detail ${d.id} at (${d.tx},${d.ty}) conflicts with terrain/reserved tiles`);
+          }
+          for (let dy = 0; dy < th; dy++) for (let dx = 0; dx < tw; dx++) groundUsed.add(`${d.tx + dx},${d.ty + dy}`);
+        } else {
+          if (!canPlaceWallDetail(d.tx, d.ty, d.sw, d.sh, d.layer === 'background')) {
+            throw new Error(`Layout error in ${id}: authored ${d.layer} detail ${d.id} at (${d.tx},${d.ty}) conflicts with walls or entrance clearance`);
+          }
+          for (let dy = 0; dy < th; dy++) for (let dx = 0; dx < tw; dx++) bgUsed.add(`${d.tx + dx},${d.ty + dy}`);
         }
+        envDetails.push({ ...d });
       }
     }
 
-    // North masonry wall dressing (only where solid masonry directly overlooks a walkable interior room)
-    for (let x = 2, slot = 0; x <= w - 4 && bgPool.length; x += 3, slot++) {
+    // 2. Restrained architectural wall dressing (spaced cleanly, never crowding doors or custom tilework)
+    for (let x = 2, slot = 0; x <= w - 4 && bgPool.length; x += 5, slot++) {
       const pick = bgPool[(slot + areaNum) % bgPool.length];
       const tw = pick.sw / 32, th = pick.sh / 32;
       if (th > 2) continue;
-      // Try y=0 first, then y=1 for recessed rooms
       let placedY = -1;
       for (const tryY of [0, 1]) {
         let ok = canPlaceWallDetail(x, tryY, pick.sw, pick.sh, true);
-        for (let dx = 0; dx < tw; dx++) if (bgUsed.has(`${x + dx},${tryY}`) || wfCols.has(x + dx)) ok = false;
+        for (let dx = 0; dx < tw; dx++) {
+          if (bgUsed.has(`${x + dx},${tryY}`) || wfCols.has(x + dx)) ok = false;
+        }
         if (ok) { placedY = tryY; break; }
       }
       if (placedY < 0) continue;
@@ -725,7 +785,7 @@ export function compileFullCampaignBundle(raw, manifest) {
       x += Math.max(0, tw - 2);
     }
 
-    // Foreground architectural framing on south masonry rims bordering interior rooms
+    // 3. Foreground architectural framing on south masonry rims (strictly clear of portals & bespoke tiles)
     if (fgPool.length) {
       const fgPositions = [2, Math.max(6, Math.floor(w / 2) - 1), w - 5];
       fgPositions.forEach((fx, fi) => {
@@ -739,14 +799,13 @@ export function compileFullCampaignBundle(raw, manifest) {
       });
     }
 
-    // Ground storytelling accents placed cleanly on open walkable floor/path tiles (never on water, walls, rails, stairs, or portals)
-    const groundUsed = new Set();
+    // 4. Subtle floor/ground accents on clean open floor/trail tiles (max 3 per area, clear of entrances)
     const candidateGround = [];
-    for (let gy = 3; gy <= h - 4; gy += 2) {
-      for (let gx = 2; gx <= w - 4; gx += 4) candidateGround.push([gx, gy]);
+    for (let gy = 4; gy <= h - 4; gy += 3) {
+      for (let gx = 3; gx <= w - 4; gx += 5) candidateGround.push([gx, gy]);
     }
     let groundPlaced = 0;
-    for (let ci = 0; ci < candidateGround.length && groundPlaced < 4 && groundPool.length; ci++) {
+    for (let ci = 0; ci < candidateGround.length && groundPlaced < 3 && groundPool.length; ci++) {
       const [gx, gy] = candidateGround[(ci * 3 + areaNum) % candidateGround.length];
       const pick = groundPool[(groundPlaced + areaNum) % groundPool.length];
       const tw = pick.sw / 32, th = pick.sh / 32;
@@ -769,23 +828,17 @@ export function compileFullCampaignBundle(raw, manifest) {
 
     const scConf = STEALTH_CONFIG[id];
     const dSpec = bp.anchors?.drone;
-    const drones = scConf ? (dSpec ? [{
+    if (scConf && !dSpec) {
+      throw new Error(`Layout error in ${id}: stealth sector missing authored drone patrol spec`);
+    }
+    const drones = scConf ? [{
       start: dSpec.start,
       zone: dSpec.zone,
       waypoints: dSpec.waypoints
-    }] : [{
-      start: [Math.floor(w / 2) + 2, 4],
-      zone: [Math.floor(w / 2) - 1, 3, w - 3, h - 4],
-      waypoints: [
-        [Math.floor(w / 2) + 2, 4],
-        [w - 4, 4],
-        [w - 4, h - 5],
-        [Math.floor(w / 2) + 2, h - 5]
-      ]
-    }]) : [];
+    }] : [];
 
     const security = scConf ? (() => {
-      const z = dSpec ? dSpec.zone : [Math.floor(w / 2) - 1, 3, w - 3, h - 4];
+      const z = dSpec.zone;
       return {
         defaultMode: 'normal',
         zones: [{

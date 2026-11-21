@@ -26,7 +26,13 @@ import {
   createCampaignMissionFactory
 } from '../public/js/engine/campaign-world.js';
 import { compileCampaignEnvironmentArt } from '../public/js/engine/campaign-environment-art.js';
-import { compileFullCampaignBundle, AREA_META, WORLD_EDGES } from '../public/js/engine/campaign-world-builder.js';
+import {
+  compileFullCampaignBundle,
+  AREA_META,
+  WORLD_EDGES,
+  validateAreaConnectivity,
+  placeAuthoredAnchor
+} from '../public/js/engine/campaign-world-builder.js';
 import { NAV_GROUPS } from '../public/js/engine/campaign-field-menu.js';
 
 const STORY_PATH = new URL('../public/assets/aeon/story/campaign.json', import.meta.url);
@@ -35,6 +41,27 @@ const ENV_PATH = new URL('../public/assets/aeon/environment/environment-art.json
 const ICON_PATH = new URL('../public/assets/aeon/icons/icon-manifest.json', import.meta.url);
 const MANIFEST_PATH = new URL('../public/assets/aeon/asset-manifest.json', import.meta.url);
 const AEON_PUBLIC_ROOT = new URL('../public/', import.meta.url);
+
+function loadPublicEnvironmentArt() {
+  const envManifest = JSON.parse(fs.readFileSync(ENV_PATH, 'utf8'));
+  const readDims = rel => {
+    const buf = fs.readFileSync(new URL(rel, AEON_PUBLIC_ROOT));
+    return { width: buf.readUInt32BE(16), height: buf.readUInt32BE(20) };
+  };
+  const images = new Map();
+  for (const d of Object.values(envManifest.doorways)) {
+    if (d.closed) images.set(d.closed, readDims(d.closed));
+    if (d.open) images.set(d.open, readDims(d.open));
+  }
+  for (const p of Object.values(envManifest.palettes)) {
+    images.set(p.floor, readDims(p.floor));
+    images.set(p.wall, readDims(p.wall));
+  }
+  for (const s of Object.values(envManifest.objects || {})) {
+    images.set(s, readDims(s));
+  }
+  return { envManifest, environmentArt: compileCampaignEnvironmentArt(envManifest, images) };
+}
 
 test('campaign gear catalog enforces lineage rules and progression scales deterministically', () => {
   assert.ok(CAMPAIGN_GEAR['calibrated-wrench']);
@@ -123,8 +150,43 @@ test('expanded environment asset library and UI icon sheet meet Sea-of-Stars bre
   assert.ok(WORLD_EDGES.length >= 28, 'World map graph must link all 29 sectors');
 });
 
-test('private Director Cut v2 story skips optional SC-060/SC-061 and routes CHOICE-07', () => {
-  if (!fs.existsSync(STORY_PATH)) return;
+test('compiler rejects disconnected rooms without mutating collision and rejects blocked/missing anchors without relocating', () => {
+  // 1. Disconnected walkable room MUST throw and MUST NOT tunnel through the separating wall
+  const w = 10, h = 8;
+  const col = new Array(w * h).fill(1);
+  // Room A (x:1..3, y:2..5) and Room B (x:6..8, y:2..5) separated by solid wall x:4..5
+  for (let y = 2; y <= 5; y++) {
+    for (let x = 1; x <= 3; x++) col[y * w + x] = 0;
+    for (let x = 6; x <= 8; x++) col[y * w + x] = 0;
+  }
+  const snapshotBefore = col.slice();
+  assert.throws(
+    () => validateAreaConnectivity('TEST_DISC', col, w, h, 2, 3),
+    /disconnected walkable tile/i
+  );
+  assert.deepEqual(col, snapshotBefore, 'Connectivity validator must NEVER mutate collision geometry');
+
+  // 2. Anchor placement MUST reject missing, blocked, solid-terrain, portal-approach, and colliding anchors
+  const terr = new Array(w * h).fill(0);
+  terr[3 * w + 2] = 2; // water conflict
+  const ctx = {
+    w, h, collision: col, terrainLayer: terr,
+    occupied: new Set(['1,2']),
+    portalApproaches: new Set(['3,3'])
+  };
+  assert.throws(() => placeAuthoredAnchor('TEST', 'missing_obj', null, ctx), /missing authored anchor/i);
+  assert.throws(() => placeAuthoredAnchor('TEST', 'blocked_wall', [4, 3], ctx), /blocked by solid geometry/i);
+  assert.throws(() => placeAuthoredAnchor('TEST', 'solid_terrain', [2, 3], ctx), /conflicts with solid terrain/i);
+  assert.throws(() => placeAuthoredAnchor('TEST', 'blocks_door', [3, 3], ctx), /blocks a doorway approach/i);
+  assert.throws(() => placeAuthoredAnchor('TEST', 'duplicate_tile', [1, 2], ctx), /collides with another authored object/i);
+  assert.deepEqual(placeAuthoredAnchor('TEST', 'valid_console', [2, 4], ctx), [2, 4]);
+});
+
+test('private Director Cut v2 story skips optional SC-060/SC-061 and routes CHOICE-07', (t) => {
+  if (!fs.existsSync(STORY_PATH)) {
+    t.skip('NOT RUN — private campaign story JSON is not installed in this public workspace');
+    return;
+  }
   const content = JSON.parse(fs.readFileSync(STORY_PATH, 'utf8'));
   assert.equal(content.scenes.length, 64);
   assert.equal(content.encounters.length, 61);
@@ -143,7 +205,7 @@ test('private Director Cut v2 story skips optional SC-060/SC-061 and routes CHOI
     assert.notEqual(nextNarrativeScene(content, afterSkip)?.id, sid);
   }
 
-  // Test CHOICE-07 branching between reclassify and sever (bound to SC-042/SC-043)
+  // Test CHOICE-07 branching between reclassify and isolate (bound to SC-042/SC-043)
   const choice07 = content.choices.find(c => c.id === 'CHOICE-07');
   assert.ok(choice07);
   const optKeys = Object.keys(choice07.options);
@@ -157,27 +219,13 @@ test('private Director Cut v2 story skips optional SC-060/SC-061 and routes CHOI
   assert.ok(['reclassify', 'isolate'].includes(branchB.enums.final_resolution));
 });
 
-test('full 29-area world compiles cleanly with environment art and 0 blocked reachability', () => {
-  if (!fs.existsSync(WORLD_PATH) || !fs.existsSync(ENV_PATH)) return;
+test('full 29-area private world compiles cleanly with environment art and 0 blocked reachability', (t) => {
+  if (!fs.existsSync(WORLD_PATH) || !fs.existsSync(ENV_PATH)) {
+    t.skip('NOT RUN — private compiled world file is not installed in this public workspace');
+    return;
+  }
   const world = JSON.parse(fs.readFileSync(WORLD_PATH, 'utf8'));
-  const envManifest = JSON.parse(fs.readFileSync(ENV_PATH, 'utf8'));
-  const readDims = rel => {
-    const buf = fs.readFileSync(new URL(rel, AEON_PUBLIC_ROOT));
-    return { width: buf.readUInt32BE(16), height: buf.readUInt32BE(20) };
-  };
-  const images = new Map();
-  for (const d of Object.values(envManifest.doorways)) {
-    if (d.closed) images.set(d.closed, readDims(d.closed));
-    if (d.open) images.set(d.open, readDims(d.open));
-  }
-  for (const p of Object.values(envManifest.palettes)) {
-    images.set(p.floor, readDims(p.floor));
-    images.set(p.wall, readDims(p.wall));
-  }
-  for (const s of Object.values(envManifest.objects || {})) {
-    images.set(s, readDims(s));
-  }
-  const environmentArt = compileCampaignEnvironmentArt(envManifest, images);
+  const { environmentArt } = loadPublicEnvironmentArt();
   const reach = auditCampaignGameplayReachability(world);
   const portals = auditCampaignPortalApproaches(world);
   assert.equal(reach.blockedCount, 0, JSON.stringify(reach.blocked));
@@ -185,89 +233,95 @@ test('full 29-area world compiles cleanly with environment art and 0 blocked rea
 
   const factory = createCampaignMissionFactory(world, { environmentArt });
   assert.equal(factory.graph.ids.length, 29);
-  const usedAtlases = new Set();
-  const usedPalettes = new Set();
-  let mapsWithWaterfalls = 0;
-  let mapsWithSky = 0;
-  let mapsWithLightShafts = 0;
   for (const id of factory.graph.ids) {
-    const mapSpec = world.maps.find(m => m.id === id);
     const mission = factory.missionForSync(id);
     assert.ok(mission, `Expected compiled mission for ${id}`);
     assert.ok(mission.environmentDetails, `Expected layered environmentDetails for ${id}`);
     assert.ok(Array.isArray(mission.terrainLayer), `Expected terrainLayer for ${id}`);
-    assert.ok(mapSpec?.environmentPalette, `Expected environmentPalette for ${id}`);
-    usedPalettes.add(mapSpec.environmentPalette);
-    if (mission.waterfalls?.length) mapsWithWaterfalls++;
-    if (mission.skyBackdrop) mapsWithSky++;
-    if (mission.lightShafts?.length) mapsWithLightShafts++;
-    for (const item of mapSpec?.environmentDetails || []) {
-      if (item.atlas) usedAtlases.add(item.atlas);
-    }
   }
-  assert.equal(usedAtlases.size, 9, `All 9 scenery atlases must be actively used, got: ${[...usedAtlases].join(', ')}`);
-  assert.ok(usedPalettes.size >= 13, `Expected rich regional palette diversity, got ${usedPalettes.size}`);
-  assert.ok(mapsWithWaterfalls >= 4, `Expected animated waterfalls in wetland/waterworks/cathedral maps, got ${mapsWithWaterfalls}`);
-  assert.ok(mapsWithSky >= 10, `Expected parallax sky backdrops across exterior/ruin areas, got ${mapsWithSky}`);
-  assert.ok(mapsWithLightShafts >= 15, `Expected volumetric light shafts across sectors, got ${mapsWithLightShafts}`);
 });
 
-test('shared campaign-world-builder compiles all 29 areas with public environment art and 0 blocked reachability', () => {
+test('full-scale 29-sector Director Cut stress compilation passes strict zero-tunneling, zero-relocation & architecture audit', () => {
   const manifest = JSON.parse(fs.readFileSync(MANIFEST_PATH, 'utf8'));
-  const envManifest = JSON.parse(fs.readFileSync(ENV_PATH, 'utf8'));
-  const readDims = rel => {
-    const buf = fs.readFileSync(new URL(rel, AEON_PUBLIC_ROOT));
-    return { width: buf.readUInt32BE(16), height: buf.readUInt32BE(20) };
+  const { environmentArt } = loadPublicEnvironmentArt();
+
+  // Build a complete synthetic Director's Cut v2 payload exercising ALL 64 scenes, 20 sidequests,
+  // 14 optional battles, 10 bosses, non-combat puzzles, ambient records, and save points across all 29 areas.
+  const allAreaIds = Object.keys(AREA_META);
+  const allScenes = [];
+  for (let i = 0; i <= 63; i++) {
+    const sid = `SC-${String(i).padStart(3, '0')}`;
+    allScenes.push({
+      id: sid,
+      trigger: sid === 'SC-000' ? 'NEW_GAME' : `TRIG_${sid.replace('-', '_')}`,
+      title: i % 3 === 0 ? `Console ${sid}` : i % 3 === 1 ? `Switch ${sid}` : `Pod ${sid}`,
+      dialogue: [],
+      sets: `done_${sid.toLowerCase().replace('-', '_')}`
+    });
+  }
+  const allQuests = [];
+  for (let i = 1; i <= 20; i++) {
+    const qid = `SQ-${String(i).padStart(2, '0')}`;
+    allQuests.push({ id: qid, title: `Sidequest ${qid}`, completion_flags: `sq_${i}_done` });
+  }
+  const optionalBattleAreas = {
+    'EN-001': 'A02', 'EN-004': 'A03', 'EN-008': 'A06', 'EN-009': 'A08',
+    'EN-012': 'A10', 'EN-014': 'A10', 'EN-018': 'A12', 'EN-022': 'A15',
+    'EN-023': 'A16', 'EN-027': 'A18', 'EN-029': 'A18', 'EN-034': 'A21',
+    'EN-038': 'A24', 'EN-054': 'A26'
   };
-  const images = new Map();
-  for (const d of Object.values(envManifest.doorways)) {
-    if (d.closed) images.set(d.closed, readDims(d.closed));
-    if (d.open) images.set(d.open, readDims(d.open));
-  }
-  for (const p of Object.values(envManifest.palettes)) {
-    images.set(p.floor, readDims(p.floor));
-    images.set(p.wall, readDims(p.wall));
-  }
-  for (const s of Object.values(envManifest.objects || {})) {
-    images.set(s, readDims(s));
-  }
-  const environmentArt = compileCampaignEnvironmentArt(envManifest, images);
+  const allEncounters = [
+    ...Object.entries(optionalBattleAreas).map(([id, area]) => ({
+      id, kind: 'battle', area, units: `Squad ${id}`, set_flag: `${id.toLowerCase().replace('-', '_')}_done`
+    })),
+    { id: 'EN-005', kind: 'boss', area: 'A03', units: 'Boss', set_flag: 'boss_b01_defeated' },
+    { id: 'EN-010', kind: 'boss', area: 'A08', units: 'Boss', set_flag: 'boss_b02_defeated' },
+    { id: 'EN-015', kind: 'boss', area: 'A10', units: 'Boss', set_flag: 'boss_b03_defeated' },
+    { id: 'EN-020', kind: 'boss', area: 'A13', units: 'Boss', set_flag: 'boss_b04_resolved' },
+    { id: 'EN-025', kind: 'boss', area: 'A16', units: 'Boss', set_flag: 'boss_b05_resolved' },
+    { id: 'EN-030', kind: 'boss', area: 'A18', units: 'Boss', set_flag: 'boss_b06_defeated' },
+    { id: 'EN-037', kind: 'boss', area: 'A21', units: 'Boss', set_flag: 'boss_b07_defeated' },
+    { id: 'EN-041', kind: 'boss', area: 'A25', units: 'Boss', set_flag: 'boss_b08_p1' },
+    { id: 'EN-042', kind: 'boss', area: 'A25', units: 'Boss', set_flag: 'boss_b08_p2' },
+    { id: 'EN-043', kind: 'boss', area: 'A25', units: 'Boss', set_flag: 'final_resolution_selected' },
+    // Non-combat puzzles across all 29 sectors (2 per sector)
+    ...allAreaIds.flatMap((area, idx) => [
+      { id: `PZ-${String(idx * 2 + 1).padStart(2, '0')}`, kind: 'puzzle', area, set_flag: `pz_${area.toLowerCase()}_1` },
+      { id: `PZ-${String(idx * 2 + 2).padStart(2, '0')}`, kind: 'hazard', area, set_flag: `pz_${area.toLowerCase()}_2` }
+    ])
+  ];
 
   const syntheticRaw = {
     schemaVersion: 1,
     revision: 2,
     flagSchema: { gameplay_flags: ['game_started'], exclusive_enums: {}, relationships: {} },
-    areas: Object.keys(AREA_META).map((id, i) => ({
+    areas: allAreaIds.map(id => ({
       id,
       name: `Synthetic Sector ${id}`,
-      save_point: i % 4 === 0 ? 'yes' : 'no',
-      story_purpose: 'Synthetic QA verification'
+      save_point: 'yes',
+      story_purpose: 'Strict architectural verification'
     })),
-    scenes: [
-      { id: 'SC-000', trigger: 'NEW_GAME', title: 'Synthetic Opening', dialogue: [], sets: 'game_started' },
-      { id: 'SC-008', trigger: 'SYNTH_BOSS', title: 'Synthetic Boss', dialogue: [], sets: 'boss_b01_defeated' }
-    ],
-    dialogue: [],
+    scenes: allScenes,
+    dialogue: allAreaIds.map(id => ({ area: id, scene_id: 'ambient', speaker: 'SYSTEM', text: 'Ambient record.' })),
     choices: [],
     insertions: [],
-    quests: [],
-    encounters: [
-      { id: 'EN-001', kind: 'battle', area: 'A02', units: 'Crawler', set_flag: 'en001_done' },
-      { id: 'EN-005', kind: 'boss', area: 'A03', units: 'Boss', set_flag: 'boss_b01_defeated' }
-    ]
+    quests: allQuests,
+    encounters: allEncounters
   };
 
   const { content, world } = compileFullCampaignBundle(syntheticRaw, manifest);
   assert.equal(world.maps.length, 29);
-  assert.equal(world.combat.encounters.length, 2);
-  assert.equal(world.mandatoryCombats.length, 1);
+  assert.equal(world.combat.encounters.length, 24);
+  assert.equal(world.mandatoryCombats.length, 10);
   assert.ok(content.flagSchema.gameplay_flags.includes('act2_complete'));
 
+  // 1. Gameplay reachability & portal approach audit
   const reach = auditCampaignGameplayReachability(world);
   const portals = auditCampaignPortalApproaches(world);
   assert.equal(reach.blockedCount, 0, JSON.stringify(reach.blocked));
   assert.equal(portals.inaccessiblePortals, 0, JSON.stringify(portals.blockedPortals));
 
+  // 2. Mission factory & environment art verification
   const factory = createCampaignMissionFactory(world, { environmentArt });
   assert.equal(factory.graph.ids.length, 29);
   const usedAtlases = new Set();
@@ -281,7 +335,7 @@ test('shared campaign-world-builder compiles all 29 areas with public environmen
     assert.ok(mission, `Expected compiled mission for ${id}`);
     assert.ok(mission.environmentDetails, `Expected layered environmentDetails for ${id}`);
     assert.ok(Array.isArray(mission.terrainLayer), `Expected terrainLayer for ${id}`);
-    assert.ok(mapSpec?.environmentPalette, `Expected environmentPalette for ${id}`);
+    assert.ok(Array.isArray(mission.portalAssemblies) && mission.portalAssemblies.length >= 1, `Expected portalAssemblies on ${id}`);
     usedPalettes.add(mapSpec.environmentPalette);
     if (mission.waterfalls?.length) mapsWithWaterfalls++;
     if (mission.skyBackdrop) mapsWithSky++;
@@ -296,7 +350,14 @@ test('shared campaign-world-builder compiles all 29 areas with public environmen
   assert.ok(mapsWithSky >= 10, `Expected sky backdrops, got ${mapsWithSky}`);
   assert.ok(mapsWithLightShafts >= 15, `Expected light shafts, got ${mapsWithLightShafts}`);
 
-  // Architectural & World Design Integrity Audit across ALL 29 sectors
+  // 3. Benchmark substantial scale verification
+  const mapById = new Map(world.maps.map(m => [m.id, m]));
+  assert.ok(mapById.get('A00').width >= 40 && mapById.get('A00').height >= 22, 'A00 Stasis Hollow must be substantial multi-room scale');
+  assert.ok(mapById.get('A02').width >= 42 && mapById.get('A02').height >= 24, 'A02 Rootway Ruins must be substantial outdoor scale');
+  assert.ok(mapById.get('A15').width >= 44 && mapById.get('A15').height >= 26, 'A15 Survey Wetland must be substantial outdoor marsh scale');
+  assert.ok(mapById.get('A24').width >= 42 && mapById.get('A24').height >= 28, 'A24 Control Cathedral must be monumental basilica scale');
+
+  // 4. Deep Architectural Integrity Audit across ALL 29 sectors
   const oppDir = { right: 'left', left: 'right', up: 'down', down: 'up' };
   const wallMountedArt = new Set([
     'service', 'overgrown', 'elevator', 'archive_seal', 'cathedral_gate',
@@ -304,21 +365,55 @@ test('shared campaign-world-builder compiles all 29 areas with public environmen
     'airlock_east', 'airlock_west', 'arch_east', 'arch_west', 'south_threshold'
   ]);
   const naturalOutdoorArt = new Set(['trail_passage', 'bridge_passage', 'rail_gantry', 'arch_east', 'arch_west', 'south_threshold']);
+  const solidTerrainCodes = new Set([2, 4, 8, 9, 12, 13, 16, 17, 18, 19, 20]);
+  const walkableTerrainCodes = new Set([1, 3, 5, 6, 7, 10, 11, 14, 15]);
   const layoutFingerprints = new Set();
-  const mapById = new Map(world.maps.map(m => [m.id, m]));
+  const seenStoryTriggers = new Set();
 
   for (const m of world.maps) {
     const col = m.layers.find(l => l.name === 'collision').data;
     const fp = `${m.width}x${m.height}:${col.join('')}:${m.terrainLayer.join(',')}`;
     layoutFingerprints.add(fp);
 
-    const portals = m.layers.find(l => l.name === 'portals').objects;
-    for (const p of portals) {
+    // 4a. Zero disconnected walkable rooms/islands (re-validate strictly)
+    validateAreaConnectivity(m.id, col, m.width, m.height, Math.floor(m.start.x / 32), Math.floor(m.start.y / 32));
+
+    // 4b. Structural terrain codes MUST agree 100% with collision geometry
+    for (let y = 0; y < m.height; y++) {
+      for (let x = 0; x < m.width; x++) {
+        const idx = y * m.width + x;
+        const tc = m.terrainLayer[idx];
+        const c = col[idx];
+        if (solidTerrainCodes.has(tc)) {
+          assert.equal(c, 1, `Collision mismatch in ${m.id} at (${x},${y}): solid structural terrain code ${tc} is walkable`);
+        }
+        if (walkableTerrainCodes.has(tc)) {
+          assert.equal(c, 0, `Collision mismatch in ${m.id} at (${x},${y}): walkable terrain code ${tc} is blocked`);
+        }
+      }
+    }
+
+    // 4c. Zero duplicate story triggers or overlapping entity tiles
+    const entityTiles = new Set([`${Math.floor(m.start.x / 32)},${Math.floor(m.start.y / 32)}`]);
+    for (const e of m.entities || []) {
+      const k = `${e.tx},${e.ty}`;
+      assert.ok(!entityTiles.has(k), `Overlapping entity in ${m.id} at (${e.tx},${e.ty}): ${e.id}`);
+      entityTiles.add(k);
+      if (e.trigger && e.sceneId) {
+        const tk = `${e.sceneId}:${e.trigger}`;
+        assert.ok(!seenStoryTriggers.has(tk), `Duplicate critical story trigger ${tk} in ${m.id}`);
+        seenStoryTriggers.add(tk);
+      }
+    }
+
+    // 4d. Doorway architectural support, entrance assemblies, reciprocity & zero scenery concealment
+    const portalsList = m.layers.find(l => l.name === 'portals').objects;
+    for (const p of portalsList) {
       const props = p.properties;
       const tx = p.x / 32, ty = p.y / 32;
       assert.ok(props.portalLabel && props.portalLabel.length > 0, `Portal ${m.id}:${p.name} missing bespoke architectural label`);
+      assert.ok(props.portalAssembly, `Portal ${m.id}:${p.name} missing portalAssembly descriptor`);
 
-      // Verify wall-mounted doors/airlocks/arches are embedded against a solid wall/structure (ZERO floating doors)
       if (wallMountedArt.has(props.portalArt)) {
         const dx = props.facing === 'right' ? 1 : props.facing === 'left' ? -1 : 0;
         const dy = props.facing === 'down' ? 1 : props.facing === 'up' ? -1 : 0;
@@ -329,7 +424,14 @@ test('shared campaign-world-builder compiles all 29 areas with public environmen
         );
       }
 
-      // Verify geographic reciprocity with destination portal
+      // Check NO background or foreground scenery intersects the entrance clearance box
+      for (const d of m.environmentDetails || []) {
+        if (d.layer === 'ground') continue;
+        const dw = d.sw / 32, dh = d.sh / 32;
+        const overlapsPortalZone = d.tx < tx + 2 && d.tx + dw > tx - 1 && d.ty < ty + 2 && d.ty + dh > ty - 1;
+        assert.ok(!overlapsPortalZone, `Scenery ${d.id} conceals entrance ${m.id}:${p.name} at (${tx},${ty})`);
+      }
+
       const destMap = mapById.get(props.toMap);
       assert.ok(destMap, `Missing destination map ${props.toMap} from ${m.id}`);
       const backPortal = destMap.layers.find(l => l.name === 'portals').objects.find(o => o.name === props.toPortal);
@@ -342,16 +444,14 @@ test('shared campaign-world-builder compiles all 29 areas with public environmen
     }
   }
 
-  // Every single one of the 29 sectors must have a unique bespoke floor plan
   assert.equal(layoutFingerprints.size, 29, `Expected 29 unique area floor plans, got ${layoutFingerprints.size}`);
 
-  // Verify natural outdoor landscape exits on key exterior regions
+  // 5. Verify natural outdoor landscape exits on exterior regions
   for (const extId of ['A02', 'A04', 'A12', 'A13', 'A15', 'A17', 'A27', 'A28']) {
     const m = mapById.get(extId);
-    const portals = m.layers.find(l => l.name === 'portals').objects;
-    for (const p of portals) {
+    const portalsList = m.layers.find(l => l.name === 'portals').objects;
+    for (const p of portalsList) {
       const art = p.properties.portalArt;
-      // Allow real building/elevator doors ONLY if backed by a building facade (9) or interior masonry wall, otherwise natural passage
       const tx = p.x / 32, ty = p.y / 32;
       const dx = p.properties.facing === 'right' ? 1 : p.properties.facing === 'left' ? -1 : 0;
       const dy = p.properties.facing === 'down' ? 1 : p.properties.facing === 'up' ? -1 : 0;
@@ -363,3 +463,4 @@ test('shared campaign-world-builder compiles all 29 areas with public environmen
     }
   }
 });
+

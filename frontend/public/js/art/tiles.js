@@ -338,6 +338,252 @@ function paintCampaignTerrainCell(c, code, x, y, atT, theme) {
       R(c, i % 2 ? '#596360' : '#434c49', rx, ry, rw, rh - 1);
       R(c, '#7e8a85', rx, ry, rw, 1);
     }
+  } else if (code === 16) {
+    // Cryo stasis pod bank embedded in recessed armored bulkhead (solid structural assembly)
+    R(c, '#121a22', X, Y, T, T);
+    R(c, '#273542', X + 1, Y + 1, T - 2, T - 2);
+    R(c, '#42596d', X + 2, Y + 1, T - 4, 2);
+    // Recessed cryogenic capsule viewport with frost sheen
+    R(c, '#09141d', X + 5, Y + 4, 22, 22);
+    R(c, '#1c4d63', X + 7, Y + 6, 18, 17);
+    R(c, '#4cc4dc', X + 9, Y + 7, 14, 14);
+    R(c, 'rgba(220,252,255,0.55)', X + 10, Y + 8, 3, 11);
+    R(c, 'rgba(12,30,42,0.45)', X + 16, Y + 9, 5, 10);
+    // Capsule clamps & status bar
+    R(c, '#2d3b48', X + 4, Y + 13, 24, 2);
+    R(c, '#151e27', X + 2, Y + T - 5, T - 4, 5);
+    R(c, '#72dce8', X + 8, Y + T - 3, 6, 2);
+    R(c, '#f2bd75', X + 19, Y + T - 3, 4, 2);
+  } else if (code === 17) {
+    // Continuous laboratory / control-room workstation console bank (solid)
+    const accent = theme === 'cathedral' ? '#c99eff' : theme === 'lantern' || theme === 'quarantine' ? '#f5b858' : '#72dce8';
+    const connectL = atT(x - 1, y) === 17, connectR = atT(x + 1, y) === 17;
+    R(c, '#11171f', X, Y + 2, T, T - 2);
+    R(c, '#2c3a47', X + (connectL ? 0 : 2), Y + 3, T - (connectL ? 0 : 2) - (connectR ? 0 : 2), 18);
+    R(c, '#4b6175', X + (connectL ? 0 : 2), Y + 3, T - (connectL ? 0 : 2) - (connectR ? 0 : 2), 2);
+    // Glowing telemetry monitor panel
+    R(c, '#0a141c', X + 4, Y + 6, 24, 11);
+    R(c, accent, X + 6, Y + 8, 11, 2);
+    R(c, 'rgba(255,255,255,0.45)', X + 6, Y + 11, 7, 1);
+    R(c, accent, X + 6, Y + 13, 15, 2);
+    R(c, '#7dffb0', X + 23, Y + 8, 3, 3);
+    // Lower desk housing & keypad deck
+    R(c, '#1d2732', X + (connectL ? 0 : 2), Y + 21, T - (connectL ? 0 : 2) - (connectR ? 0 : 2), 9);
+    for (let kx = 5; kx < 26; kx += 5) R(c, '#607487', X + kx, Y + 23, 3, 2);
+    R(c, '#0b1016', X, Y + T - 2, T, 2);
+  } else if (code === 18) {
+    // Tall archive bookshelf / vault data-canister storage rack (solid)
+    const warm = theme === 'mail' || theme === 'lantern';
+    const frame = warm ? '#3b2b1e' : '#1d2534';
+    const hi = warm ? '#694e38' : '#3a4a66';
+    R(c, '#0e131b', X, Y, T, T);
+    R(c, frame, X + 1, Y + 1, T - 2, T - 2);
+    R(c, hi, X + 1, Y + 1, T - 2, 2);
+    // Three stocked shelves with varied data ledgers/canisters
+    for (let row = 0; row < 3; row++) {
+      const sy = Y + 4 + row * 9;
+      R(c, '#0b0f16', X + 3, sy, T - 6, 7);
+      for (let bx = 4; bx < T - 5; bx += 4) {
+        const v = hsh(x * 7 + bx, y * 11 + row, 5);
+        if (v < 0.14) continue;
+        const col = v > 0.72 ? (warm ? '#c99352' : '#5e88b8') : v > 0.42 ? (warm ? '#7d5338' : '#3e5c78') : '#4a6b59';
+        R(c, col, X + bx, sy + 1, 3, 6);
+        R(c, 'rgba(255,255,255,0.22)', X + bx, sy + 1, 1, 6);
+      }
+      R(c, hi, X + 2, sy + 7, T - 4, 1);
+    }
+  } else if (code === 19) {
+    // Monumental carved architectural column / cathedral buttress pillar (solid)
+    const stone = theme === 'cathedral' ? '#363b52' : theme === 'archive' ? '#344154' : theme === 'rootway' ? '#49544c' : '#3b4a56';
+    const hi = theme === 'cathedral' ? '#626a8f' : theme === 'archive' ? '#5c7291' : theme === 'rootway' ? '#6d7c70' : '#647b8e';
+    const trim = theme === 'cathedral' ? '#d4a8ff' : theme === 'archive' ? '#98bfff' : theme === 'rootway' ? '#7ec482' : '#72dce8';
+    R(c, '#10151c', X + 2, Y, T - 4, T);
+    // Capital & cornice crown
+    R(c, hi, X + 2, Y + 1, T - 4, 4);
+    R(c, '#1c232d', X + 3, Y + 5, T - 6, 2);
+    // Fluted column shaft
+    R(c, stone, X + 5, Y + 7, T - 10, 18);
+    R(c, hi, X + 6, Y + 7, 3, 18);
+    R(c, 'rgba(0,0,0,0.34)', X + 11, Y + 7, 2, 18);
+    R(c, hi, X + 14, Y + 7, 4, 18);
+    R(c, 'rgba(0,0,0,0.34)', X + 19, Y + 7, 2, 18);
+    R(c, trim, X + 15, Y + 10, 2, 11);
+    // Stepped plinth base
+    R(c, hi, X + 3, Y + 25, T - 6, 3);
+    R(c, '#1a2029', X + 2, Y + 28, T - 4, 4);
+  } else if (code === 20) {
+    // Weathered ancient stone ruin wall draped with moss & hanging roots (solid)
+    R(c, '#202925', X, Y, T, T);
+    R(c, '#47544c', X + 1, Y + 2, 14, 12); R(c, '#69786d', X + 1, Y + 2, 14, 2);
+    R(c, '#3e4a43', X + 16, Y + 2, 15, 11); R(c, '#637368', X + 16, Y + 2, 15, 2);
+    R(c, '#3a463f', X + 1, Y + 15, 19, 13); R(c, '#5c6b61', X + 1, Y + 15, 19, 1);
+    R(c, '#49574e', X + 21, Y + 14, 10, 14); R(c, '#6a7a6f', X + 21, Y + 14, 10, 1);
+    // Moss crown & creeping root tendrils
+    if (atT(x, y - 1) !== 20) {
+      R(c, '#3a7542', X, Y, T, 4);
+      R(c, '#63b060', X + 2, Y, 11, 2);
+      R(c, '#63b060', X + 17, Y + 1, 12, 2);
+    }
+    R(c, '#2e6336', X + 6 + ((x * 5) % 8), Y + 4, 3, 12);
+    R(c, '#4f914c', X + 7 + ((x * 5) % 8), Y + 4, 1, 10);
+    R(c, '#594230', X + 22, Y + 10, 2, 16);
+    if (atT(x, y + 1) !== 20) R(c, 'rgba(0,0,0,0.45)', X, Y + T - 3, T, 3);
+  }
+}
+
+function paintPortalAssemblyBase(c, map, pa, theme) {
+  const { tx, ty, dir, assembly } = pa;
+  const X = tx * T, Y = ty * T;
+  const dx = dir === 'right' ? 1 : dir === 'left' ? -1 : 0;
+  const dy = dir === 'down' ? 1 : dir === 'up' ? -1 : 0;
+
+  if (assembly === 'trail_exit') {
+    // Extend natural packed-earth trail cleanly off the map boundary + place rustic trail marker posts
+    const dirt = theme === 'wetland' ? 'rgba(116,96,68,0.68)' : theme === 'sky' || theme === 'wasteland' ? 'rgba(156,126,86,0.64)' : 'rgba(114,98,74,0.64)';
+    const edge = theme === 'wetland' ? 'rgba(64,104,58,0.5)' : 'rgba(84,74,52,0.46)';
+    for (let step = 0; step <= 2; step++) {
+      const nx = tx + dx * step, ny = ty + dy * step;
+      if (nx < 0 || ny < 0 || nx >= map.w || ny >= map.h) continue;
+      R(c, dirt, nx * T, ny * T, T, T);
+      if (dx !== 0) {
+        R(c, edge, nx * T, ny * T, T, 3);
+        R(c, edge, nx * T, ny * T + T - 3, T, 3);
+      } else {
+        R(c, edge, nx * T, ny * T, 3, T);
+        R(c, edge, nx * T + T - 3, ny * T, 3, T);
+      }
+    }
+    // Weathered timber trail marker bollards framing the exit mouth
+    if (dir === 'left' || dir === 'right') {
+      const px = dir === 'left' ? X + 3 : X + T - 9;
+      R(c, '#21170f', px, Y - 5, 6, 8); R(c, '#8c6b47', px + 1, Y - 4, 4, 5);
+      R(c, '#21170f', px, Y + T - 3, 6, 8); R(c, '#8c6b47', px + 1, Y + T - 2, 4, 5);
+    } else {
+      const py = dir === 'up' ? Y + 2 : Y + T - 8;
+      R(c, '#21170f', X - 5, py, 7, 7); R(c, '#8c6b47', X - 4, py + 1, 5, 5);
+      R(c, '#21170f', X + T - 2, py, 7, 7); R(c, '#8c6b47', X + T - 1, py + 1, 5, 5);
+    }
+    return;
+  }
+
+  if (assembly === 'bridge_exit') {
+    // Extend wooden boardwalk planks & railings seamlessly over edge water to the map boundary
+    for (let step = 0; step <= 1; step++) {
+      const nx = tx + dx * step, ny = ty + dy * step;
+      if (nx < 0 || ny < 0 || nx >= map.w || ny >= map.h) continue;
+      const BX = nx * T, BY = ny * T;
+      R(c, '#1c140e', BX, BY, T, T);
+      for (let px = 0; px < T; px += 6) {
+        R(c, '#694a31', BX + px + 1, BY + 1, 5, T - 2);
+        R(c, '#8e6644', BX + px + 1, BY + 1, 1, T - 2);
+      }
+      R(c, '#3d2a1c', BX, BY, T, 3); R(c, '#a8825b', BX, BY, T, 1);
+      R(c, '#3d2a1c', BX, BY + T - 3, T, 3);
+    }
+    // Lantern piling posts at causeway entrance
+    const px = dir === 'left' ? X + 2 : X + T - 7;
+    R(c, '#24180f', px, Y - 6, 5, 9); R(c, '#ffd884', px + 1, Y - 5, 3, 3);
+    R(c, '#24180f', px, Y + T - 3, 5, 9); R(c, '#ffd884', px + 1, Y + T - 2, 3, 3);
+    return;
+  }
+
+  if (assembly === 'rail_gantry') {
+    // Extend railway ballast & twin steel tracks seamlessly to the map boundary
+    for (let step = 0; step <= 1; step++) {
+      const nx = tx + dx * step, ny = ty + dy * step;
+      if (nx < 0 || ny < 0 || nx >= map.w || ny >= map.h) continue;
+      const RX = nx * T, RY = ny * T;
+      R(c, 'rgba(32,36,42,0.65)', RX, RY + 2, T, T - 4);
+      for (let sx = 2; sx < T; sx += 8) R(c, '#34271d', RX + sx, RY + 3, 4, T - 6);
+      R(c, '#1c232b', RX, RY + 7, T, 4); R(c, '#9eb4c4', RX, RY + 8, T, 2);
+      R(c, '#1c232b', RX, RY + 21, T, 4); R(c, '#9eb4c4', RX, RY + 22, T, 2);
+    }
+    // Steel gantry stanchions flanking the tracks
+    const gx = dir === 'left' ? X + 2 : X + T - 8;
+    R(c, '#141c24', gx, Y - 10, 6, 12); R(c, '#6a8296', gx + 1, Y - 9, 4, 10);
+    R(c, '#141c24', gx, Y + T - 2, 6, 12); R(c, '#6a8296', gx + 1, Y + T - 1, 4, 10);
+    return;
+  }
+
+  // Structural interior/wall-embedded assemblies: airlock, archway, cathedral_gate, elevator
+  const trim = assembly === 'cathedral_gate' ? '#d4a8ff'
+    : assembly === 'airlock' ? (theme === 'quarantine' ? '#f5b858' : '#72dce8')
+    : assembly === 'elevator' ? '#ffe2a8'
+    : '#9eb6c7';
+  const frameDark = '#111720';
+  const frameMid = assembly === 'cathedral_gate' ? '#363b52' : '#2d3b48';
+  const frameHi = assembly === 'cathedral_gate' ? '#626a8f' : '#53687a';
+
+  // Ground threshold plate on the portal tile itself
+  R(c, 'rgba(10,16,22,0.55)', X + 2, Y + 2, T - 4, T - 4);
+  R(c, frameHi, X + 2, Y + 2, T - 4, 2);
+  R(c, frameHi, X + 2, Y + T - 4, T - 4, 2);
+  if (assembly === 'airlock' || assembly === 'elevator') {
+    for (let sx = 4; sx < T - 4; sx += 8) R(c, trim, X + sx, Y + T - 3, 4, 2);
+  }
+
+  // Recessed shadowed opening + flanking architectural jamb pilasters in the backing wall
+  const wx = tx + dx, wy = ty + dy;
+  if (wx >= 0 && wy >= 0 && wx < map.w && wy < map.h) {
+    const WX = wx * T, WY = wy * T;
+    if (dir === 'up') {
+      // North wall portal: carve recessed threshold bay + twin jamb pilasters on left/right
+      R(c, frameDark, WX + 2, WY + 4, T - 4, T - 4);
+      R(c, '#060a10', WX + 6, WY + 8, T - 12, T - 8);
+      // Left & right structural jamb pilasters extending into adjacent wall tiles
+      R(c, frameDark, WX - 6, WY, 11, T); R(c, frameMid, WX - 5, WY + 2, 9, T - 2); R(c, frameHi, WX - 4, WY + 2, 2, T - 2);
+      R(c, frameDark, WX + T - 5, WY, 11, T); R(c, frameMid, WX + T - 4, WY + 2, 9, T - 2); R(c, frameHi, WX + T - 3, WY + 2, 2, T - 2);
+      // Cathedral gate gets grand triple-bay flanking buttresses
+      if (assembly === 'cathedral_gate') {
+        R(c, frameMid, WX - 18, WY + 2, 12, T - 2); R(c, trim, WX - 14, WY + 8, 2, T - 12);
+        R(c, frameMid, WX + T + 6, WY + 2, 12, T - 2); R(c, trim, WX + T + 12, WY + 8, 2, T - 12);
+      }
+      R(c, trim, WX + 6, WY + 5, T - 12, 2);
+    } else if (dir === 'down') {
+      // South threshold passage: recessed stone/steel stair landing cutting into south parapet
+      R(c, frameDark, WX + 2, WY, T - 4, T - 6);
+      R(c, '#090e14', WX + 6, WY, T - 12, T - 10);
+      R(c, frameMid, WX - 4, WY, 8, T - 4); R(c, frameHi, WX - 3, WY, 2, T - 4);
+      R(c, frameMid, WX + T - 4, WY, 8, T - 4); R(c, frameHi, WX + T - 3, WY, 2, T - 4);
+      R(c, trim, WX + 7, WY + 2, T - 14, 2);
+    } else if (dir === 'right' || dir === 'left') {
+      // East/West wall-mounted airlock or stone archway cut into side wall
+      const rx = dir === 'right' ? WX : WX + 8;
+      R(c, frameDark, rx, WY - 4, T - 8, T + 8);
+      R(c, '#060a10', rx + 3, WY + 3, T - 14, T - 6);
+      // Upper & lower masonry jamb piers
+      R(c, frameMid, WX + 1, WY - 6, T - 2, 9); R(c, frameHi, WX + 2, WY - 5, T - 4, 2);
+      R(c, frameMid, WX + 1, WY + T - 3, T - 2, 9); R(c, frameHi, WX + 2, WY + T - 2, T - 4, 2);
+      // Luminous bulkhead status strip
+      const stripX = dir === 'right' ? WX + 2 : WX + T - 5;
+      R(c, trim, stripX, WY + 5, 3, T - 10);
+    }
+  }
+}
+
+function paintPortalAssemblyOver(c, map, pa, theme) {
+  const { tx, ty, dir, assembly } = pa;
+  const X = tx * T, Y = ty * T;
+  if (assembly === 'rail_gantry') {
+    // Overhead steel railway signal gantry beam spanning above the tracks (depth occlusion!)
+    const gx = dir === 'left' ? X + 1 : X + T - 9;
+    R(c, 'rgba(0,0,0,0.45)', gx - 1, Y - 14, 10, 6);
+    R(c, '#25323e', gx, Y - 15, 8, 5);
+    R(c, '#8ba3b8', gx + 1, Y - 15, 6, 1);
+    R(c, '#7dffb0', gx + 2, Y - 13, 4, 2);
+    return;
+  }
+  if (assembly === 'cathedral_gate' && dir === 'up') {
+    // Monumental overhead archivolt cornice beam above the north cathedral gate
+    R(c, '#151926', X - 14, Y - 38, T + 28, 10);
+    R(c, '#495275', X - 12, Y - 37, T + 24, 7);
+    R(c, '#d4a8ff', X - 6, Y - 34, T + 12, 2);
+  } else if ((assembly === 'airlock' || assembly === 'archway') && dir === 'up') {
+    // Overhead reinforced lintel header spanning the north doorway jambs
+    const accent = assembly === 'airlock' ? (theme === 'quarantine' ? '#f5b858' : '#72dce8') : '#9eb6c7';
+    R(c, '#111821', X - 6, Y - 34, T + 12, 7);
+    R(c, '#3a4c5c', X - 5, Y - 33, T + 10, 4);
+    R(c, accent, X + 6, Y - 31, T - 12, 2);
   }
 }
 
@@ -352,7 +598,7 @@ export function bakeMap(map, mission) {
   for (let y = 0; y < map.h; y++) for (let x = 0; x < map.w; x++) {
     const g = at(x, y);
     const tc = tLayer ? atT(x, y) : 0;
-    const solidOverride = tc === 2 || tc === 8 || tc === 9 || tc === 12 || tc === 13;
+    const solidOverride = tc === 2 || tc === 8 || tc === 9 || tc === 12 || tc === 13 || (tc >= 16 && tc <= 20);
     // ONLY an owner-private selected 32x32 map palette replaces a default
     // schematic tile. Original Ghost Signal missions retain their renderer.
     if (g === 2) {
@@ -404,6 +650,9 @@ export function bakeMap(map, mission) {
     if (at(x, y + 1) !== 2 && atT(x, y + 1) !== 2) { R(c, 'rgba(0,0,0,.3)', X, Y + T - 3, T, 3); R(c, 'rgba(0,0,0,.14)', X, Y + T - 7, T, 4); }
   }
   paintCampaignEnvironmentDetails(c,mission.environmentDetails,'background');
+  if (Array.isArray(mission.portalAssemblies) && mission.portalAssemblies.length) {
+    for (const pa of mission.portalAssemblies) paintPortalAssemblyBase(c, map, pa, mission.campaignTheme);
+  }
   const draw = { machine, crate, debris, cable, hazard, rack };
   for (const p of mission.props) if (p.solid) { R(c, 'rgba(0,0,0,.34)', p.x * T + 5, (p.y + (p.h || 1)) * T - 1, (p.w || 1) * T - 2, 5); R(c, 'rgba(0,0,0,.2)', (p.x + (p.w || 1)) * T - 1, p.y * T + 8, 4, (p.h || 1) * T - 6); }
   for (const p of mission.props) draw[p.t](c, p);
@@ -433,6 +682,9 @@ export function bakeOver(map, mission=null) {
   }
   }
   paintCampaignEnvironmentDetails(c,mission?.environmentDetails,'foreground');
+  if (Array.isArray(mission?.portalAssemblies) && mission.portalAssemblies.length) {
+    for (const pa of mission.portalAssemblies) paintPortalAssemblyOver(c, map, pa, mission.campaignTheme);
+  }
   return cv;
 }
 // Parallax under-structure seen through the void around rooms.

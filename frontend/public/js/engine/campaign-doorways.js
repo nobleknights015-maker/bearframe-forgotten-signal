@@ -4,6 +4,7 @@
 const props = raw => Array.isArray(raw) ?
   Object.fromEntries(raw.map(p=>[p.name,p.value])) : (raw||{});
 const types=new Set(['bulkhead','hatch','exit']);
+const assemblies=new Set(['airlock','archway','cathedral_gate','elevator','trail_exit','bridge_exit','rail_gantry']);
 const prompts=Object.freeze({bulkhead:'BULKHEAD',hatch:'HATCH',exit:'ELEVATOR / EXIT'});
 const idValid=s=>typeof s==='string'&&/^[A-Za-z][A-Za-z0-9_-]{0,95}$/.test(s);
 const blocked=properties=>!types.has(properties.portalStyle);
@@ -18,13 +19,15 @@ export function compileCampaignDoorways(graph){
       const p=props(portal.properties);
       const style=p.portalStyle??'bulkhead';
       if(!idValid(portal.name)||!types.has(style)||
-         (p.portalArt!==undefined&&!/^[a-z][a-z0-9_]{0,63}$/.test(p.portalArt)))
-        throw new TypeError('Campaign doorway style, art binding or source identifier is invalid');
+         (p.portalArt!==undefined&&!/^[a-z][a-z0-9_]{0,63}$/.test(p.portalArt))||
+         (p.portalAssembly!==undefined&&!assemblies.has(p.portalAssembly)))
+        throw new TypeError('Campaign doorway style, art binding, assembly or source identifier is invalid');
       return Object.freeze({
         id:'campaign_door_'+portal.name,
         // Runtime sprite art uses the same original 32x32 field entity path.
         type:style,portalId:portal.name,portalArt:p.portalArt??null,
         portalDir:p.facing??null,
+        portalAssembly:p.portalAssembly??null,
         tx:portal.x/32,ty:portal.y/32,
         w:1,h:1,interact:true,solid:false,
         requiresFlag:p.requiresFlag??null,

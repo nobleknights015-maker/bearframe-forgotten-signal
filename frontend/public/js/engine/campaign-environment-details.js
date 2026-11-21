@@ -25,8 +25,18 @@ export function compileCampaignEnvironmentDetails(map,art){
   const reserve=(x,y,w,h,label)=>reserved.push({x,y,w,h,label});
   reserve(Math.floor(map.start.x/TILE),Math.floor(map.start.y/TILE),1,1,'start');
   for(const e of map.entities||[])reserve(e.tx,e.ty,1,1,e.id);
-  for(const p of map.layers.find(l=>l.name==='portals').objects)
-    reserve(p.x/TILE,p.y/TILE,p.width/TILE,p.height/TILE,p.name);
+  for(const p of map.layers.find(l=>l.name==='portals').objects){
+    const px=p.x/TILE,py=p.y/TILE,pw=p.width/TILE,ph=p.height/TILE;
+    reserve(px,py,pw,ph,p.name);
+    const pp=Array.isArray(p.properties)?Object.fromEntries(p.properties.map(o=>[o.name,o.value])):(p.properties||{});
+    if(pp.portalAssembly){
+      const dx=pp.facing==='right'?1:pp.facing==='left'?-1:0;
+      const dy=pp.facing==='down'?1:pp.facing==='up'?-1:0;
+      // Reserve the wall backing, flanking jambs, and inward approach tile so scenery never conceals a doorway.
+      reserve(px-1,py-1,3,3,p.name+'_entrance_clearance');
+      if(dx||dy)reserve(px+dx-1,py+dy-1,3,3,p.name+'_arch_frame');
+    }
+  }
   for(const t of map.triggers||[])
     reserve(Math.floor(t.x/TILE),Math.floor(t.y/TILE),
       Math.ceil(t.width/TILE),Math.ceil(t.height/TILE),t.id);

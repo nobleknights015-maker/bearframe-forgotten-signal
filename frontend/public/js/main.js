@@ -137,7 +137,7 @@ function loop(now) {
   requestAnimationFrame(loop);
 }
 showTitle();
-if (location.pathname.endsWith('/campaign.html')) {
+if (location.pathname.endsWith('/campaign.html') || document.body.classList.contains('aeon-campaign')) {
   import('./engine/campaign-game.js').then(({mountCampaignGame})=>
     mountCampaignGame({game,ui,sfx,touchMode,refreshTouch,settings,store,syncSettings}))
     .catch(error=>{console.error('Private campaign initialization failed',error);
