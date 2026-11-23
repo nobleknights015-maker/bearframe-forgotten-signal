@@ -7,6 +7,13 @@ import { mkdir, writeFile } from 'node:fs/promises';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { deflateSync } from 'node:zlib';
+import {
+  SLEEPER_IDS,
+  renderSleeperPortrait,
+  renderSleeperWorldFrame,
+  renderSleeperBattleFrame,
+  scaleHumanoidWorldFrameToJrpg
+} from './sleeper-art.mjs';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const ROOT = resolve(__dirname, '../public/assets/aeon');
@@ -292,32 +299,43 @@ const MACHINE_ACTION_MAP = [
   ['guard', 'idle'], ['hit', 'hurt'], ['down', 'defeat'], ['victory', 'idle'], ['charge', 'charge']
 ];
 
-function renderHumanWorldSheet(cfg, fw, fh, isBearframe = false) {
+function renderHumanWorldSheet(cfg, fw, fh, isBearframe = false, charId = '') {
   const cv = new PixelCanvas(fw * 9, fh * 4);
   const dirs = ['down', 'left', 'right', 'up'];
+  const isSleeper = SLEEPER_IDS.includes(charId);
   for (let row = 0; row < 4; row++) {
     const dir = dirs[row];
     for (let col = 0; col < 9; col++) {
-      const f = new PixelCanvas(fw, fh);
-      const pose = col === 0 ? poseFor('idle', 0, 4) : poseFor('walk', col - 1, 8);
-      drawAndroid(f.getContext(), cfg, dir, pose, fw, fh);
-      if (isBearframe) applyBearframeEmblem(f, 0, 0, fw, fh, ['down', 'up', 'right', 'left'].indexOf(dir), col % 3 === 0);
+      let f = new PixelCanvas(fw, fh);
+      if (isSleeper) {
+        renderSleeperWorldFrame(f, charId, dir, col);
+      } else {
+        const pose = col === 0 ? poseFor('idle', 0, 4) : poseFor('walk', col - 1, 8);
+        drawAndroid(f.getContext(), cfg, dir, pose, fw, fh);
+        if (isBearframe) applyBearframeEmblem(f, 0, 0, fw, fh, ['down', 'up', 'right', 'left'].indexOf(dir), col % 3 === 0);
+        f = scaleHumanoidWorldFrameToJrpg(f, 37);
+      }
       cv.getContext().drawImage(f, col * fw, row * fh);
     }
   }
   return cv;
 }
 
-function renderHumanBattleSheet(cfg, size, isBearframe = false) {
+function renderHumanBattleSheet(cfg, size, isBearframe = false, charId = '') {
   const cv = new PixelCanvas(size * 6, size * 9);
   const anims = battleAnimTable();
+  const isSleeper = SLEEPER_IDS.includes(charId);
   for (const [bName, rigAnim] of ACTION_MAP) {
     const spec = anims[bName];
     for (let col = 0; col < spec.frames; col++) {
       const f = new PixelCanvas(size, size);
-      const pose = poseFor(rigAnim, col, spec.frames);
-      drawAndroid(f.getContext(), cfg, 'right', pose, size, size);
-      if (isBearframe) applyBearframeEmblem(f, 0, 0, size, size, 2, pose.hot);
+      if (isSleeper) {
+        renderSleeperBattleFrame(f, charId, bName, col, spec.frames);
+      } else {
+        const pose = poseFor(rigAnim, col, spec.frames);
+        drawAndroid(f.getContext(), cfg, 'right', pose, size, size);
+        if (isBearframe) applyBearframeEmblem(f, 0, 0, size, size, 2, pose.hot);
+      }
       cv.getContext().drawImage(f, col * size, spec.row * size);
     }
   }
@@ -495,6 +513,10 @@ const PORTRAIT_SPECS = [
 
 function renderPortrait(spec) {
   const cv = new PixelCanvas(128, 128);
+  if (SLEEPER_IDS.includes(spec.id)) {
+    renderSleeperPortrait(cv, spec.id);
+    return cv;
+  }
   // Rich Sea-of-Stars atmospheric backdrop gradient + scanlines + rim glow
   for (let y = 0; y < 128; y++) {
     const t = y / 127;
@@ -1676,10 +1698,10 @@ for (const ch of CHARACTERS) {
   const worldFile = `assets/world/${ch.id}.png`;
   const battleFile = `assets/battlers/${ch.id}.png`;
   const wSheet = ch.kind === 'human'
-    ? renderHumanWorldSheet(ch.cfg, ch.ww, ch.wh, ch.bearframe)
+    ? renderHumanWorldSheet(ch.cfg, ch.ww, ch.wh, ch.bearframe, ch.id)
     : renderMachineWorldSheet(ch.rig, ch.ww, ch.wh);
   const bSheet = ch.kind === 'human'
-    ? renderHumanBattleSheet(ch.cfg, ch.bw, ch.bearframe)
+    ? renderHumanBattleSheet(ch.cfg, ch.bw, ch.bearframe, ch.id)
     : renderMachineBattleSheet(ch.rig, ch.bw);
   await writePng(worldFile, wSheet);
   await writePng(battleFile, bSheet);

@@ -4,7 +4,23 @@ import {rpgMenuModel,RPG_TABS} from './rpg-menu-model.js';
 import {createCampaignParty,createParty,equipItem,swapPartyReserve} from './rpg-party.js';
 import {CAMPAIGN_GEAR,CAMPAIGN_CONSUMABLES,nextLevelXp,effectiveUnitStats} from './campaign-gear.js';
 import {AREA_META,WORLD_EDGES} from './campaign-world-builder.js';
+import {SLEEPER_META} from './aeon-v5-bridge.js';
 
+const AEON_ROOT=new URL('../../assets/aeon/',import.meta.url);
+const UNIT_PORTRAIT_ID=Object.freeze({
+  sleeper_A:'sleeper_A',
+  sleeper_B:'sleeper_B',
+  sleeper_C:'sleeper_C',
+  sleeper_D:'sleeper_D',
+  ghostgrid_utility_pica:'pica',
+  echo_industrial_maintenance:'rill',
+  bearframe_exploration_miya:'miya'
+});
+const COMPANION_ROLE=Object.freeze({
+  ghostgrid_utility_pica:{role:'SUPPORT DRONE',archetype:'Ghost-Grid Utility Frame',accent:'#53e6f2'},
+  echo_industrial_maintenance:{role:'ECHO COURIER',archetype:'Industrial Maintenance Frame',accent:'#f2b857'},
+  bearframe_exploration_miya:{role:'EXPLORER',archetype:'Bearframe Field Survey Unit',accent:'#3fe3d4'}
+});
 const $=id=>document.getElementById(id);
 const node=(tag,text,cls)=>{
   const n=document.createElement(tag);
@@ -738,11 +754,40 @@ export function mountCampaignFieldMenu({
       return row.detail;
     };
 
+    const buildUnitHeader=(idx)=>{
+      if(!['status','party','equipment','skills'].includes(tab))return null;
+      const m=world.party?.[idx];
+      if(!m)return null;
+      const pid=UNIT_PORTRAIT_ID[m.artId];
+      const meta=SLEEPER_META[m.artId]||COMPANION_ROLE[m.artId]||{role:(m.lineage||'UNIT').toUpperCase(),archetype:'',accent:'#72dce8'};
+      const card=node('div',undefined,'campaign-unit-header');
+      card.style.setProperty('--unit-accent',meta.accent||'#72dce8');
+      if(pid){
+        const img=document.createElement('img');
+        img.className='campaign-unit-portrait';
+        img.src=new URL('portraits/'+pid+'.png',AEON_ROOT).href;
+        img.alt=(m.name||m.id)+' portrait';
+        img.onerror=()=>{img.style.display='none';};
+        card.append(img);
+      }
+      const info=node('div',undefined,'campaign-unit-meta');
+      const displayName=m.id==='sleeper'&&world.stats?.callsign
+        ? `${world.stats.callsign.toUpperCase()} (${meta.code||m.name||'SLEEPER'})`
+        : (m.name||m.id).toUpperCase();
+      info.append(node('div',displayName,'campaign-unit-name'));
+      info.append(node('div',`${meta.role}${meta.archetype?' · '+meta.archetype:''}`,'campaign-unit-role'));
+      info.append(node('div',`LV ${m.level||1}  ·  HP ${m.hp}/${m.maxHp}  ·  EP ${m.ep??0}/${m.maxEp??0}`,'campaign-unit-vitals'));
+      card.append(info);
+      return card;
+    };
+
     const body=node('div',undefined,'case-body');
     const list=node('ul',undefined,'campaign-record-list');
     const detail=node('pre',detailForRow(model.rows[selectedIdx]||model.rows[0],selectedIdx));
     detail.className='campaign-record-detail';
     const rightCol=node('div',undefined,'campaign-record-right');
+    let unitSlot=buildUnitHeader(selectedIdx);
+    if(unitSlot)rightCol.append(unitSlot);
     rightCol.append(detail);
     let actionSlot=buildActionPanel(world,selectedIdx);
     rightCol.append(actionSlot);
@@ -759,6 +804,10 @@ export function mountCampaignFieldMenu({
         selectedIdx=idx;
         list.querySelectorAll('.case-item').forEach(el=>el.classList.remove('active'));
         b.classList.add('active');
+        const nextUnit=buildUnitHeader(idx);
+        if(unitSlot&&nextUnit){unitSlot.replaceWith(nextUnit);unitSlot=nextUnit;}
+        else if(unitSlot&&!nextUnit){unitSlot.remove();unitSlot=null;}
+        else if(!unitSlot&&nextUnit){rightCol.prepend(nextUnit);unitSlot=nextUnit;}
         detail.textContent=detailForRow(row,idx);
         const fresh=buildActionPanel(world,selectedIdx);
         actionSlot.replaceWith(fresh);

@@ -134,8 +134,36 @@ test('cinematics formatter binds callsign, pronouns, and portrait mappings', () 
   assert.equal(formatCampaignSpeaker('Sleeper', world, 'sleeper_C'), 'VESPER');
   assert.equal(formatCampaignSpeaker('Guardian', world, 'sleeper_C'), 'GUARDIAN');
   assert.equal(portraitIdForSpeaker('SLEEPER', 'sleeper_C'), 'sleeper_C');
+  assert.equal(portraitIdForSpeaker('VESPER', 'sleeper_C', world), 'sleeper_C');
+  assert.equal(portraitIdForSpeaker('KESTREL', 'sleeper_B', { stats: { callsign: 'Kestrel' } }), 'sleeper_B');
   assert.equal(portraitIdForSpeaker('WARD-7 / VOICE SYNTHESIS', 'sleeper_A'), 'ward7');
   assert.equal(portraitIdForSpeaker('SYSTEM', 'sleeper_A'), null);
+});
+
+test('all four Sleepers have distinct portrait, overworld, and battle assets at valid dimensions', () => {
+  const ids = ['sleeper_A', 'sleeper_B', 'sleeper_C', 'sleeper_D'];
+  const portraitHashes = new Set();
+  const worldHashes = new Set();
+  const battleHashes = new Set();
+  for (const id of ids) {
+    const pBuf = fs.readFileSync(new URL(`assets/aeon/portraits/${id}.png`, AEON_PUBLIC_ROOT));
+    assert.equal(pBuf.readUInt32BE(16), 128);
+    assert.equal(pBuf.readUInt32BE(20), 128);
+    portraitHashes.add(pBuf.toString('base64'));
+
+    const wBuf = fs.readFileSync(new URL(`assets/aeon/assets/world/${id}.png`, AEON_PUBLIC_ROOT));
+    assert.equal(wBuf.readUInt32BE(16), 288);
+    assert.equal(wBuf.readUInt32BE(20), 224);
+    worldHashes.add(wBuf.toString('base64'));
+
+    const bBuf = fs.readFileSync(new URL(`assets/aeon/assets/battlers/${id}.png`, AEON_PUBLIC_ROOT));
+    assert.equal(bBuf.readUInt32BE(16), 384);
+    assert.equal(bBuf.readUInt32BE(20), 576);
+    battleHashes.add(bBuf.toString('base64'));
+  }
+  assert.equal(portraitHashes.size, 4);
+  assert.equal(worldHashes.size, 4);
+  assert.equal(battleHashes.size, 4);
 });
 
 test('expanded environment asset library and UI icon sheet meet Sea-of-Stars breadth requirements', () => {

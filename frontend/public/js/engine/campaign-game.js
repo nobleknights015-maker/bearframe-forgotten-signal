@@ -200,8 +200,24 @@ export async function mountCampaignGame({game,ui,sfx,touchMode,refreshTouch,sett
     if(!artId)return null;
     if(followerCache.has(artId))return followerCache.get(artId);
     const img=new Image();
-    const rec={img,ready:false};
-    img.onload=()=>{rec.ready=img.naturalWidth>=144&&img.naturalHeight>=64;};
+    const rec={img,sheet:null,ready:false};
+    img.onload=()=>{
+      if(img.naturalWidth>=144&&img.naturalHeight>=64){
+        // Remap 9x4 (down,left,right,up) owner world sheet into 14x4 (down,up,right,left) Ghost Signal follower sheet
+        const fw=Math.floor(img.naturalWidth/9),fh=Math.floor(img.naturalHeight/4);
+        const cv=document.createElement('canvas');cv.width=14*32;cv.height=4*56;
+        const ctx=cv.getContext('2d');ctx.imageSmoothingEnabled=false;
+        const srcRowMap=[0,3,2,1]; // down->0, up->3, right->2, left->1
+        const drawW=Math.min(32,fw),drawH=Math.min(56,Math.round((drawW/fw)*fh));
+        const ox=Math.floor((32-drawW)/2),oy=56-drawH;
+        for(let row=0;row<4;row++){
+          const sRow=srcRowMap[row];
+          for(let col=0;col<8;col++)ctx.drawImage(img,(col+1)*fw,sRow*fh,fw,fh,col*32+ox,row*56+oy,drawW,drawH);
+          for(let col=8;col<14;col++)ctx.drawImage(img,0,sRow*fh,fw,fh,col*32+ox,row*56+oy,drawW,drawH);
+        }
+        rec.sheet=cv;rec.ready=true;
+      }
+    };
     img.onerror=()=>{rec.ready=false;};
     img.src=new URL('assets/world/'+artId+'.png',ROOT).href;
     followerCache.set(artId,rec);
@@ -278,7 +294,7 @@ export async function mountCampaignGame({game,ui,sfx,touchMode,refreshTouch,sett
           const unit=world?.party?.find(u=>u.id===id);
           if(!unit?.artId)continue;
           const rec=getFollowerSheet(unit.artId);
-          followers.push({id:unit.id,artId:unit.artId,get sheet(){return rec.ready?rec.img:null;}});
+          followers.push({id:unit.id,artId:unit.artId,get sheet(){return rec.ready?(rec.sheet||rec.img):null;}});
         }
         game.partyFollowers=followers;
       };
@@ -393,8 +409,8 @@ export async function mountCampaignGame({game,ui,sfx,touchMode,refreshTouch,sett
         onBlocked:blocked,
         formatSpeaker:(sp,w)=>formatCampaignSpeaker(sp,w,starterId),
         formatText:(txt,w)=>formatCampaignDialogue(txt,w),
-        onShowLine:({sceneId,line,index,total})=>{
-          cinematics.updatePortrait(line.speaker,starterId);
+        onShowLine:({sceneId,line,index,total,world})=>{
+          cinematics.updatePortrait(line.rawSpeaker||line.speaker,starterId,world);
           cinematics.showStoryboardShot({sceneId,index,total,areaId:game.m?.id||'A00',starterId});
           cinematics.recordLine({speaker:line.speaker,text:line.text,sceneId});
         },
@@ -484,9 +500,11 @@ export async function mountCampaignGame({game,ui,sfx,touchMode,refreshTouch,sett
 
       const playSideDialogue=(dialogueRows,flagToSet,toastMsg,xpReward=0)=>{
         if(!dialogueRows.length)return false;
+        const wNow=journal.readWorld();
         const lines=dialogueRows.map(d=>({
-          s:formatCampaignSpeaker(d.speaker,journal.readWorld(),starterId),
-          t:formatCampaignDialogue(d.text,journal.readWorld())
+          rawSpeaker:d.speaker,
+          s:formatCampaignSpeaker(d.speaker,wNow,starterId),
+          t:formatCampaignDialogue(d.text,wNow)
         }));
         game.mode='dialog';
         let idx=0;
@@ -515,7 +533,7 @@ export async function mountCampaignGame({game,ui,sfx,touchMode,refreshTouch,sett
             return;
           }
           const line=lines[idx++];
-          cinematics.updatePortrait(line.s,starterId);
+          cinematics.updatePortrait(line.rawSpeaker||line.s,starterId,journal.readWorld());
           cinematics.recordLine({speaker:line.s,text:line.t,sceneId:flagToSet||'SIDE'});
           ui.say([line],showNext);
         };

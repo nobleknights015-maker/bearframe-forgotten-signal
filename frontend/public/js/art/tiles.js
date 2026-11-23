@@ -754,10 +754,11 @@ export function drawEntity(c, e, g) {
       const idleCol = Math.floor(t * 2.2 + e.tx) % 4 === 0 ? 1 : 0;
       const drawW = Math.min(48, fw);
       const drawH = Math.round((drawW / fw) * fh);
-      c.fillStyle = 'rgba(0,0,0,0.42)';
-      c.fillRect(X + 6, Y + 25, 20, 4);
-      c.fillStyle = 'rgba(0,0,0,0.24)';
-      c.fillRect(X + 4, Y + 26, 24, 2);
+      const isHuman = fw === 32 && fh === 56;
+      c.fillStyle = 'rgba(0,0,0,0.38)';
+      c.fillRect(X + (isHuman ? 9 : 6), Y + 26, isHuman ? 14 : 20, 3);
+      c.fillStyle = 'rgba(0,0,0,0.22)';
+      c.fillRect(X + (isHuman ? 7 : 4), Y + 27, isHuman ? 18 : 24, 2);
       c.imageSmoothingEnabled = false;
       c.drawImage(sheet, idleCol * fw, dirRow * fh, fw, fh,
         Math.round(X + 16 - drawW / 2), Math.round(Y + 29 - drawH), drawW, drawH);

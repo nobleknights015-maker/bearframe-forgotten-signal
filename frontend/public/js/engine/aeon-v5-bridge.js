@@ -91,6 +91,36 @@ export async function loadAeonV5(){
   for(const id of STARTERS)worldSheetSpec(manifest,id);
   return manifest;
 }
+export const SLEEPER_META=Object.freeze({
+  sleeper_A:Object.freeze({
+    code:'SLEEPER A',
+    role:'VANGUARD',
+    archetype:'Crested Ivory Bastion',
+    summary:'Heavy ceramic pauldrons, copper half-mantle & twin cyan chevrons.',
+    accent:'#68ecff'
+  }),
+  sleeper_B:Object.freeze({
+    code:'SLEEPER B',
+    role:'SURVEYIST',
+    archetype:'Hooded Brass Pathfinder',
+    summary:'Pointed olive poncho, brass rangefinder optic & field survey pack.',
+    accent:'#52f5c0'
+  }),
+  sleeper_C:Object.freeze({
+    code:'SLEEPER C',
+    role:'TECHNICIAN',
+    archetype:'Copper-Mane Relay Rig',
+    summary:'Swept copper wire crest, flip-down amber goggles & dynamo pack.',
+    accent:'#ffbe3b'
+  }),
+  sleeper_D:Object.freeze({
+    code:'SLEEPER D',
+    role:'COURIER',
+    archetype:'Winged Crimson Runner',
+    summary:'Swept silver ear-wings, tall rose optics & billowing crimson scarf.',
+    accent:'#ff6eb4'
+  })
+});
 export async function chooseStarter(manifest,options={}){
   return new Promise(resolve=>{
     const stage=document.getElementById('stage');
@@ -106,26 +136,52 @@ export async function chooseStarter(manifest,options={}){
     };
     const shell=document.createElement('div');
     shell.id='aeon-v5-choose';shell.className='overlay';shell.style.zIndex='60';
-    const panel=document.createElement('section');panel.className='panel case';
-    panel.style.cssText='display:flex;flex-direction:column;align-items:center;gap:calc(var(--u)*5);padding:calc(var(--u)*8)';
+    const panel=document.createElement('section');panel.className='panel case sleeper-pick-panel';
     const title=document.createElement('h2');title.textContent=options.title||'CHOOSE ANCIENT SLEEPER // V5 ART QA';panel.append(title);
-    const info=document.createElement('p');info.textContent=options.description||'Select one of the four approved character identities. This is a noncanonical development test.';
-    info.style.cssText='font-size:calc(var(--u)*7);text-align:center';panel.append(info);
-    const grid=document.createElement('div');grid.style.cssText='display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:calc(var(--u)*5);width:100%';
+    const info=document.createElement('p');info.className='sleeper-pick-info';
+    info.textContent=options.description||'Select one of the four approved character identities. This is a noncanonical development test.';
+    panel.append(info);
+    const grid=document.createElement('div');grid.className='sleeper-pick-grid';
     for(const id of STARTERS){
-      const button=document.createElement('button');button.className='menu-btn sm';
+      const meta=SLEEPER_META[id]||{code:id.replace('_',' '),role:'',archetype:'',summary:'',accent:'#72dce8'};
+      const button=document.createElement('button');button.className='menu-btn sm sleeper-pick-card';
       button.type='button';button.dataset.starter=id;button.disabled=options.enabled?!options.enabled(id):false;
-      button.style.cssText='display:flex;flex-direction:column;align-items:center;gap:calc(var(--u)*2);min-width:0;padding:calc(var(--u)*2)';
-      const picture=document.createElement('img');picture.alt=id+' approved character selection';
+      button.style.setProperty('--sleeper-accent',meta.accent);
+
+      const artRow=document.createElement('div');artRow.className='sleeper-pick-art-row';
+      const picture=document.createElement('img');picture.className='sleeper-pick-portrait';
+      picture.alt=meta.code+' '+meta.role+' portrait';
       picture.src=new URL('portraits/'+id+'.png',ROOT).href;
-      picture.style.cssText='height:calc(var(--u)*130);max-width:100%;width:100%;object-fit:contain;image-rendering:auto';
-      picture.onerror=()=>{picture.style.display='none';button.textContent=id+' / portrait missing';};
-      const label=document.createElement('span');label.textContent=id.replace('_',' ');
-      label.style.fontSize='calc(var(--u)*7)';button.append(picture,label);
+      picture.onerror=()=>{picture.style.display='none';};
+
+      // Compact live overworld sprite preview (idle frame 0 facing down, crisp nearest-neighbor)
+      const sprCanvas=document.createElement('canvas');
+      sprCanvas.className='sleeper-pick-sprite';
+      sprCanvas.width=32;sprCanvas.height=44;
+      sprCanvas.setAttribute('aria-hidden','true');
+      const sprImg=new Image();
+      sprImg.onload=()=>{
+        const ctx=sprCanvas.getContext('2d');
+        if(!ctx)return;
+        ctx.imageSmoothingEnabled=false;
+        ctx.clearRect(0,0,32,44);
+        ctx.fillStyle='rgba(0,0,0,0.4)';
+        ctx.fillRect(9,40,14,3);
+        ctx.drawImage(sprImg,0,12,32,44,0,0,32,44);
+      };
+      sprImg.src=new URL('assets/world/'+id+'.png',ROOT).href;
+      artRow.append(picture,sprCanvas);
+
+      const roleTag=document.createElement('span');roleTag.className='sleeper-pick-role';
+      roleTag.textContent=meta.role?`${meta.code} · ${meta.role}`:meta.code;
+      const archTag=document.createElement('span');archTag.className='sleeper-pick-arch';
+      archTag.textContent=meta.archetype;
+
+      button.append(artRow,roleTag,archTag);
       button.addEventListener('click',()=>finish(id));grid.append(button);
     }
     panel.append(grid);
-    if(options.cancel){const back=document.createElement('button');back.type='button';back.className='menu-btn sm';back.textContent='BACK';back.onclick=()=>finish(null);panel.append(back);}
+    if(options.cancel){const back=document.createElement('button');back.type='button';back.className='menu-btn sm sleeper-pick-back';back.textContent='BACK';back.onclick=()=>finish(null);panel.append(back);}
     shell.append(panel);stage.append(shell);document.addEventListener('keydown',navigate);
     grid.querySelector('button:not(:disabled)')?.focus();
   });

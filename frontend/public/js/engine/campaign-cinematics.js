@@ -20,15 +20,43 @@ const SPEAKER_PORTRAIT_MAP = Object.freeze({
   SYSTEM: 'system'
 });
 
-export function portraitIdForSpeaker(speaker = '', starterId = 'sleeper_A') {
+export function portraitIdForSpeaker(speaker = '', starterId = 'sleeper_A', world = null) {
   const s = String(speaker || '').trim().toUpperCase();
   if (!s || s === 'SYSTEM' || s === 'OLD POD DISPLAY') return null;
   if (s === 'SLEEPER' || s.startsWith('SLEEPER ') || s === 'YOU') return starterId;
+  const callsign = String(world?.stats?.callsign || '').trim().toUpperCase();
+  if (callsign && s === callsign) return starterId;
   for (const [prefix, id] of Object.entries(SPEAKER_PORTRAIT_MAP)) {
     if (s === prefix || s.startsWith(prefix)) return id === 'system' ? null : id;
   }
   return null;
 }
+
+const STORYBOARD_IMG_CACHE = new Map();
+function getStoryboardImage(relPath, onReady) {
+  if (typeof Image === 'undefined') return null;
+  let rec = STORYBOARD_IMG_CACHE.get(relPath);
+  if (!rec) {
+    const img = new Image();
+    rec = { img, loaded: false, listeners: new Set() };
+    img.onload = () => {
+      rec.loaded = img.naturalWidth > 0;
+      for (const fn of rec.listeners) fn();
+      rec.listeners.clear();
+    };
+    img.src = new URL(relPath, ROOT).href;
+    STORYBOARD_IMG_CACHE.set(relPath, rec);
+  }
+  if (!rec.loaded && onReady) rec.listeners.add(onReady);
+  return rec.loaded ? rec.img : null;
+}
+
+const SLEEPER_STORYBOARD_ACCENT = Object.freeze({
+  sleeper_A: '#68ecff',
+  sleeper_B: '#52f5c0',
+  sleeper_C: '#ffbe3b',
+  sleeper_D: '#ff6eb4'
+});
 
 const PRONOUN_SETS = Object.freeze({
   'they/them': { subj: 'they', obj: 'them', poss: 'their', copula: 'are' },
@@ -172,11 +200,49 @@ function drawStoryboardArt(canvas, shot, areaId, starterId) {
     ctx.fillRect(px, py, 2, 2);
   }
 
+  // Render the player's actual chosen Sleeper in the storyboard shot so cutscenes match identity!
+  const safeStarter = SLEEPER_STORYBOARD_ACCENT[starterId] ? starterId : 'sleeper_A';
+  const accent = SLEEPER_STORYBOARD_ACCENT[safeStarter];
+  const redraw = () => drawStoryboardArt(canvas, shot, areaId, safeStarter);
+  const battlerImg = getStoryboardImage('assets/battlers/' + safeStarter + '.png', redraw);
+  if (battlerImg) {
+    // Grounded Sleeper full-body figure standing on the storyboard deck (left-third framing)
+    const sx = 64, sy = H - 36;
+    const glowG = ctx.createRadialGradient(sx + 32, sy - 30, 4, sx + 32, sy - 30, 42);
+    glowG.addColorStop(0, accent + '44');
+    glowG.addColorStop(1, 'rgba(0,0,0,0)');
+    ctx.fillStyle = glowG;
+    ctx.fillRect(sx - 12, sy - 74, 88, 84);
+    ctx.fillStyle = 'rgba(0,0,0,0.45)';
+    ctx.fillRect(sx + 12, sy - 3, 40, 5);
+    ctx.imageSmoothingEnabled = false;
+    ctx.drawImage(battlerImg, 0, 0, 64, 64, sx, sy - 64, 64, 64);
+  }
+  // If scene involves a named companion, also stage them opposite the Sleeper
+  const partnerId = text.includes('miya') ? 'bearframe_exploration_miya'
+    : text.includes('rill') ? 'echo_industrial_maintenance'
+      : text.includes('pica') ? 'ghostgrid_utility_pica'
+        : text.includes('guardian') ? 'npc_guardian' : null;
+  if (partnerId) {
+    const pImg = getStoryboardImage('assets/battlers/' + partnerId + '.png', redraw);
+    if (pImg) {
+      const fw = Math.floor(pImg.naturalWidth / 6);
+      const fh = Math.floor(pImg.naturalHeight / 9);
+      const drawS = Math.min(72, fh);
+      ctx.save();
+      ctx.translate(W - 84, H - 36);
+      ctx.scale(-1, 1);
+      ctx.imageSmoothingEnabled = false;
+      ctx.drawImage(pImg, 0, 0, fw, fh, -Math.floor(drawS / 2), -drawS, drawS, drawS);
+      ctx.restore();
+    }
+  }
+
   // Subtle letterbox bars for cinematic storyboard shot feel
   ctx.fillStyle = '#05080d';
   ctx.fillRect(0, 0, W, 10);
   ctx.fillRect(0, H - 10, W, 10);
-  ctx.fillStyle = 'rgba(114, 220, 232, 0.35)';
+  ctx.fillStyle = accent + '88';
   ctx.fillRect(0, 10, W, 1);
   ctx.fillRect(0, H - 11, W, 1);
 
@@ -247,9 +313,9 @@ export function createCampaignCinematics({ game, ui, content, sfx, readWorld, co
     };
   }
 
-  const updatePortrait = (speaker, starterId) => {
+  const updatePortrait = (speaker, starterId, world = null) => {
     if (!portraitWrap || !portraitImg) return;
-    const pid = portraitIdForSpeaker(speaker, starterId);
+    const pid = portraitIdForSpeaker(speaker, starterId, world || readWorld?.());
     if (!pid) {
       portraitWrap.classList.add('empty');
       portraitImg.removeAttribute('src');

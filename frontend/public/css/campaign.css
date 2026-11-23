@@ -840,3 +840,153 @@ body.aeon-campaign #rotate {
   }
 }
 
+/* Upgraded 4-Sleeper Character Picker (Crisp Pixel Portraits + Live Overworld Preview) */
+#aeon-v5-choose .sleeper-pick-panel {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: calc(var(--u) * 4);
+  padding: calc(var(--u) * 7);
+  width: min(96%, calc(var(--u) * 448));
+  max-height: 94%;
+  overflow-y: auto;
+  background: rgba(10, 16, 24, 0.97);
+  border: 2px solid var(--aeon-cyan);
+}
+.sleeper-pick-info {
+  font-size: max(12px, calc(var(--u) * 7));
+  text-align: center;
+  margin: 0;
+  color: #cfe0ea;
+}
+.sleeper-pick-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: calc(var(--u) * 5);
+  width: 100%;
+}
+.sleeper-pick-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: calc(var(--u) * 2.5);
+  min-width: 0;
+  padding: calc(var(--u) * 3.5);
+  background: rgba(11, 17, 25, 0.96);
+  border: 1px solid #2b3c50;
+  border-top: 3px solid var(--sleeper-accent, var(--aeon-cyan));
+  border-left: 1px solid #2b3c50 !important;
+  text-align: center;
+  transition: transform 110ms ease, border-color 110ms ease, background-color 110ms ease;
+}
+.sleeper-pick-card:hover,
+.sleeper-pick-card:focus-visible {
+  background: #142535 !important;
+  color: #ffffff !important;
+  border-color: var(--sleeper-accent, var(--aeon-cyan)) !important;
+  box-shadow: 0 0 0 1px var(--sleeper-accent, var(--aeon-cyan));
+  transform: translateY(-1px);
+  outline: none;
+}
+.sleeper-pick-art-row {
+  position: relative;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  max-height: calc(var(--u) * 102);
+  background: #070d14;
+  border: 1px solid #223244;
+  overflow: hidden;
+}
+.sleeper-pick-portrait {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+}
+.sleeper-pick-sprite {
+  position: absolute;
+  right: 3px;
+  bottom: 3px;
+  width: max(28px, calc(var(--u) * 26));
+  height: max(38px, calc(var(--u) * 36));
+  background: rgba(7, 12, 18, 0.86);
+  border: 1px solid var(--sleeper-accent, var(--aeon-cyan));
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+  pointer-events: none;
+}
+.sleeper-pick-role {
+  font-family: 'Silkscreen', monospace;
+  font-size: max(9px, calc(var(--u) * 5.2));
+  color: var(--sleeper-accent, var(--aeon-cyan));
+  line-height: 1.15;
+  letter-spacing: 0.02em;
+}
+.sleeper-pick-arch {
+  font-family: 'VT323', monospace;
+  font-size: max(13px, calc(var(--u) * 7.6));
+  color: #dce9f0;
+  line-height: 1.05;
+}
+.sleeper-pick-back {
+  min-width: calc(var(--u) * 60);
+}
+
+/* Character Identity Portrait Card inside Status / Party / Equipment / Skills Menu */
+.campaign-unit-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 8px;
+  background: #0b121b;
+  border: 1px solid #283a4d;
+  border-left: 3px solid var(--unit-accent, var(--aeon-cyan));
+  flex-shrink: 0;
+}
+.campaign-unit-portrait {
+  width: max(52px, calc(var(--u) * 36));
+  height: max(52px, calc(var(--u) * 36));
+  flex: 0 0 auto;
+  border: 1px solid var(--unit-accent, var(--aeon-border));
+  background: #070d14;
+  object-fit: contain;
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+}
+.campaign-unit-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+.campaign-unit-name {
+  font-family: 'Silkscreen', monospace;
+  font-size: max(11px, calc(var(--u) * 6.2));
+  color: #f0f6fa;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.campaign-unit-role {
+  font-family: 'Silkscreen', monospace;
+  font-size: max(9px, calc(var(--u) * 4.8));
+  color: var(--unit-accent, var(--aeon-cyan));
+}
+.campaign-unit-vitals {
+  font-family: 'VT323', monospace;
+  font-size: max(15px, calc(var(--u) * 8.5));
+  color: #cfe0ea;
+  line-height: 1;
+}
+
+@media (orientation: portrait), (max-width: 560px) {
+  .sleeper-pick-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+

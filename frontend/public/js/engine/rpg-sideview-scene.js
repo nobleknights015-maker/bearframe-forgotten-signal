@@ -215,8 +215,10 @@ export function createSideViewBattleScene(manifest={},options={}) {
       if(!(art[slot.key]&&sheet(slot,art[slot.key],unit,t,pose,active)))
         schematic(slot,unit,t,pose,active);
       const fill=Math.round(30*Math.max(0,unit.hp)/unit.maxHp);
-      rect(c,slot.x-15,slot.y-52,30,3,'#070809');
-      rect(c,slot.x-15,slot.y-52,fill,2,unit.hp>unit.maxHp*.35?'#7dffb0':'#ff3b30');
+      const spriteH=art[slot.key]?battleSpriteBounds(slot,art[slot.key]).height:48;
+      const barY=Math.max(18,slot.y-Math.min(spriteH+2,59));
+      rect(c,slot.x-15,barY,30,3,'#070809');
+      rect(c,slot.x-15,barY,fill,2,unit.hp>unit.maxHp*.35?'#7dffb0':'#ff3b30');
     }
     cues(slots,t);
     drawPopups(t);

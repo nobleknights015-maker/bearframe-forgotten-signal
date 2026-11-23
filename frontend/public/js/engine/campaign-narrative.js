@@ -147,9 +147,10 @@ export function mountCampaignNarrative({
     const line=lineIndex>=0?allLines[lineIndex]:null;
     if(line){
       takeMode('dialog');
-      const speaker=formatSpeaker?formatSpeaker(line.speaker||'SYSTEM',world):(line.speaker||'SYSTEM');
+      const rawSpeaker=line.speaker||'SYSTEM';
+      const speaker=formatSpeaker?formatSpeaker(rawSpeaker,world):rawSpeaker;
       const text=formatText?formatText(line.text,world):line.text;
-      onShowLine?.({sceneId:id,line:{...line,speaker,text},index:lineIndex,total:allLines.length,world});
+      onShowLine?.({sceneId:id,line:{...line,rawSpeaker,speaker,text},index:lineIndex,total:allLines.length,world});
       ui.say([{s:speaker,t:text}],once(()=>{
         transact(current=>acknowledgeNarrativeLine(content,current,line.line_id));
         pump();

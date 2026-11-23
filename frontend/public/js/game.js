@@ -514,7 +514,7 @@ export class Game {
     const drawFollower = (fl, pos) => {
       if (!fl?.sheet || p.hidden) return;
       const FX = Math.round(pos.x), FY = Math.round(pos.y), anchor = fl.anchorY || 56, sy = FY - 2;
-      c.fillStyle = 'rgba(0,0,0,.32)'; c.fillRect(FX - 9, sy, 18, 4); c.fillRect(FX - 6, sy - 1, 12, 6);
+      c.fillStyle = 'rgba(0,0,0,.32)'; c.fillRect(FX - 7, sy, 14, 3); c.fillRect(FX - 5, sy - 1, 10, 4);
       const fr = p.moving ? Math.floor((p.anim + fl.idx * 2) * 8 / 11) % 8 : 8 + (Math.floor((t + fl.idx) / .35) % 4);
       c.drawImage(fl.sheet, fr * FW, ROW[pos.dir] * FH, FW, FH, FX - 16, FY - anchor, FW, FH);
     };
@@ -523,7 +523,12 @@ export class Game {
     const drawP = () => {
       if (p.hidden) return;
       const X = Math.round(p.x), Y = Math.round(p.y), sy = this.fieldSpriteAnchorY ? Y - 2 : Y;
-      c.fillStyle = 'rgba(0,0,0,.28)'; c.fillRect(X - 10, sy, 20, 4); c.fillStyle = 'rgba(0,0,0,.34)'; c.fillRect(X - 8, sy - 1, 16, 6); c.fillRect(X - 5, sy - 2, 10, 8);
+      if (this.fieldSpriteAnchorY) {
+        c.fillStyle = 'rgba(0,0,0,.28)'; c.fillRect(X - 8, sy, 16, 3);
+        c.fillStyle = 'rgba(0,0,0,.36)'; c.fillRect(X - 6, sy - 1, 12, 4);
+      } else {
+        c.fillStyle = 'rgba(0,0,0,.28)'; c.fillRect(X - 10, sy, 20, 4); c.fillStyle = 'rgba(0,0,0,.34)'; c.fillRect(X - 8, sy - 1, 16, 6); c.fillRect(X - 5, sy - 2, 10, 8);
+      }
       if (!(p.hurt > 0 && (t * 14 | 0) % 2)) c.drawImage(this.sheet, this.frame() * FW, ROW[p.dir] * FH, FW, FH, X - 16, Y - (this.fieldSpriteAnchorY??52), FW, FH);
     };
     for (const d of this.drones) if (d.y < p.y) this.renderSecurityUnit(c, d, t);
