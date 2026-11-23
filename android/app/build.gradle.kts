@@ -2,17 +2,25 @@ plugins {
     id("com.android.application")
 }
 
+val aeonOfflineBuild = (findProperty("aeonOfflineBuild")?.toString()?.toBoolean() == true)
+
 android {
     namespace = "labs.bearframe.ghostsignal"
     compileSdk = 35
     buildFeatures { buildConfig = true }
 
     defaultConfig {
-        applicationId = "labs.bearframe.ghostsignal"
+        applicationId = if (aeonOfflineBuild) "labs.bearframe.aeoncircuit" else "labs.bearframe.ghostsignal"
         minSdk = 26
         targetSdk = 35
         versionCode = 1
-        versionName = "0.1.0-dev"
+        versionName = if (aeonOfflineBuild) "2.0.0-aeon-offline" else "0.1.0-dev"
+        buildConfigField("boolean", "LAUNCH_CAMPAIGN", aeonOfflineBuild.toString())
+        manifestPlaceholders["appLabel"] = if (aeonOfflineBuild) {
+            "Aeon Circuit: The Silent Wake"
+        } else {
+            "Bearframe Ghost Signal Engine"
+        }
     }
     buildTypes {
         getByName("release") { isMinifyEnabled = false }
@@ -29,7 +37,24 @@ dependencies {
 }
 
 val copyGhostSignalAssets by tasks.registering(Sync::class) {
-    from(rootProject.file("../frontend/public"))
+    val publicRoot = rootProject.file("../frontend/public")
+    from(publicRoot) {
+        if (!aeonOfflineBuild) {
+            // Public builds MUST NEVER package private Bearframe/Aeon story files.
+            exclude("assets/aeon/story/**")
+        }
+    }
     into(layout.buildDirectory.dir("generated/ghost-signal"))
+    doFirst {
+        if (aeonOfflineBuild) {
+            val campaignJson = File(publicRoot, "assets/aeon/story/campaign.json")
+            val worldJson = File(publicRoot, "assets/aeon/story/opening-world-review-candidate.json")
+            if (!campaignJson.isFile || !worldJson.isFile) {
+                throw GradleException(
+                    "Owner-private offline build requires compiled frontend/public/assets/aeon/story/{campaign.json,opening-world-review-candidate.json}. Run node frontend/narrative-tools/build_full_campaign.mjs first."
+                )
+            }
+        }
+    }
 }
 tasks.named("preBuild") { dependsOn(copyGhostSignalAssets) }

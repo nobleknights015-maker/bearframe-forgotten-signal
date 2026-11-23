@@ -45,7 +45,11 @@ export function mountCampaignNarrative({
     game.mode=mode;
   };
   const release=()=>{
-    if(owned&&['dialog','choice'].includes(game.mode))game.mode=priorMode;
+    if(owned){
+      ui.choiceCb=null;ui.cb=null;ui.line=null;ui.queue=[];
+      ui.show?.('dialog',false);
+      if(['dialog','choice'].includes(game.mode))game.mode=priorMode;
+    }
     owned=false;priorMode=null;
   };
   // A successful synchronous write is required before any dependent UI/effect.

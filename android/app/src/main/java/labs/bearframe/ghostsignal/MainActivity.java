@@ -90,8 +90,13 @@ public final class MainActivity extends Activity {
         final WebViewAssetLoader loader = new WebViewAssetLoader.Builder()
             .setDomain("appassets.androidplatform.net")
             .addPathHandler("/", path -> {
-                if (BuildConfig.DEBUG && path.startsWith("assets/aeon/"))
-                    return installedPrivate.handle(path.substring("assets/aeon/".length()));
+                if (BuildConfig.DEBUG && path.startsWith("assets/aeon/")) {
+                    String rel = path.substring("assets/aeon/".length());
+                    File overrideFile = new File(ownerContent, rel);
+                    if (overrideFile.isFile()) {
+                        return installedPrivate.handle(rel);
+                    }
+                }
                 return packagedPublic.handle(path);
             })
             .build();
@@ -129,8 +134,12 @@ public final class MainActivity extends Activity {
                 return true;
             }
         });
-        // Development APK offers both opt-in labs; production still launches untouched Ghost Signal.
-        webView.loadUrl(BuildConfig.DEBUG ? "https://appassets.androidplatform.net/engine-lab.html" : APP_URL);
+        // Owner-private offline Aeon Circuit build launches campaign.html directly with zero import;
+        // public debug build opens engine-lab.html; public release launches untouched Ghost Signal.
+        final String startUrl = BuildConfig.LAUNCH_CAMPAIGN
+            ? "https://appassets.androidplatform.net/campaign.html"
+            : (BuildConfig.DEBUG ? "https://appassets.androidplatform.net/engine-lab.html" : APP_URL);
+        webView.loadUrl(startUrl);
     }
 
     @Override protected void onActivityResult(int requestCode, int resultCode, Intent data) {

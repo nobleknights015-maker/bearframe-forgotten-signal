@@ -609,7 +609,11 @@ export async function mountCampaignGame({game,ui,sfx,touchMode,refreshTouch,sett
             const encSpec=content.encounters?.find(en=>en.id===e.encounterId);
             if(encSpec){
               if(encSpec.kind==='battle'||encSpec.kind==='boss'){
-                if(combat?.start(encSpec.id))return;
+                if(!combat?.start(encSpec.id)){
+                  if(journal.readWorld()?.encounters?.[encSpec.id]?.outcome==='victory')ui.toast('HOSTILE ALREADY CLEARED',2);
+                  else ui.toast('ENCOUNTER LOCKED — ADVANCE CURRENT OBJECTIVE',2.5);
+                }
+                return;
               }
               if(journal.readWorld()?.encounters?.[encSpec.id]?.outcome==='victory'){
                 ui.toast('APPARATUS ALREADY STABILIZED',2);return;

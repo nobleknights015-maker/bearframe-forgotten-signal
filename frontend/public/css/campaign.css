@@ -674,15 +674,14 @@ body.aeon-campaign #rotate {
   display: none !important;
 }
 
-/* Android / Touch Landscape ergonomics (min 44px touch targets & safe areas) */
+/* Android / Touch Landscape ergonomics (min 40-44px touch targets & safe areas) */
 @media (pointer: coarse), (max-height: 520px) {
   .pix-btn,
   .dialog-tool-btn,
   .menu-btn.sm,
   .campaign-nav-toggle,
   .campaign-nav-item,
-  .campaign-nav-close,
-  #rpg-lab-battle button {
+  .campaign-nav-close {
     min-height: 40px;
   }
   .campaign-nav-toggle {
@@ -700,7 +699,9 @@ body.aeon-campaign #rotate {
   .campaign-nav-backdrop {
     position: fixed;
   }
-  #rpg-lab-menu {
+  #rpg-lab-menu,
+  #rpg-lab-battle,
+  #campaign-modal {
     position: fixed;
     padding: calc(env(safe-area-inset-top, 0px) + 6px) calc(env(safe-area-inset-right, 0px) + 8px) calc(env(safe-area-inset-bottom, 0px) + 6px) calc(env(safe-area-inset-left, 0px) + 8px);
   }
@@ -709,9 +710,50 @@ body.aeon-campaign #rotate {
     max-width: 780px;
     max-height: 100%;
   }
+  #rpg-lab-battle .panel {
+    width: min(96vw, 760px);
+    max-height: calc(100dvh - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px) - 16px);
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+  }
+  #rpg-lab-battle canvas {
+    width: 100%;
+    max-width: 100%;
+    height: auto;
+    max-height: 42dvh;
+    object-fit: contain;
+    image-rendering: pixelated;
+    image-rendering: crisp-edges;
+  }
+  #rpg-lab-battle button {
+    min-height: 36px;
+    font-size: max(10px, calc(var(--u) * 6.5)) !important;
+  }
+  #campaign-modal .panel,
+  #campaign-modal .panel.campaign-wide {
+    width: min(94vw, 720px);
+    max-height: calc(100dvh - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px) - 16px);
+    overflow-y: auto;
+  }
+  #cinematic-canvas {
+    width: auto;
+    max-width: 92%;
+    height: auto;
+    max-height: 46dvh;
+  }
+  #cinematic-caption {
+    width: min(92%, calc(var(--u) * 380));
+  }
   body.aeon-campaign #dialog {
-    left: calc(var(--u) * 18);
-    right: calc(var(--u) * 18);
+    left: calc(var(--u) * 14);
+    right: calc(var(--u) * 14);
+    bottom: calc(var(--u) * 5);
+    max-height: 46dvh;
+    overflow-y: auto;
+  }
+  body.aeon-campaign #campaign-area-tag {
+    max-width: 30%;
   }
 }
 
