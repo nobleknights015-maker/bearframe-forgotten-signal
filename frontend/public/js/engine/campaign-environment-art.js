@@ -83,14 +83,27 @@ export function compileCampaignEnvironmentArt(manifest,images){
     imageCount:imagePaths.size
   });
 }
-const fetchImage=src=>new Promise((resolve,reject)=>{
+const loadImageOnce=(src,attempt=0)=>new Promise((resolve,reject)=>{
   const image=new Image();
   image.onload=()=>resolve(image);
   image.onerror=()=>reject(new Error('Owner PNG missing: '+src));
-  image.src=new URL(src,SITE).href;
+  const url=new URL(src,SITE);
+  if(attempt>0)url.searchParams.set('r',String(attempt));
+  image.src=url.href;
 });
+const fetchImage=async(src,maxAttempts=3)=>{
+  let lastError=null;
+  for(let attempt=0;attempt<maxAttempts;attempt++){
+    try{return await loadImageOnce(src,attempt);}
+    catch(err){
+      lastError=err;
+      if(attempt<maxAttempts-1)await new Promise(r=>setTimeout(r,150*(attempt+1)));
+    }
+  }
+  throw lastError||new Error('Owner PNG missing: '+src);
+};
 export async function loadCampaignEnvironmentArt({requireInstalled=false,
-  read=globalThis.fetch?.bind(globalThis),loadImage=fetchImage}={}){
+  read=globalThis.fetch?.bind(globalThis),loadImage=fetchImage,concurrency=6}={}){
   if(typeof read!=='function'||typeof loadImage!=='function')
     fail('environment image APIs unavailable');
   const url=new URL('environment/environment-art.json',ROOT);
@@ -100,7 +113,13 @@ export async function loadCampaignEnvironmentArt({requireInstalled=false,
     fail('owner environment installation missing (HTTP '+result.status+')');
   }
   const manifest=await result.json(),{imagePaths}=checkedPaths(manifest);
-  const entries=await Promise.all([...imagePaths].map(async path=>
-    [path,await loadImage(path)]));
+  const queue=[...imagePaths],entries=[];
+  const workerCount=Math.max(1,Math.min(concurrency,queue.length));
+  await Promise.all(Array.from({length:workerCount},async()=>{
+    while(queue.length){
+      const path=queue.shift();
+      entries.push([path,await loadImage(path)]);
+    }
+  }));
   return compileCampaignEnvironmentArt(manifest,new Map(entries));
 }

@@ -1,0 +1,132 @@
+name: Owner-Private Offline Aeon Circuit APK (Manual / Private Repo Only)
+# Secure alternative Android APK build & emulator test workflow.
+# NEVER commits private Director's Cut v2 story files or restricted artwork to public GitHub.
+#
+# Required encrypted GitHub Actions Secrets (in a PRIVATE fork/mirror or restricted environment):
+#   AEON_CAMPAIGN_JSON_GZ_B64    — base64(gzip(Aeon_Circuit_Directors_Cut_v2_campaign.json))
+#   AEON_LORE_BIBLE_JSON_GZ_B64  — base64(gzip(Bearframe_Lore_Bible_Revision_4_10.json))
+#
+# Safety guard: refuses to upload the compiled owner-private APK artifact if the repository
+# is public, preventing accidental public exposure of unpublished screenplay/lore assets.
+on:
+  workflow_dispatch:
+    inputs:
+      run_emulator_smoke:
+        description: 'Run Android API 35 emulator install & launch smoke test'
+        required: false
+        default: true
+        type: boolean
+
+concurrency:
+  group: aeon-private-offline-apk-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  build-offline-apk:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    permissions:
+      contents: read
+    steps:
+      - name: Safety guard — block private APK artifact upload on public repositories
+        env:
+          REPO_PRIVATE: ${{ github.event.repository.private }}
+        run: |
+          if [ "${REPO_PRIVATE}" != "true" ]; then
+            echo "ERROR: Refusing to build/upload owner-private offline APK in a PUBLIC repository." >&2
+            echo "Run this workflow inside a PRIVATE repository mirror or locally via scripts/build-private-aeon-apk.sh." >&2
+            exit 1
+          fi
+
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Restore private source JSONs from encrypted Actions Secrets into ignored path
+        env:
+          CAMPAIGN_B64: ${{ secrets.AEON_CAMPAIGN_JSON_GZ_B64 }}
+          LORE_B64: ${{ secrets.AEON_LORE_BIBLE_JSON_GZ_B64 }}
+        run: |
+          set -euo pipefail
+          if [ -z "$CAMPAIGN_B64" ] || [ -z "$LORE_B64" ]; then
+            echo "Missing encrypted secrets AEON_CAMPAIGN_JSON_GZ_B64 / AEON_LORE_BIBLE_JSON_GZ_B64" >&2
+            exit 1
+          fi
+          mkdir -p public/assets/aistudio
+          printf '%s' "$CAMPAIGN_B64" | base64 -d | gunzip > public/assets/aistudio/Aeon_Circuit_Directors_Cut_v2_campaign.json
+          printf '%s' "$LORE_B64" | base64 -d | gunzip > public/assets/aistudio/Bearframe_Lore_Bible_Revision_4_10.json
+
+      - name: Compile Director's Cut v2 campaign and run release preflight
+        run: |
+          set -euo pipefail
+          node frontend/narrative-tools/build_full_campaign.mjs
+          node frontend/narrative-tools/preflight_private_campaign.mjs frontend/public/assets/aeon --release
+          node --test frontend/tests/*.test.mjs
+
+      - name: Install Android 35 SDK
+        run: |
+          set -euo pipefail
+          export ANDROID_SDK_ROOT="${ANDROID_HOME:-/usr/local/lib/android/sdk}"
+          SDKMANAGER="$(find "$ANDROID_SDK_ROOT/cmdline-tools" -maxdepth 3 -type f -name sdkmanager | sort -V | tail -n 1)"
+          yes | "$SDKMANAGER" --sdk_root="$ANDROID_SDK_ROOT" --licenses >/dev/null || true
+          "$SDKMANAGER" --sdk_root="$ANDROID_SDK_ROOT" "platforms;android-35" "build-tools;35.0.0" "platform-tools"
+
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.10.2'
+
+      - name: Assemble and verify owner-private offline APK
+        run: |
+          set -euo pipefail
+          gradle -p android :app:assembleDebug -PaeonOfflineBuild=true --no-daemon --max-workers=2
+          mkdir -p private-export
+          cp android/app/build/outputs/apk/debug/app-debug.apk private-export/Aeon-Circuit-The-Silent-Wake.apk
+          bash android/ci/verify-offline-aeon-apk.sh private-export/Aeon-Circuit-The-Silent-Wake.apk
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: aeon-circuit-silent-wake-offline-apk
+          path: private-export/Aeon-Circuit-The-Silent-Wake.apk
+          if-no-files-found: error
+          retention-days: 3
+
+  emulator-smoke:
+    if: ${{ inputs.run_emulator_smoke != false }}
+    needs: build-offline-apk
+    runs-on: ubuntu-24.04
+    timeout-minutes: 40
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          name: aeon-circuit-silent-wake-offline-apk
+          path: android/app/build/outputs/apk/debug
+      - name: Emulator install, launch, background/resume and restart smoke
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 35
+          arch: x86_64
+          profile: pixel_2
+          emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -no-snapshot -camera-back none -camera-front none
+          disable-animations: false
+          emulator-boot-timeout: 900
+          script: bash android/ci/emulator-smoke.sh
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: aeon-circuit-emulator-evidence
+          path: |
+            ghost-signal-emulator-launch.png
+            ghost-signal-emulator-resume.png
+            ghost-signal-emulator-restart.png
+          if-no-files-found: ignore
+          retention-days: 3

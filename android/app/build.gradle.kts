@@ -40,8 +40,13 @@ val copyGhostSignalAssets by tasks.registering(Sync::class) {
     val publicRoot = rootProject.file("../frontend/public")
     from(publicRoot) {
         if (!aeonOfflineBuild) {
-            // Public builds MUST NEVER package private Bearframe/Aeon story files.
-            exclude("assets/aeon/story/**")
+            // Public builds MUST NEVER package private Bearframe/Aeon story or owner-only art.
+            exclude(
+                "assets/aeon/story/**",
+                "assets/aeon/portraits/**",
+                "assets/aeon/assets/world/**",
+                "assets/aeon/assets/battlers/**"
+            )
         }
     }
     into(layout.buildDirectory.dir("generated/ghost-signal"))

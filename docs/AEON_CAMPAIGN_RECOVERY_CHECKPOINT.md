@@ -19,36 +19,30 @@ This checkpoint integrates the compiled Director's Cut v2 campaign into the 29-s
    - Completed all 20 sidequest bindings (`SQ-01`–`SQ-20`), including dialogue-less requests (`SQ-17`–`SQ-20`), with prerequisite checks, XP awards, and automatic level-up progression.
    - Hardened battle/boss encounter dispatch in `campaign-game.js` so locked or already-cleared battles never fall through to noncombat puzzle modals.
 
-3. **Responsive Android Landscape & Owner-Private Offline APK Support (Phase 5)**
-   - Added Moto G (2025) landscape safety rules in `frontend/public/css/campaign.css` (`844×390`, `915×412`, `max-height: 520px`) for side-view combat panels/canvases, campaign modals, dialogue boxes, cinematics, and consolidated dropdown navigation (`>= 44px` menu toggle, zero horizontal overflow).
-   - Updated `android/app/build.gradle.kts`, `android/app/src/main/AndroidManifest.xml`, and `android/app/src/main/java/labs/bearframe/ghostsignal/MainActivity.java`:
-     - **Public default build** (`gradle -p android :app:assembleDebug`): strictly excludes `assets/aeon/story/**` from packaged APK assets and preserves existing Ghost Signal / Engine Lab behavior.
-     - **Owner-private offline APK build** (`gradle -p android :app:assembleDebug -PaeonOfflineBuild=true` or `:app:assembleRelease -PaeonOfflineBuild=true`): validates local compiled campaign JSON, packages it offline inside the APK, sets `applicationId` to `labs.bearframe.aeoncircuit` with label `"Aeon Circuit: The Silent Wake"`, and boots `campaign.html` directly with zero runtime JSON import.
-     - Fixed `WebViewAssetLoader` asset routing in `MainActivity.java` so `assets/aeon/*` falls back to packaged APK assets whenever no owner-installed override exists in internal storage.
+3. **Responsive Android Landscape, Offline Fonts, Asset Loader Fix & APK Build Pipeline (Phase 5)**
+   - Fixed `Owner PNG missing: assets/aeon/environment/doors/sluice_gate_closed.png` in `frontend/public/js/engine/campaign-environment-art.js` by replacing the unthrottled 71-image `Promise.all` burst with bounded concurrency (`6` workers) and 3-attempt backoff retry, reducing transient proxy drops and peak image-decode memory on 4 GB RAM Android devices.
+   - Updated `frontend/serve.js` with `Content-Length`, `.woff2`/`.woff` MIME types, static caching (`max-age=300`) for images/fonts, and a constant-time token-gated private APK download endpoint (`/private-apk/<48-96-hex-token>/Aeon-Circuit-The-Silent-Wake.apk`) serving strictly from `.gitignore`d `private-export/` with `X-Robots-Tag: noindex, nofollow` and `Cache-Control: no-store, private`.
+   - Bundled local SIL OFL 1.1 pixel fonts (`frontend/public/assets/fonts/silkscreen-{400,700}.woff2`, `vt323-400.woff2`) and removed external `fonts.googleapis.com` links from `frontend/public/campaign.html` for 100% air-gapped offline rendering.
+   - Added Moto G (2025) landscape safety rules in `frontend/public/css/campaign.css` (`844×390`, `915×412`, `720×360`, `max-height: 520px`) for side-view combat panels/canvases, campaign modals, dialogue boxes, cinematics, and consolidated dropdown navigation (`>= 44px` menu toggle, zero horizontal overflow).
+   - Added Android mipmap launcher icons (`mdpi`–`xxxhdpi`), `sensorLandscape` orientation lock, 4 GB RAM WebView optimizations, `scripts/build-private-aeon-apk.sh`, `android/ci/verify-offline-aeon-apk.sh`, and `.github/workflows/aeon-private-offline-apk.yml` (private-repo-only workflow with API 35 emulator smoke job):
+     - **Public default build** (`gradle -p android :app:assembleDebug`): strictly excludes `assets/aeon/story/**`, `portraits/**`, `assets/world/**`, and `assets/battlers/**` from packaged APK assets and preserves Ghost Signal / Engine Lab behavior.
+     - **Owner-private offline APK build** (`gradle -p android :app:assembleDebug -PaeonOfflineBuild=true` or `:app:assembleRelease -PaeonOfflineBuild=true`): validates local compiled campaign JSON (refusing compilation if absent), packages it offline inside the APK, sets `applicationId` to `labs.bearframe.aeoncircuit` with label `"Aeon Circuit: The Silent Wake"`, and boots `campaign.html` directly with zero runtime JSON import.
 
 ## Verification Matrix
 
 | Check | Result | Notes |
 | --- | --- | --- |
-| Private campaign compile (`build_full_campaign.mjs`) | **PASS** | 29 areas, 64 scenes, 24 combat, 10 mandatory battles, 137 flags (local `.gitignore`d output) |
-| Private campaign preflight (`--review`) | **PASS** | `problems: []` |
-| Private campaign preflight (`--release`) | **PASS** | `42` characters, `4` portraits, `29/29` reachable, `64/64` scenes, `30/30` quests, `problems: []` |
-| Full Node test suite (`node --test frontend/tests/*.test.mjs`) | **PASS** | `246/246` passing, `0` failed, `0` skipped (includes E2E playthrough for all 4 Sleepers, all 10 main quests, 7 choices, 10 mandatory bosses, and both endings) |
-| Live Chromium walkthrough (`1280×720`) | **PASS** | Title, 4 Sleepers, `SC-000`–`SC-004`, Callsign/Pronouns (`Vesper` / `she/her`), Dropdown Menu, 29-sector World Map, Quests, Save/Reload/Continue, real doorway transit `A00 -> A01 -> A02`, live `EN-001` side-view combat turn, `0` console/page errors |
-| Live Chromium visual inspection (`A00`, `A02`, `A15`, `A24`, Combat, Menu, World Map) | **PASS** | Verified in-game captures; caught and resolved stuck `#dialog` box after clicking `SKIP` |
-| Responsive layout QA (`844×390`, `915×412`, `1024×768`) | **PASS** | Side-view combat (`panelH: 355 <= 390`, `minBtnH: 36`), dropdown menu (`toggleH: 44`, `drawerBottom: 380 <= 390`), `overflowX: false` across all tested sizes |
-| Frozen Ghost Signal files untouched | **PASS** | `index.html`, `css/game.css`, `js/ui.js`, `studio/index.html` unmodified |
+| Public Engine Android APK build (`gradle -p android :app:assembleDebug`) | **PASS** | Compiled real 1.6 MB APK with JDK 17 + Gradle 8.10.2 + Android SDK 35 (`minSdk 26`, `targetSdk 35`); passes `verify-apk-assets.sh`, `aapt dump badging`, and `apksigner verify` (v2); bundles mipmap icons, 71 env PNGs, and local `.woff2` fonts |
+| Offline APK safety guard (`-PaeonOfflineBuild=true` without private JSONs) | **PASS** | Refuses build cleanly when `assets/aeon/story/{campaign.json,opening-world-review-candidate.json}` are absent |
+| Live Chromium offline QA & 71-PNG loader (`campaign.html`) | **PASS** | `0` external requests (`blockedExternal: []`), `Silkscreen` 400/700 + `VT323` 400 loaded locally, `71/71` environment PNGs loaded (`sluice_gate_closed.png` `64×64`), `0` page errors |
+| Moto G (2025) & Android viewport scaling (`844×390`, `915×412`, `720×360`, `1024×768`) | **PASS** | `overflowX: false` across all tested Android viewports |
+| Full Node test suite (`node --test frontend/tests/*.test.mjs`) | **PASS** | `243/246` passing, `0` failed, `3` skipped (the 3 private-story tests require reattaching the deleted private JSONs; previously passed `246/246` with real files attached) |
+| Frozen Ghost Signal files untouched | **PASS** | `index.html`, `css/game.css`, `js/ui.js`, `studio/index.html` unmodified; `index.html` boots cleanly |
 | Local build & lint (`npm run lint && npm run build`) | **PASS** | All JS/MJS syntax checks and frontend build succeeded cleanly |
-| Control-plane RPC (`compile_applet` / `lint_applet`) | **NOT RUN** | Control-plane gateway returned HTTP 504 timeout; local `npm run lint && npm run build` passed directly |
-| Android Gradle APK compilation (`assembleDebug` / `-PaeonOfflineBuild=true`) | **NOT RUN** | JDK 17, Gradle, and Android SDK Platform 35 are not installed in this container |
-| Physical Moto G (2025) hardware & >30-minute save soak | **NOT RUN** | Requires physical target device or Android emulator outside this environment |
+| Owner-private offline Director's Cut v2 APK compilation | **NOT RUN** | Blocked because the two private JSONs (`Aeon_Circuit_Directors_Cut_v2_campaign.json` and `Bearframe_Lore_Bible_Revision_4_10.json`) are not currently on disk; toolchain is ready in `/tmp` |
+| Android AVD emulator execution in container | **NOT RUN** | Blocked by gVisor container kernel (`Linux 4.19.0-gvisor`, no `/dev/kvm`, no QEMU); automated emulator job provided in `.github/workflows/aeon-private-offline-apk.yml` |
 
-## Prioritized Remaining Follow-Ups (On Owner Workstation / Device)
+## Remaining Steps to Finalize Private APK & Device Testing
 
-1. **Build owner-private offline APK**: After running `node frontend/narrative-tools/build_full_campaign.mjs` locally with the private source JSONs, build via:
-   ```bash
-   gradle -p android :app:assembleDebug -PaeonOfflineBuild=true
-   ```
-   (or `:app:assembleRelease -PaeonOfflineBuild=true` signed with your private keystore).
-2. **Moto G (2025) hardware soak test**: Install the APK, play offline with airplane mode enabled, verify touch/gamepad controls, audio resume after HOME/backgrounding, and Save/Continue persistence across force-stop/relaunch.
-3. **Optional local pixel font bundling**: `campaign.html` falls back gracefully offline, while bundling locally licensed `Silkscreen` and `VT323` `.woff2` files will guarantee identical offline typography on air-gapped Android devices.
+1. **Compile owner-private offline APK**: Reattach the two private JSONs (`Aeon_Circuit_Directors_Cut_v2_campaign.json` and `Bearframe_Lore_Bible_Revision_4_10.json`) in this workspace or run `bash scripts/build-private-aeon-apk.sh <campaign.json> <lore.json>` locally (or run `.github/workflows/aeon-private-offline-apk.yml` in a private GitHub repository).
+2. **Moto G (2025) hardware / API 35 emulator test**: Install `Aeon-Circuit-The-Silent-Wake.apk`, verify airplane-mode offline launch, movement, side-view combat, dropdown menus, dialogue/cutscenes, and Save/Continue persistence across force-stop/relaunch.

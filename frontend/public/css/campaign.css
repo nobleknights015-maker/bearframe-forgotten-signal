@@ -1,4 +1,26 @@
 /* Aeon Circuit: The Silent Wake — Campaign Presentation & Android Landscape Styles */
+@font-face {
+  font-family: 'Silkscreen';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('../assets/fonts/silkscreen-400.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Silkscreen';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url('../assets/fonts/silkscreen-700.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'VT323';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('../assets/fonts/vt323-400.woff2') format('woff2');
+}
+
 :root {
   --aeon-cyan: #72dce8;
   --aeon-amber: #f2bd75;

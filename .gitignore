@@ -19,3 +19,6 @@ credentials.json
 /frontend/public/assets/aeon/story/
 /frontend/public/studio/refs/
 /private-export/
+/android/.gradle/
+/android/app/build/
+/android/local.properties
